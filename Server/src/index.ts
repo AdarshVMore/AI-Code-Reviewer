@@ -3,6 +3,9 @@ import express from "express";
 import { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { verifySignature } from "./utils/verifySignature";
+import { getOctokit } from "./github/getClient";
+import { getReviewRules } from "./github/getReviewRules";
+import { getDifferenceData } from "./github/getCodeDiff";
 
 const app = express();
 const port = 3000;
@@ -12,6 +15,9 @@ console.log(GITHUB_SECRET);
 
 type PullRequestEvent = {
   action: "opened" | "synchronize" | "closed";
+  installation: {
+    id: string | number
+  },
   pull_request: {
     title: string;
     number: number;
@@ -21,7 +27,10 @@ type PullRequestEvent = {
     };
   };
   repository: {
-    full_name: string;
+    name: string
+    owner: {
+      login: string
+    }
   };
 };
 
@@ -40,19 +49,28 @@ app.post("/webhook/github", (req: Request, res: Response) => {
   }
 
   const event = req.headers["x-github-event"];
-  console.log(`📦 Event: ${event}`);
+  console.log(`Event: ${event}`);
 
-  if (event === "pull_request") {
+  main()
+
+  async function main (){
+    console.log("api called...")
+    if (event === "pull_request") {
     const payload = req.body as PullRequestEvent;
-    const { action, pull_request, repository } = payload;
+    const installationId = payload.installation.id as number
+    const owner = payload.repository.owner.login
+    const repo = payload.repository.name
+    const prNumber = payload.pull_request.number
 
-    console.log(`👉 PR ${action}`);
-    console.log(`Title: ${pull_request.title}`);
-    console.log(`Repo: ${repository.full_name}`);
-    console.log(`Branch: ${pull_request.head.ref}`);
-    console.log(`SHA: ${pull_request.head.sha}`);
+    console.log(installationId, owner , repo, prNumber)
+    
+    const octoKit = await getOctokit(installationId)
+    const difference = await getDifferenceData(octoKit, owner, repo, prNumber)
+    const rules = await getReviewRules(octoKit, owner, repo, prNumber)
 
+    console.log(difference.slice(0, 500), rules)
     res.sendStatus(200)
+  }
   }
 });
 

@@ -11,8 +11,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@octokit/app": "^16.1.2",
+    "@octokit/app": "^13.1.8",
+    "@octokit/auth-app": "^8.2.0",
     "@octokit/rest": "^22.0.1",
+    "@octokit/webhooks-types": "^7.6.1",
     "body-parser": "^2.2.2",
     "crypto": "^1.0.1",
     "dotenv": "^17.3.1",
