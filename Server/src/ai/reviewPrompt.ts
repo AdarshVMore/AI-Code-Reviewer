@@ -1,17 +1,57 @@
-export function reviewPrompt ( diff:string, rules:any ){
-    return `
-You are a strict senior engineer reviewing code.
+import Anthropic from "@anthropic-ai/sdk";
 
-Follow these rules strictly:
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY!,
+});
+
+export async function getAIReview(prompt: string) {
+  const res = await anthropic.messages.create({
+    model: "claude-3-5-sonnet-latest",
+    max_tokens: 1500,
+    temperature: 0,
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+  return res.content;
+}
+
+export function reviewPrompt(diff: string, rules: any) {
+    console.log("rules =>>>>>>>" , rules)
+    console.log("difference =>>>>>>", diff)
+    
+  return `
 ${JSON.stringify(rules, null, 2)}
 
-Review the following git diff:
+Analyze this git diff:
 
 ${diff}
 
-Return:
-- Summary
-- Issues (file + line)
-- Suggested fixes
+Return ONLY valid JSON in this format:
+
+{
+  "summary": "short summary",
+  "issues": [
+    {
+      "file": "file path",
+      "line": number,
+      "problem": "what is wrong",
+      "fix": "suggested fix"
+    }
+  ]
+}
 `;
+}
+
+export function parseAIResponse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.log("❌ Failed to parse AI response");
+    return null;
+  }
 }
