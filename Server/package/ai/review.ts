@@ -21,18 +21,14 @@ export async function getAIReview(prompt: string | null) {
 }
 
 export function reviewPrompt(diff: string, rules: any) {
-    console.log("rules =>>>>>>>" , rules)
-    console.log("difference =>>>>>>", diff)
-    const rule = JSON.stringify(rules, null, 2)
-    console.log("phase 1 rule", rule)
-    const prompt = ` ${rule} Analyze this git diff: ${diff} Return ONLY valid JSON in this format: {"summary": "short summary","issues": [  {    "file": "file path",    "line": number,    "problem": "what is wrong",    "fix": "suggested fix"  }]}`
-    console.log("phase 2 prompt", prompt)
-    return prompt;
+  const rule = JSON.stringify(rules, null, 2);
+  const prompt = ` ${rule} Analyze this git diff: ${diff} Return ONLY valid JSON in this format: {"summary": "short summary","issues": [  {    "file": "file path",    "line": number,    "problem": "what is wrong",    "fix": "suggested fix"  }]}`;
+  return prompt;
 }
 
 export function parseAIResponse(text: string) {
   try {
-    return text
+    return text;
   } catch (err) {
     console.log("❌ Failed to parse AI response");
     return null;
