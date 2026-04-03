@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-bg-base: #0c0c0c;
+  --color-bg-surface: #141414;
+  --color-bg-raised: #1a1a1a;
+  --color-bg-border: #262626;
+  --color-bg-muted: #2a2a2a;
+
+  --color-text-primary: #ededed;
+  --color-text-secondary: #888888;
+  --color-text-tertiary: #555555;
+  --color-text-inverse: #0c0c0c;
+
+  --color-brand: #5b6af0;
+  --color-brand-muted: #1e2140;
+  --color-brand-hover: #4a59e8;
+
+  --color-severity-high: #ef4444;
+  --color-severity-high-bg: #1f0a0a;
+  --color-severity-high-text: #fca5a5;
+  --color-severity-med: #f59e0b;
+  --color-severity-med-bg: #1f1200;
+  --color-severity-med-text: #fcd34d;
+  --color-severity-low: #22c55e;
+  --color-severity-low-bg: #0a1f0e;
+  --color-severity-low-text: #86efac;
+
+  --color-status-active: #22c55e;
+  --color-status-active-bg: #0a1f0e;
+  --color-status-paused: #888888;
+  --color-status-paused-bg: #1a1a1a;
+  --color-status-failed: #ef4444;
+  --color-status-failed-bg: #1f0a0a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0c0c0c;
+  color: #ededed;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a2a;
+}
