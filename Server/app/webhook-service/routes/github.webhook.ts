@@ -1,6 +1,10 @@
 import { Router, Request, Response } from "express";
 import { verifySignature } from "../middleware/verifySignature";
 import { processPRReviewJob } from "../../worker-service/processors/review.processor";
+import { createClient } from "redis";
+
+const client = createClient()
+client.connect()
 
 const router = Router();
 const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
@@ -26,7 +30,7 @@ type PullRequestEvent = {
   };
 };
 
-router.post("/webhook/github", (req: Request, res: Response) => {
+router.post("/webhook/github", async (req: Request, res: Response) => {
   if (!verifySignature(req, GITHUB_SECRET)) {
     console.log("invalid request");
     return res.status(401).send("invalid signature");
@@ -36,13 +40,20 @@ router.post("/webhook/github", (req: Request, res: Response) => {
 
   if (event === "pull_request") {
     const payload = req.body as PullRequestEvent;
+    const installationId= payload.installation.id
+    const owner= payload.repository.owner.login
+    const repo= payload.repository.name
+    const prNumber= payload.pull_request.number
 
-    processPRReviewJob({
-      installationId: payload.installation.id,
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name,
-      prNumber: payload.pull_request.number,
-    }).catch((err) => console.error("PR review failed:", err));
+    const pushingResponse = await client.lPush("reviewQueue", JSON.stringify({installationId, owner, repo, prNumber}))
+
+    console.log("pushing to queue ====>", pushingResponse)
+    // processPRReviewJob({
+    //   installationId: payload.installation.id,
+    //   owner: payload.repository.owner.login,
+    //   repo: payload.repository.name,
+    //   prNumber: payload.pull_request.number,
+    // }).catch((err) => console.error("PR review failed:", err));
   }
 
   res.sendStatus(200);
