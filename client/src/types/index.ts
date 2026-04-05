@@ -86,3 +86,9 @@ export interface RepoSettings {
   focusAreas: string[]
   ignorePaths: string[]
 }
+
+declare module 'next-auth' {
+  interface Session {
+    accessToken: string
+  }
+}
