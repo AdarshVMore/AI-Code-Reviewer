@@ -1,5 +1,6 @@
-import { getOctokit, getDifferenceData, getReviewRules } from "./github.service";
-import { getAIReview, reviewPrompt, parseAIResponse } from "./ai.service";
+import { getOctokit, getDifferenceData, getReviewRules } from "./github.service.js";
+import { getAIReview, reviewPrompt, parseAIResponse } from "./ai.service.js";
+import { db } from "../../../package/db/prisma.js";
 
 export type PRReviewJobData = {
   installationId: number;
@@ -10,6 +11,7 @@ export type PRReviewJobData = {
 
 export async function runPRReview(data: PRReviewJobData) {
   // const { installationId, owner, repo, prNumber } = data;
+  console.log("here is the data =========>", data)
   const installationId = data.installationId
   const owner = data.owner
   const repo = data.repo
@@ -18,6 +20,7 @@ export async function runPRReview(data: PRReviewJobData) {
   const octokit = await getOctokit(installationId);
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
+
 
   const prompt = reviewPrompt(difference, rules);
   const parsedPrompt = parseAIResponse(prompt);
