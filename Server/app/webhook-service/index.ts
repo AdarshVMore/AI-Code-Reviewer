@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
-import githubWebhookRouter from "./routes/github.webhook";
+import githubWebhookRouter from "./routes/github.webhook.js";
 
 const app = express();
-const port = 3000;
+const port = 3002;
 
 app.use(
   bodyParser.json({
