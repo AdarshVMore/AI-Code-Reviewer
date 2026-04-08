@@ -1,2 +1,2 @@
-export { getOctokit } from "../../../package/github/client";
-export { getDifferenceData, getReviewRules } from "../../../package/github/pr";
+export { getOctokit } from "../../../package/github/client.js";
+export { getDifferenceData, getReviewRules } from "../../../package/github/pr.js";

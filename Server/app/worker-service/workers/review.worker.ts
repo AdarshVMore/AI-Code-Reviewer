@@ -1,5 +1,5 @@
 import { createClient } from "redis";
-import { processPRReviewJob } from "../processors/review.processor";
+import { processPRReviewJob } from "../processors/review.processor.js";
 
 
 export async function workersOn(){

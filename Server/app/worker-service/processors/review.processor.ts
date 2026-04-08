@@ -1,6 +1,6 @@
-import { getOctokit } from "../services/github.service";
-import { runPRReview, PRReviewJobData } from "../services/review.service";
-export { getOctokit } from "../../../package/github/client";
+import { getOctokit } from "../services/github.service.js";
+import { runPRReview, PRReviewJobData } from "../services/review.service.js";
+export { getOctokit } from "../../../package/github/client.js";
 import {createClient} from "redis"
 
 export async function processPRReviewJob(data: PRReviewJobData) {

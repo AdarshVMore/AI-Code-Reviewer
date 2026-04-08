@@ -3,6 +3,7 @@ import { Request } from "express";
 
 export function verifySignature(req: Request, secret: string): boolean {
   const signature = req.headers["x-hub-signature-256"];
+  console.log("-----------signature is --------- \n", signature)
   if (!signature || typeof signature !== "string") {
     return false;
   }

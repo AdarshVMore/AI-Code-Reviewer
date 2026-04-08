@@ -13,7 +13,7 @@ type PullRequestEvent = {
   action: "opened" | "synchronize" | "closed";
   installation: { id: number };
   pull_request: { title: string; number: number; head: { ref: string; sha: string } };
-  repository: { name: string; owner: { login: string } };
+  repository: { name: string; owner: { id: number; login: string; avatar_url: string } };
 };
 
 type InstallationEvent = {
@@ -74,18 +74,29 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     console.log("pull_request action:", payload.action, `${owner}/${repo}#${prNumber}`);
 
     if (payload.action === "opened") {
-      // check if repo already exists — created via installation event
-      const existingRepo = await db.repository.findUnique({
-        where: { owner_name: { owner, name: repo } },
+      const repoOwner = payload.repository.owner;
+
+      const user = await db.user.upsert({
+        where: { githubId: repoOwner.id },
+        update: {},
+        create: {
+          githubId: repoOwner.id,
+          githubUsername: repoOwner.login,
+          githubAvatar: repoOwner.avatar_url,
+          email: null,
+          plan: "free",
+        },
       });
 
-      if (!existingRepo) {
-        console.log(`repo ${owner}/${repo} not in DB — installation event may have been missed`);
-      }
+      await db.repository.upsert({
+        where: { owner_name: { owner, name: repo } },
+        update: { installationId },
+        create: { owner, name: repo, installationId, userId: user.id },
+      });
 
       const pushed = await client.lPush(
         "reviewQueue",
-        JSON.stringify({ installationId, owner, repo, prNumber })
+        JSON.stringify({ installationId, owner, repo, prNumber, prTitle: payload.pull_request.title })
       );
       console.log("pushed to queue, queue length:", pushed);
     }
