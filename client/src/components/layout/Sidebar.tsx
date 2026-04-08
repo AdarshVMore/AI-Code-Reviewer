@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Avatar } from '@/components/ui'
+import { useUser } from '@/hooks/useUser'
 
 const navItems = [
   {
@@ -31,20 +32,11 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    label: 'Settings',
-    href: '/settings',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="8" cy="8" r="2.5" />
-        <circle cx="8" cy="8" r="6" strokeDasharray="3 2.5" />
-      </svg>
-    ),
-  },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const user = useUser()
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/' || pathname.startsWith('/repo')
@@ -76,10 +68,10 @@ export function Sidebar() {
 
       <div className="mt-auto border-t border-bg-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <Avatar src="" username="adam" size="md" />
+          <Avatar src={user?.githubAvatar ?? ''} username={user?.githubUsername ?? ''} size="md" />
           <div className="flex flex-col min-w-0">
-            <span className="text-xs font-mono text-text-secondary truncate">adam</span>
-            <span className="text-xs font-mono bg-brand-muted text-brand px-2 py-0.5 rounded-full w-fit mt-0.5">pro</span>
+            <span className="text-xs font-mono text-text-secondary truncate">{user?.githubUsername ?? '...'}</span>
+            <span className="text-xs font-mono bg-brand-muted text-brand px-2 py-0.5 rounded-full w-fit mt-0.5">{user?.plan ?? 'free'}</span>
           </div>
         </div>
       </div>
