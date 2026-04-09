@@ -39,7 +39,8 @@ export function Sidebar() {
   const user = useUser()
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/' || pathname.startsWith('/repo')
+    if (href === '/') return pathname === '/'
+    if (href === '/repos') return pathname.startsWith('/repos') || pathname.startsWith('/repo/')
     return pathname.startsWith(href)
   }
 
@@ -54,9 +55,9 @@ export function Sidebar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 border-l-2 ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-transparent text-sm transition-all duration-150 ${
               isActive(item.href)
-                ? 'bg-bg-raised text-text-primary border-brand'
+                ? 'bg-bg-raised text-text-primary  border-transparent'
                 : 'text-text-secondary hover:text-text-primary hover:bg-bg-raised border-transparent'
             }`}
           >

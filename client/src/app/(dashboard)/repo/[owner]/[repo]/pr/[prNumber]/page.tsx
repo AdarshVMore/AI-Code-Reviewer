@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { Card, Badge, SectionLabel, Spinner } from '@/components/ui'
 import { Topbar } from '@/components/layout/Topbar'
 import { usePRReview } from '@/hooks/usePRReview'
+import { useRepos } from '@/hooks'
 
 export default function PRPage() {
   const params = useParams()
@@ -12,12 +13,19 @@ export default function PRPage() {
   const repo = params.repo as string
   const prNumber = params.prNumber as string
 
-  const { review, loading, error } = usePRReview(prNumber)
+    const { repos } = useRepos()
+    const currentRepo = repos.find((r) => r.owner === owner && r.name === repo)
+    const repoId = currentRepo?.id ?? ''
+
+  const { review, loading, error } = usePRReview(repoId, prNumber)
+
+  console.log
 
   if (loading) return <div className="flex items-center justify-center h-full"><Spinner /></div>
   if (error || !review) return <div className="px-8 py-7 text-sm text-text-secondary">{error ?? 'Review not found.'}</div>
 
   const issues = review.parsedReview?.issues ?? []
+  console.log("issues =======>", issues)
 
   return (
     <>

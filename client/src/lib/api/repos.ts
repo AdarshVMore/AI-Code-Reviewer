@@ -16,6 +16,6 @@ export async function fetchRepoSettings(id: string) {
 }
 
 export async function updateRepoSettings(id: string, body: Record<string, unknown>) {
-  const { data } = await apiClient.post(`/api/repo/update-settings?id=${id}`, body)
+  const { data } = await apiClient.put(`/api/repo/update-settings?id=${id}`, body)
   return data
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import {
@@ -14,33 +14,21 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { Card, Badge, SectionLabel, Avatar } from '@/components/ui'
+import { Card, SectionLabel, Avatar } from '@/components/ui'
 import { Topbar } from '@/components/layout/Topbar'
+import { useRepos } from '@/hooks/useRepos'
+import { useAllPRs } from '@/hooks/useAllPRs'
 
-const reviewsData = [
-  { date: 'Jan 01', count: 3 },
-  { date: 'Jan 02', count: 5 },
-  { date: 'Jan 03', count: 2 },
-  { date: 'Jan 04', count: 6 },
-  { date: 'Jan 05', count: 4 },
-  { date: 'Jan 06', count: 8 },
-  { date: 'Jan 07', count: 3 },
-  { date: 'Jan 08', count: 5 },
-  { date: 'Jan 09', count: 7 },
-  { date: 'Jan 10', count: 4 },
-  { date: 'Jan 11', count: 6 },
-  { date: 'Jan 12', count: 3 },
-  { date: 'Jan 13', count: 5 },
-  { date: 'Jan 14', count: 4 },
-]
-
-const categoryData = [
-  { category: 'Security', count: 31 },
-  { category: 'Error handling', count: 24 },
-  { category: 'Code quality', count: 18 },
-  { category: 'Performance', count: 12 },
-  { category: 'Types', count: 7 },
-]
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 60) return `${mins} min ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs} hr ago`
+  const days = Math.floor(hrs / 24)
+  if (days === 1) return 'yesterday'
+  return `${days} days ago`
+}
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null
@@ -52,22 +40,12 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 }
 
 type TabId = 'reviews' | 'analytics' | 'collaborators' | 'settings'
-type FilterId = 'all' | 'high' | 'medium' | 'low'
 
 const tabs: { id: TabId; label: string }[] = [
   { id: 'reviews', label: 'Reviews' },
   { id: 'analytics', label: 'Analytics' },
   { id: 'collaborators', label: 'Collaborators' },
   { id: 'settings', label: 'Settings' },
-]
-
-const reviews = [
-  { title: 'Add JWT middleware to API routes', pr: 84, author: 'adam', variant: 'high' as const, label: '3 high', time: '2 min ago' },
-  { title: 'Refactor user service to use Prisma', pr: 83, author: 'priya', variant: 'medium' as const, label: '2 medium', time: '1 hr ago' },
-  { title: 'Fix race condition in session handler', pr: 82, author: 'ravi', variant: 'high' as const, label: '4 high', time: '5 hr ago' },
-  { title: 'Add rate limiting to auth endpoints', pr: 81, author: 'priya', variant: 'medium' as const, label: '2 medium', time: 'yesterday' },
-  { title: 'Setup CI/CD pipeline', pr: 80, author: 'adam', variant: 'low' as const, label: '1 low', time: '2 days ago' },
-  { title: 'Migrate from mongoose to Prisma', pr: 79, author: 'sarah', variant: 'medium' as const, label: '3 medium', time: '3 days ago' },
 ]
 
 type StrictnessId = 'strict' | 'balanced' | 'light'
@@ -86,6 +64,14 @@ const focusAreaOptions = [
   { id: 'types', label: 'Types' },
 ]
 
+const categoryData = [
+  { category: 'Security', count: 31 },
+  { category: 'Error handling', count: 24 },
+  { category: 'Code quality', count: 18 },
+  { category: 'Performance', count: 12 },
+  { category: 'Types', count: 7 },
+]
+
 export default function RepoPage() {
   const params = useParams()
   const router = useRouter()
@@ -93,11 +79,23 @@ export default function RepoPage() {
   const repo = params.repo as string
 
   const [activeTab, setActiveTab] = useState<TabId>('reviews')
-  const [filter, setFilter] = useState<FilterId>('all')
   const [strictness, setStrictness] = useState<StrictnessId>('balanced')
   const [checkedAreas, setCheckedAreas] = useState(['security', 'errorHandling', 'codeQuality'])
 
-  const filteredReviews = filter === 'all' ? reviews : reviews.filter((r) => r.variant === filter)
+  const { repos } = useRepos()
+  const currentRepo = repos.find((r) => r.owner === owner && r.name === repo)
+  const repoId = currentRepo?.id ?? ''
+
+  const { prs, loading } = useAllPRs(repoId)
+
+  const reviewsData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const pr of prs) {
+      const date = new Date(pr.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
+      counts[date] = (counts[date] ?? 0) + 1
+    }
+    return Object.entries(counts).map(([date, count]) => ({ date, count }))
+  }, [prs])
 
   function toggleArea(id: string) {
     setCheckedAreas((prev) => prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id])
@@ -105,7 +103,7 @@ export default function RepoPage() {
 
   return (
     <>
-      <Topbar title={`${owner}/${repo}`} subtitle="6 PRs · last reviewed 2 min ago" />
+      <Topbar title={`${owner}/${repo}`} subtitle={`${prs.length} PRs reviewed`} />
       <div className="px-8 py-7 max-w-7xl mx-auto">
 
         <div className="flex border-b border-bg-border mb-6">
@@ -126,41 +124,33 @@ export default function RepoPage() {
 
         {activeTab === 'reviews' && (
           <>
-            <div className="flex gap-2 mb-5">
-              {(['all', 'high', 'medium', 'low'] as FilterId[]).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`text-xs px-3 py-1.5 rounded-full border cursor-pointer transition-colors duration-150 bg-transparent ${
-                    filter === f
-                      ? 'bg-bg-raised border-bg-border text-text-primary'
-                      : 'border-transparent text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
-            </div>
-
-            {filteredReviews.map((r) => (
+            {loading && <p className="text-sm text-text-secondary">Loading...</p>}
+            {!loading && prs.length === 0 && (
+              <p className="text-sm text-text-secondary">No PRs reviewed yet.</p>
+            )}
+            {prs.map((pr) => (
               <Card
-                key={r.pr}
+                key={pr.id}
                 hoverable
                 className="mb-3 p-4"
-                onClick={() => router.push(`/repo/${owner}/${repo}/pr/${r.pr}`)}
+                onClick={() => router.push(`/repo/${owner}/${repo}/pr/${pr.prNumber}`)}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-text-primary truncate">{r.title}</p>
+                    <p className="text-sm font-medium text-text-primary truncate">
+                      {pr.prTitle ?? `PR #${pr.prNumber}`}
+                    </p>
                     <p className="text-xs font-mono text-text-secondary mt-0.5">
-                      acme/backend · PR #{r.pr} · by @{r.author}
+                      {owner}/{repo} · PR #{pr.prNumber}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <Badge variant={r.variant} label={r.label} />
-                    <span className="text-xs font-mono text-text-tertiary">{r.time}</span>
+                    <span className="text-xs font-mono text-text-tertiary">{timeAgo(pr.createdAt)}</span>
                   </div>
                 </div>
+                {pr.summary && (
+                  <p className="text-xs text-text-secondary mt-2 line-clamp-2">{pr.summary}</p>
+                )}
               </Card>
             ))}
           </>
