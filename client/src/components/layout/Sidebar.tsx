@@ -72,7 +72,6 @@ export function Sidebar() {
           <Avatar src={user?.githubAvatar ?? ''} username={user?.githubUsername ?? ''} size="md" />
           <div className="flex flex-col min-w-0">
             <span className="text-xs font-mono text-text-secondary truncate">{user?.githubUsername ?? '...'}</span>
-            <span className="text-xs font-mono bg-brand-muted text-brand px-2 py-0.5 rounded-full w-fit mt-0.5">{user?.plan ?? 'free'}</span>
           </div>
         </div>
       </div>

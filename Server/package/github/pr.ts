@@ -20,17 +20,51 @@ export async function getDifferenceData(
   return diff.data as unknown as string;
 }
 
+// example review rules
+/* 
+{
+  "code_style": [
+    "no var",
+    "prefer async/await",
+    "no console.log in production"
+  ],
+  "architecture": [
+    "follow MVC pattern",
+    "no business logic in controllers"
+  ],
+  "security": [
+    "validate all inputs",
+    "no raw SQL queries"
+  ],
+  "performance": [
+    "avoid nested loops over large arrays"
+  ]
+} 
+*/
+
 export async function getReviewRules(
-  _octokit: Octokit,
-  _owner: string,
-  _repo: string,
+  octokit: Octokit,
+  owner: string,
+  repo: string,
   _pull_number: number
 ) {
-  return {
-    rules: [
-      "Use clean code practices",
-      "Avoid unused variables",
-      "Handle errors properly",
-    ],
-  };
+  try {
+    const response = await octokit.repos.getContent({
+      owner,
+      repo,
+      path: ".reviewrc.json",
+    });
+
+    const file = response.data as { content: string };
+    const content = Buffer.from(file.content, "base64").toString("utf-8");
+    return JSON.parse(content);
+  } catch {
+    return {
+      rules: [
+        "Use clean code practices",
+        "Avoid unused variables",
+        "Handle errors properly",
+      ],
+    };
+  }
 }

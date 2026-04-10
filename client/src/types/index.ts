@@ -25,6 +25,8 @@ export interface Repo {
   installationId: number
 }
 
+export type IssueCategory = 'security' | 'performance' | 'quality' | 'maintainability'
+
 export interface ReviewIssue {
   file: string
   line: number
@@ -32,6 +34,32 @@ export interface ReviewIssue {
   category: string
   message: string
   suggestion: string
+}
+
+export interface PRIssue {
+  id: string
+  reviewId: string
+  file: string
+  line: number
+  category: IssueCategory
+  severity: Severity
+  problem: string
+  fix: string
+  createdAt: string
+}
+
+export interface PRReviewDetail {
+  id: string
+  prNumber: number
+  prTitle: string | null
+  summary: string | null
+  score: number | null
+  author: string
+  commitSHA: string
+  repositoryId: string
+  createdAt: string
+  repository: { name: string; owner: string }
+  issues: PRIssue[]
 }
 
 export interface Review {

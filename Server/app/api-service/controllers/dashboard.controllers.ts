@@ -28,19 +28,11 @@ async function getStats(userId: string) {
   const userRepos = await db.repository.findMany({ where: { userId }, select: { id: true } });
   const repoIds = userRepos.map((r) => r.id);
 
-  const [totalReviews, totalRepos, allReviews] = await Promise.all([
+  const [totalReviews, totalRepos, totalIssues] = await Promise.all([
     db.pRReview.count({ where: { repositoryId: { in: repoIds } } }),
     db.repository.count({ where: { userId } }),
-    db.pRReview.findMany({ where: { repositoryId: { in: repoIds } }, select: { rawReview: true } }),
+    db.issue.count({ where: { review: { repositoryId: { in: repoIds } } } }),
   ]);
-
-  let totalIssues = 0;
-  for (const review of allReviews) {
-    try {
-      const parsed = JSON.parse(review.rawReview);
-      totalIssues += parsed.issues?.length ?? 0;
-    } catch {}
-  }
 
   return { totalReviews, totalRepos, totalIssues };
 }
@@ -69,20 +61,15 @@ async function commonIssues(userId: string) {
   const userRepos = await db.repository.findMany({ where: { userId }, select: { id: true } });
   const repoIds = userRepos.map((r) => r.id);
 
-  const reviews = await db.pRReview.findMany({
-    where: { repositoryId: { in: repoIds } },
-    select: { rawReview: true },
+  const issues = await db.issue.findMany({
+    where: { review: { repositoryId: { in: repoIds } } },
+    select: { problem: true },
   });
 
   const freq: Record<string, number> = {};
-  for (const review of reviews) {
-    try {
-      const parsed = JSON.parse(review.rawReview);
-      for (const issue of parsed.issues ?? []) {
-        const key = issue.problem ?? "unknown";
-        freq[key] = (freq[key] ?? 0) + 1;
-      }
-    } catch {}
+  for (const issue of issues) {
+    const key = issue.problem ?? "unknown";
+    freq[key] = (freq[key] ?? 0) + 1;
   }
 
   return Object.entries(freq)
