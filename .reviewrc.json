@@ -1,0 +1,18 @@
+{
+  "code_style": [
+    "no var",
+    "prefer async/await",
+    "no console.log in production"
+  ],
+  "architecture": [
+    "follow MVC pattern",
+    "no business logic in controllers"
+  ],
+  "security": [
+    "validate all inputs",
+    "no raw SQL queries"
+  ],
+  "performance": [
+    "avoid nested loops over large arrays"
+  ]
+}
