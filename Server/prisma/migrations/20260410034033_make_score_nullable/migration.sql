@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "PRReview" ALTER COLUMN "score" DROP NOT NULL;

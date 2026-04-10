@@ -18,10 +18,14 @@ export async function runPRReview(data: PRReviewJobData) {
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
 
   const prompt = reviewPrompt(difference, rules);
-  const parsedPrompt = parseAIResponse(prompt);
-  const aiResponse = await getAIReview(parsedPrompt) as any;
-  const rawText = aiResponse[0]?.text || "";
-  const cleanText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+  const aiResponse = await getAIReview(prompt);
+  const cleanText = aiResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+  const parsedPrompt = parseAIResponse(cleanText);
+
+  if (!parsedPrompt) {
+    console.log("❌ Failed to parse AI response");
+    return;
+  }
 
   await octokit.issues.createComment({ owner, repo, issue_number: prNumber, body: cleanText });
 
@@ -34,18 +38,31 @@ export async function runPRReview(data: PRReviewJobData) {
     return aiResponse;
   }
 
-  let parsedReview = null;
-  try { parsedReview = JSON.parse(cleanText); } catch {}
-
-  await db.pRReview.create({
+  const savedReview = await db.pRReview.create({
     data: {
       prNumber,
       prTitle: prTitle ?? null,
-      summary: parsedReview?.summary ?? null,
-      rawReview: cleanText,
+      summary: parsedPrompt.summary ?? null,
+      score: parsedPrompt.score ?? 0,
       repositoryId: repository.id,
+      author: owner,
+      commitSHA: "",
     },
   });
+
+  if (parsedPrompt.issues?.length > 0) {
+    await db.issue.createMany({
+      data: parsedPrompt.issues.map((issue: any) => ({
+        reviewId: savedReview.id,
+        file: issue.file,
+        line: issue.line,
+        category: issue.category,
+        severity: issue.severity,
+        problem: issue.problem,
+        fix: issue.fix,
+      })),
+    });
+  }
 
   console.log(`review saved to DB for ${owner}/${repo}#${prNumber}`);
   return aiResponse;

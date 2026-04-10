@@ -41,8 +41,31 @@ model PRReview {
   prNumber     Int
   prTitle      String?
   summary      String?
-  rawReview    String    
+  score        Int?
+  author       String
+  commitSHA    String
   repositoryId String
   repository   Repository @relation(fields: [repositoryId], references: [id])
-  createdAt    DateTime   @default(now())
+
+  issues       Issue[]   
+
+  createdAt    DateTime  @default(now())
+}
+
+model Issue {
+  id        String   @id @default(cuid())
+
+  reviewId  String
+  review    PRReview @relation(fields: [reviewId], references: [id])
+
+  file      String
+  line      Int
+
+  category  String   
+  severity  String   
+
+  problem   String
+  fix       String
+
+  createdAt DateTime @default(now())
 }

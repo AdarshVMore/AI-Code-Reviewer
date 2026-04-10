@@ -70,6 +70,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     const owner = payload.repository.owner.login;
     const repo = payload.repository.name;
     const prNumber = payload.pull_request.number;
+    console.log("------------------------------------------ All data i get in terms of repository ------------------------------------------ \n" , payload.repository)
 
     console.log("pull_request action:", payload.action, `${owner}/${repo}#${prNumber}`);
 
