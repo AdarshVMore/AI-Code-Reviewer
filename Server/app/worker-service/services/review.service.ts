@@ -1,4 +1,8 @@
-import { getOctokit, getDifferenceData, getReviewRules } from "./github.service.js";
+import {
+  getOctokit,
+  getDifferenceData,
+  getReviewRules,
+} from "./github.service.js";
 import { getAIReview, reviewPrompt, parseAIResponse } from "./ai.service.js";
 import { db } from "../../../package/db/prisma.js";
 
@@ -51,11 +55,21 @@ export async function runPRReview(data: PRReviewJobData) {
 
   const octokit = await getOctokit(installationId);
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
+  const { data: collaborators } = await octokit.rest.repos.listCollaborators({
+    owner,
+    repo,
+  });
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
-
+  console.log(
+    "-------======------======== RULEX =======-------========-------\n",
+    rules, collaborators
+  );
   const prompt = reviewPrompt(difference, rules);
   const aiResponse = await getAIReview(prompt);
-  const cleanText = aiResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+  const cleanText = aiResponse
+    .replace(/```json/g, "")
+    .replace(/```/g, "")
+    .trim();
   const parsedPrompt = parseAIResponse(cleanText);
 
   if (!parsedPrompt) {
@@ -64,14 +78,21 @@ export async function runPRReview(data: PRReviewJobData) {
   }
 
   const commentBody = formatReviewComment(parsedPrompt);
-  await octokit.issues.createComment({ owner, repo, issue_number: prNumber, body: commentBody });
+  await octokit.issues.createComment({
+    owner,
+    repo,
+    issue_number: prNumber,
+    body: commentBody,
+  });
 
   const repository = await db.repository.findUnique({
     where: { owner_name: { owner, name: repo } },
   });
 
   if (!repository) {
-    console.log(`repo ${owner}/${repo} not found in DB after upsert — skipping save`);
+    console.log(
+      `repo ${owner}/${repo} not found in DB after upsert — skipping save`,
+    );
     return aiResponse;
   }
 
