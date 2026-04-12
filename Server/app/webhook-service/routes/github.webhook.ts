@@ -63,7 +63,9 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
   }
 
   if (event === "pull_request") {
+    console.log("i am in")
     const payload = req.body as PullRequestEvent;
+    console.log(payload)
     const installationId = payload.installation.id;
     const owner = payload.repository.owner.login;
     const repo = payload.repository.name;
