@@ -21,6 +21,7 @@
     "@octokit/webhooks-types": "^7.6.1",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
+    "adm-zip": "^0.5.17",
     "axios": "^1.14.0",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
@@ -32,6 +33,7 @@
     "redis": "^5.11.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",

@@ -14,5 +14,8 @@
   ],
   "performance": [
     "avoid nested loops over large arrays"
-  ]
+  ],
+  "ci": {
+    "install_directory": "backend"
+  }
 }

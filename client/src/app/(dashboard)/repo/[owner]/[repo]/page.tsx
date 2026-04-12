@@ -19,6 +19,8 @@ import { Topbar } from '@/components/layout/Topbar'
 import { useRepos } from '@/hooks/useRepos'
 import { useAllPRs } from '@/hooks/useAllPRs'
 import { useCollaborators } from '@/hooks/useCollaborator'
+import { useDeployments, Deployment } from '@/hooks/useDeployments'
+import { fixDeployment } from '@/lib/api/deployments'
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -40,12 +42,13 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   )
 }
 
-type TabId = 'reviews' | 'analytics' | 'collaborators' | 'settings'
+type TabId = 'reviews' | 'analytics' | 'collaborators' | 'settings' | 'deployment'
 
 const tabs: { id: TabId; label: string }[] = [
   { id: 'reviews', label: 'Reviews' },
   { id: 'analytics', label: 'Analytics' },
   { id: 'collaborators', label: 'Collaborators' },
+  {id: 'deployment', label: 'deployment'},
   { id: 'settings', label: 'Settings' },
 ]
 
@@ -89,6 +92,8 @@ export default function RepoPage() {
 
   const { prs, loading } = useAllPRs(repoId)
   const { allCollaborators } = useCollaborators(repoId)
+  const { deployments, loading: deploymentsLoading, setDeployments } = useDeployments(repoId)
+  const [fixingId, setFixingId] = useState<string | null>(null)
 
   const reviewsData = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -101,6 +106,24 @@ export default function RepoPage() {
 
   function toggleArea(id: string) {
     setCheckedAreas((prev) => prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id])
+  }
+
+  async function handleFix(deployment: Deployment) {
+    setFixingId(deployment.id)
+    try {
+      const result = await fixDeployment(deployment.id)
+      setDeployments((prev) =>
+        prev.map((d) =>
+          d.id === deployment.id
+            ? { ...d, fixes: [...d.fixes, { id: Date.now().toString(), status: 'applied', commitSha: result.commitSha, diff: result.diff, createdAt: new Date().toISOString() }] }
+            : d
+        )
+      )
+    } catch {
+      alert('Failed to apply fix')
+    } finally {
+      setFixingId(null)
+    }
   }
 
   return (
@@ -212,6 +235,62 @@ export default function RepoPage() {
                 </span>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeTab === 'deployment' && (
+          <div>
+            {deploymentsLoading && <p className="text-sm text-text-secondary">Loading...</p>}
+            {!deploymentsLoading && deployments.length === 0 && (
+              <p className="text-sm text-text-secondary">No deployments tracked yet.</p>
+            )}
+            {deployments.map((d) => {
+              const appliedFix = d.fixes.find((f) => f.status === 'applied')
+              const isFixing = fixingId === d.id
+              return (
+                <Card key={d.id} className="mb-3">
+                  <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <span className={`w-2 h-2 rounded-full shrink-0 mt-1 ${d.status === 'failed' ? 'bg-red-400' : d.status === 'success' ? 'bg-green-400' : 'bg-amber-400'}`} />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-bg-raised border border-bg-border text-text-secondary capitalize">{d.provider.replace('_', ' ')}</span>
+                          {d.branch && <span className="text-xs font-mono text-text-tertiary">{d.branch}</span>}
+                          {d.prNumber && <span className="text-xs font-mono text-text-tertiary">PR #{d.prNumber}</span>}
+                        </div>
+                        <p className="text-xs font-mono text-text-tertiary mt-1">{new Date(d.createdAt).toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {d.status === 'failed' && !appliedFix && (
+                        <button
+                          onClick={() => handleFix(d)}
+                          disabled={isFixing}
+                          className="text-xs font-medium px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isFixing ? 'Fixing...' : 'Fix the issue'}
+                        </button>
+                      )}
+                      {appliedFix && appliedFix.commitSha && (
+                        <span className="text-xs font-mono text-green-400">Fixed · {appliedFix.commitSha.slice(0, 7)}</span>
+                      )}
+                    </div>
+                  </div>
+                  {d.cause && (
+                    <div className="mt-3 pt-3 border-t border-bg-border">
+                      <p className="text-xs font-mono text-text-tertiary mb-1">Cause</p>
+                      <p className="text-sm text-text-secondary">{d.cause}</p>
+                    </div>
+                  )}
+                  {d.fix && (
+                    <div className="mt-2">
+                      <p className="text-xs font-mono text-text-tertiary mb-1">Suggested fix</p>
+                      <p className="text-sm text-text-secondary">{d.fix}</p>
+                    </div>
+                  )}
+                </Card>
+              )
+            })}
           </div>
         )}
 

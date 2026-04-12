@@ -2,9 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
 
 async function getDbUserId(req: Request): Promise<string | null> {
-  // console.log("user Id ------> " , req)
   const githubId = (req as any).githubUser?.id;
-  console.log(githubId)
   if (!githubId) return null;
   const user = await db.user.findUnique({ where: { githubId } });
   return user?.id ?? null;

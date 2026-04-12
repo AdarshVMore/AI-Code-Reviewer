@@ -31,6 +31,7 @@ model Repository {
   userId         String
   user           User        @relation(fields: [userId], references: [id])
   reviews        PRReview[]
+  deployments    Deployment[]
   createdAt      DateTime    @default(now())
 
   @@unique([owner, name])
@@ -61,11 +62,43 @@ model Issue {
   file      String
   line      Int
 
-  category  String   
-  severity  String   
+  category  String
+  severity  String
 
   problem   String
   fix       String
 
   createdAt DateTime @default(now())
+}
+
+model Deployment {
+  id           String          @id @default(cuid())
+  repositoryId String
+  repository   Repository      @relation(fields: [repositoryId], references: [id])
+
+  provider     String
+  status       String
+  deploymentId String
+  prNumber     Int?
+  branch       String?
+
+  cause        String?
+  fix          String?
+  rawLogs      String?
+
+  fixes        DeploymentFix[]
+
+  createdAt    DateTime        @default(now())
+}
+
+model DeploymentFix {
+  id           String     @id @default(cuid())
+  deploymentId String
+  deployment   Deployment @relation(fields: [deploymentId], references: [id])
+
+  status       String
+  commitSha    String?
+  diff         String?
+
+  createdAt    DateTime   @default(now())
 }

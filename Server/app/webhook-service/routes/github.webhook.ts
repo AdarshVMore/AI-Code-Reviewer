@@ -59,22 +59,19 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
           create: { owner, name, installationId, userId: user.id },
         });
       }
-
-      console.log(`installation created: ${payload.repositories?.length ?? 0} repos stored`);
     }
   }
 
   if (event === "pull_request") {
+    console.log("i am in")
     const payload = req.body as PullRequestEvent;
+    console.log(payload)
     const installationId = payload.installation.id;
     const owner = payload.repository.owner.login;
     const repo = payload.repository.name;
     const prNumber = payload.pull_request.number;
-    console.log("------------------------------------------ All data i get in terms of repository ------------------------------------------ \n" , payload.repository)
 
-    console.log("pull_request action:", payload.action, `${owner}/${repo}#${prNumber}`);
-
-    if (payload.action === "opened") {
+    if (payload.action === "opened" || payload.action === "synchronize") {
       const repoOwner = payload.repository.owner;
 
       const user = await db.user.upsert({
@@ -100,6 +97,37 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
         JSON.stringify({ installationId, owner, repo, prNumber, prTitle: payload.pull_request.title })
       );
       console.log("pushed to queue, queue length:", pushed);
+    }
+  }
+  
+  console.log("running the workflowwwwww")
+  if (event === "workflow_run") {
+    const payload = req.body as any;
+    console.log("payload recieved , here is its id", payload.workflow_run.id)
+
+    if (payload.workflow_run?.conclusion === "failure") {
+      const installationId = payload.installation?.id;
+      const owner = payload.repository.owner.login;
+      const repo = payload.repository.name;
+      const runId = payload.workflow_run.id;
+      const branch = payload.workflow_run.head_branch;
+      const prNumber = payload.workflow_run.pull_requests?.[0]?.number ?? null;
+
+      await client.lPush(
+        "deploymentQueue",
+        JSON.stringify({
+          provider: "github_actions",
+          owner,
+          repo,
+          prNumber,
+          branch,
+          deploymentId: String(runId),
+          runId,
+          installationId,
+        })
+      );
+
+      console.log(`workflow_run failure queued: ${owner}/${repo} run ${runId}`);
     }
   }
 
