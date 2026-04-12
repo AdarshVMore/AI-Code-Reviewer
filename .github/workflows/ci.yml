@@ -19,10 +19,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: cd backend && npm install
+        run: cd server && npm install
 
       - name: Generate Prisma client
-        run: cd backend && npx prisma generate
+        run: cd server && npx prisma generate
 
       - name: Build TypeScript
-        run: cd backend && npx tsc --noEmit
+        run: cd server && npx tsc --noEmit
