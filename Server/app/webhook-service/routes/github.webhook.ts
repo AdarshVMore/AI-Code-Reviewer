@@ -103,6 +103,35 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     }
   }
 
+  if (event === "workflow_run") {
+    const payload = req.body as any;
+
+    if (payload.workflow_run?.conclusion === "failure") {
+      const installationId = payload.installation?.id;
+      const owner = payload.repository.owner.login;
+      const repo = payload.repository.name;
+      const runId = payload.workflow_run.id;
+      const branch = payload.workflow_run.head_branch;
+      const prNumber = payload.workflow_run.pull_requests?.[0]?.number ?? null;
+
+      await client.lPush(
+        "deploymentQueue",
+        JSON.stringify({
+          provider: "github_actions",
+          owner,
+          repo,
+          prNumber,
+          branch,
+          deploymentId: String(runId),
+          runId,
+          installationId,
+        })
+      );
+
+      console.log(`workflow_run failure queued: ${owner}/${repo} run ${runId}`);
+    }
+  }
+
   res.sendStatus(200);
 });
 
