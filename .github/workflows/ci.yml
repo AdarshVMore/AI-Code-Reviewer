@@ -19,13 +19,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        working-directory: server
-        run: npm install
+        run: cd server && npm install
 
       - name: Generate Prisma client
-        working-directory: server
-        run: npx prisma generate
+        run: cd server && npx prisma generate
 
       - name: Build TypeScript
-        working-directory: server
-        run: npx tsc --noEmit
+        run: cd server && npx tsc --noEmit
