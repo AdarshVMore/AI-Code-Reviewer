@@ -24,5 +24,17 @@ jobs:
       - name: Generate Prisma client
         run: cd Server && npx prisma generate
 
+      - name: Update tsconfig lib for ES2022
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = 'Server/tsconfig.json';
+            const tsconfig = JSON.parse(fs.readFileSync(path, 'utf8'));
+            tsconfig.compilerOptions = tsconfig.compilerOptions || {};
+            tsconfig.compilerOptions.lib = ['ES2022', 'DOM'];
+            tsconfig.compilerOptions.target = 'ES2022';
+            fs.writeFileSync(path, JSON.stringify(tsconfig, null, 2));
+          "
+
       - name: Build TypeScript
         run: cd Server && npx tsc --noEmit
