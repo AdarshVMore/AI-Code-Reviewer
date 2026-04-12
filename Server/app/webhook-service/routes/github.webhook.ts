@@ -71,7 +71,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     const repo = payload.repository.name;
     const prNumber = payload.pull_request.number;
 
-    if (payload.action === "opened") {
+    if (payload.action === "opened" || payload.action === "synchronize") {
       const repoOwner = payload.repository.owner;
 
       const user = await db.user.upsert({
