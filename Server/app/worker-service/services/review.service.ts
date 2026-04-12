@@ -60,10 +60,7 @@ export async function runPRReview(data: PRReviewJobData) {
     repo,
   });
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
-  console.log(
-    "-------======------======== RULEX =======-------========-------\n",
-    rules, collaborators
-  );
+
   const prompt = reviewPrompt(difference, rules);
   const aiResponse = await getAIReview(prompt);
   const cleanText = aiResponse
