@@ -59,8 +59,6 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
           create: { owner, name, installationId, userId: user.id },
         });
       }
-
-      console.log(`installation created: ${payload.repositories?.length ?? 0} repos stored`);
     }
   }
 
@@ -70,9 +68,6 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     const owner = payload.repository.owner.login;
     const repo = payload.repository.name;
     const prNumber = payload.pull_request.number;
-    console.log("------------------------------------------ All data i get in terms of repository ------------------------------------------ \n" , payload.repository)
-
-    console.log("pull_request action:", payload.action, `${owner}/${repo}#${prNumber}`);
 
     if (payload.action === "opened") {
       const repoOwner = payload.repository.owner;
@@ -102,9 +97,11 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
       console.log("pushed to queue, queue length:", pushed);
     }
   }
-
+  
+  console.log("running the workflowwwwww")
   if (event === "workflow_run") {
     const payload = req.body as any;
+    console.log("payload recieved , here is its id", payload.workflow_run.id)
 
     if (payload.workflow_run?.conclusion === "failure") {
       const installationId = payload.installation?.id;

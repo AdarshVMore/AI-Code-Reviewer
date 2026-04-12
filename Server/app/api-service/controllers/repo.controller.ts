@@ -2,9 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
 
 async function getDbUserId(req: Request): Promise<string | null> {
-  console.log(req)
   const githubId = (req as any).githubUser?.id;
-  console.log("from user Id", githubId)
   if (!githubId) return null;
   const user = await db.user.findUnique({ where: { githubId } });
   return user?.id ?? null;
@@ -12,7 +10,6 @@ async function getDbUserId(req: Request): Promise<string | null> {
 
 export async function allRepos(req: Request, res: Response) {
   const userId = await getDbUserId(req);
-  console.log("from get all repo", userId)
   if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
 
   const repos = await db.repository.findMany({
