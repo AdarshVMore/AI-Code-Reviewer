@@ -5,6 +5,11 @@ export async function fetchAllRepos() {
   return data as { id: string; owner: string; name: string; installationId: number; createdAt: string; _count: { reviews: number } }[]
 }
 
+export async function fetchAllCollaborators(id:string){
+  const {data} = await apiClient.get(`/api/repo/collaborators/${id}`)
+  return data
+}
+
 export async function fetchRepoAnalytics(id: string) {
   const { data } = await apiClient.get(`/api/repo/all-analytics?id=${id}`)
   return data as { id: string; prNumber: number; prTitle: string | null; summary: string | null; createdAt: string }[]

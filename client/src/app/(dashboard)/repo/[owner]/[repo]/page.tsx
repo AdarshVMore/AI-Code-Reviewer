@@ -18,6 +18,7 @@ import { Card, SectionLabel, Avatar } from '@/components/ui'
 import { Topbar } from '@/components/layout/Topbar'
 import { useRepos } from '@/hooks/useRepos'
 import { useAllPRs } from '@/hooks/useAllPRs'
+import { useCollaborators } from '@/hooks/useCollaborator'
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -87,6 +88,7 @@ export default function RepoPage() {
   const repoId = currentRepo?.id ?? ''
 
   const { prs, loading } = useAllPRs(repoId)
+  const { allCollaborators } = useCollaborators(repoId)
 
   const reviewsData = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -194,25 +196,20 @@ export default function RepoPage() {
           <div>
             <div className="flex items-center py-2 border-b border-bg-border mb-1 text-xs text-text-tertiary uppercase tracking-wide">
               <span className="flex-1">User</span>
-              <span className="w-16 text-right">PRs</span>
-              <span className="w-16 text-right">Issues</span>
-              <span className="w-20 text-right">High</span>
-              <span className="w-32 text-right">Top issue</span>
+              <span className="w-24 text-right">Access</span>
             </div>
-            {[
-              { username: 'adam', prs: 18, issues: 47, high: 12, top: 'Security' },
-              { username: 'priya', prs: 14, issues: 31, high: 8, top: 'Error handling' },
-              { username: 'ravi', prs: 9, issues: 18, high: 3, top: 'Code quality' },
-            ].map((c) => (
-              <div key={c.username} className="flex items-center py-3 border-b border-bg-border last:border-0">
+            {allCollaborators.length === 0 && (
+              <p className="text-sm text-text-secondary py-4">No collaborators found.</p>
+            )}
+            {allCollaborators.map((c) => (
+              <div key={c.id} className="flex items-center py-3 border-b border-bg-border last:border-0">
                 <div className="flex-1 flex items-center gap-2">
-                  <Avatar src="" username={c.username} size="sm" />
-                  <span className="text-sm font-mono text-text-secondary">{c.username}</span>
+                  <Avatar src={c.avatar_url} username={c.login} size="sm" />
+                  <span className="text-sm font-mono text-text-secondary">{c.login}</span>
                 </div>
-                <span className="w-16 text-right text-sm font-mono text-text-secondary">{c.prs}</span>
-                <span className="w-16 text-right text-sm font-mono text-text-secondary">{c.issues}</span>
-                <span className="w-20 text-right text-sm font-mono text-text-secondary">{c.high}</span>
-                <span className="w-32 text-right text-sm font-mono text-text-secondary">{c.top}</span>
+                <span className="w-24 text-right text-xs font-mono text-text-tertiary">
+                  {c.permissions?.admin ? 'admin' : c.permissions?.push ? 'write' : 'read'}
+                </span>
               </div>
             ))}
           </div>
