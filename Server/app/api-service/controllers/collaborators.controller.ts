@@ -6,19 +6,19 @@ export async function getCollaborators(req: Request<{ id: string }>, res: Respon
   const { id } = req.params;
 
   const repository = await db.repository.findUnique({ where: { id } });
-  if (repository) {
+  if (!repository) {
     res.status(404).json({ error: "repository not found" });
     return;
   }
 
-  const oktokit = await getOctokit(repository.installationId);
+  const octokit = await getOctokit(repository.installationId);
   const collaborators = await octokit.paginate(octokit.rest.repos.listCollaborators, {
     owner: repository.owner,
     repo: repository.name,
   });
 
   res.json(
-    collaborators.map((c) => ({
+    collaborators.map((c: { id: number; login: string; avatar_url: string; permissions?: Record<string, boolean> }) => ({
       id: c.id,
       login: c.login,
       avatar_url: c.avatar_url,
