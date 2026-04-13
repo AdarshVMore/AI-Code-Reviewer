@@ -8,7 +8,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     return
   }
 
-  const token = authHeader.split(" ")[1]
+  const tokens = authHeader.split(" ")[1]
 
   try {
     const { data } = await axios.get("https://api.github.com/user", {
