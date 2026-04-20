@@ -51,6 +51,8 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
         },
       });
 
+
+
       for (const r of payload.repositories ?? []) {
         const [owner, name] = r.full_name.split("/");
         await db.repository.upsert({
@@ -60,6 +62,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
         });
       }
     }
+
   }
 
   if (event === "pull_request") {
@@ -72,6 +75,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     const prNumber = payload.pull_request.number;
 
     if (payload.action === "opened" || payload.action === "synchronize") {
+      client.lPush("ragData", JSON.stringify({ installationId, owner, repo }))
       const repoOwner = payload.repository.owner;
 
       const user = await db.user.upsert({
@@ -130,6 +134,8 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
       console.log(`workflow_run failure queued: ${owner}/${repo} run ${runId}`);
     }
   }
+
+  
 
   res.sendStatus(200);
 });

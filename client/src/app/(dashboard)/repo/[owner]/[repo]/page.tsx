@@ -54,20 +54,6 @@ const tabs: { id: TabId; label: string }[] = [
 
 type StrictnessId = 'strict' | 'balanced' | 'light'
 
-const strictnessOptions: { id: StrictnessId; label: string; description: string }[] = [
-  { id: 'strict', label: 'Strict', description: 'Catches everything, slower reviews' },
-  { id: 'balanced', label: 'Balanced', description: 'Recommended for most teams' },
-  { id: 'light', label: 'Light', description: 'Critical bugs only' },
-]
-
-const focusAreaOptions = [
-  { id: 'security', label: 'Security' },
-  { id: 'performance', label: 'Performance' },
-  { id: 'codeQuality', label: 'Code quality' },
-  { id: 'errorHandling', label: 'Error handling' },
-  { id: 'types', label: 'Types' },
-]
-
 const categoryData = [
   { category: 'Security', count: 31 },
   { category: 'Error handling', count: 24 },
@@ -83,8 +69,6 @@ export default function RepoPage() {
   const repo = params.repo as string
 
   const [activeTab, setActiveTab] = useState<TabId>('reviews')
-  const [strictness, setStrictness] = useState<StrictnessId>('balanced')
-  const [checkedAreas, setCheckedAreas] = useState(['security', 'errorHandling', 'codeQuality'])
 
   const { repos } = useRepos()
   const currentRepo = repos.find((r) => r.owner === owner && r.name === repo)
@@ -103,10 +87,6 @@ export default function RepoPage() {
     }
     return Object.entries(counts).map(([date, count]) => ({ date, count }))
   }, [prs])
-
-  function toggleArea(id: string) {
-    setCheckedAreas((prev) => prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id])
-  }
 
   async function handleFix(deployment: Deployment) {
     setFixingId(deployment.id)
@@ -296,62 +276,7 @@ export default function RepoPage() {
 
         {activeTab === 'settings' && (
           <div>
-            <SectionLabel>Review strictness</SectionLabel>
-            {strictnessOptions.map((opt) => (
-              <div
-                key={opt.id}
-                onClick={() => setStrictness(opt.id)}
-                className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer mb-2 transition-colors duration-150 ${
-                  strictness === opt.id ? 'border-brand bg-brand-muted' : 'border-bg-border hover:bg-bg-raised'
-                }`}
-              >
-                <div className={`w-4 h-4 rounded-full border-2 shrink-0 mt-0.5 flex items-center justify-center ${
-                  strictness === opt.id ? 'border-brand' : 'border-bg-muted'
-                }`}>
-                  {strictness === opt.id && <div className="w-2 h-2 rounded-full bg-brand" />}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-text-primary">{opt.label}</p>
-                  <p className="text-xs text-text-secondary mt-0.5">{opt.description}</p>
-                </div>
-              </div>
-            ))}
-
-            <SectionLabel>Focus areas</SectionLabel>
-            {focusAreaOptions.map((area) => {
-              const checked = checkedAreas.includes(area.id)
-              return (
-                <div
-                  key={area.id}
-                  onClick={() => toggleArea(area.id)}
-                  className="flex items-center gap-2.5 py-1.5 cursor-pointer"
-                >
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-                    checked ? 'bg-brand border-brand' : 'border-bg-border bg-bg-surface'
-                  }`}>
-                    {checked && (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="text-sm text-text-secondary hover:text-text-primary">{area.label}</span>
-                </div>
-              )
-            })}
-
-            <SectionLabel>Ignore paths</SectionLabel>
-            <textarea
-              className="w-full bg-bg-surface border border-bg-border rounded-xl p-3 font-mono text-sm text-text-primary placeholder-text-tertiary resize-none h-24 focus:outline-none focus:border-brand/50 transition-colors"
-              placeholder={"*.test.ts\nmigrations/\ndist/"}
-            />
-
-            <button
-              onClick={() => console.log('save settings')}
-              className="mt-6 bg-brand hover:bg-brand-hover text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors duration-150 active:scale-95"
-            >
-              Save settings
-            </button>
+            under construction
           </div>
         )}
 

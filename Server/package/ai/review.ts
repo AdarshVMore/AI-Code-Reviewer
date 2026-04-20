@@ -4,7 +4,24 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
-export async function getAIReview(prompt: string | null) {
+export async function getAIReview(prompt: string | null, retries = 4) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await _callAI(prompt);
+    } catch (err: any) {
+      if (err?.status === 529 && attempt < retries) {
+        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s, 8s
+        console.log(`Anthropic overloaded (529), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`);
+        await new Promise((r) => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+  throw new Error("Max retries exceeded for AI review");
+}
+
+async function _callAI(prompt: string | null) {
   const res = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 1500,

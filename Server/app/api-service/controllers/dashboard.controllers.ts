@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
+import { createClient } from "redis";
+
+const redisClient = createClient();
+await redisClient.connect();
 
 async function getDbUserId(req: Request): Promise<string | null> {
   const githubId = (req as any).githubUser?.id;
@@ -10,33 +14,65 @@ async function getDbUserId(req: Request): Promise<string | null> {
 
 export async function getAllData(req: Request, res: Response) {
   const userId = await getDbUserId(req);
-  if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
+  if (!userId) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
 
-  const [stats, recentPR, activeRepo, issues] = await Promise.all([
-    getStats(userId),
-    recentPRs(userId),
-    activeRepos(userId),
-    commonIssues(userId),
-  ]);
+  const cachedData = await redisClient.get(`dashboardData:${userId}`);
 
-  res.json({ stats, recentPR, activeRepo, issues });
+  if (cachedData) {
+    console.log("cache for dashboard data hitttt");
+    const parsedData = JSON.parse(cachedData)
+    res.json(parsedData);
+  } else {
+    const [stats, recentPR, activeRepo, issues] = await Promise.all([
+      getStats(userId),
+      recentPRs(userId),
+      activeRepos(userId),
+      commonIssues(userId),
+    ]);
+
+    const dataToStore = {stats, recentPR, activeRepo, issues}
+
+    const data = redisClient.setEx(`dashboardData:${userId}`,1000, JSON.stringify(dataToStore))
+    console.log("cache is stored for dashboard stats", data);
+
+    res.json({ stats, recentPR, activeRepo, issues });
+  }
 }
 
 async function getStats(userId: string) {
-  const userRepos = await db.repository.findMany({ where: { userId }, select: { id: true } });
-  const repoIds = userRepos.map((r) => r.id);
 
-  const [totalReviews, totalRepos, totalIssues] = await Promise.all([
-    db.pRReview.count({ where: { repositoryId: { in: repoIds } } }),
-    db.repository.count({ where: { userId } }),
-    db.issue.count({ where: { review: { repositoryId: { in: repoIds } } } }),
-  ]);
+    const userRepos = await db.repository.findMany({
+      where: { userId },
+      select: { id: true },
+    });
+    const repoIds = userRepos.map((r) => r.id);
 
-  return { totalReviews, totalRepos, totalIssues };
+    const [totalReviews, totalRepos, totalIssues] = await Promise.all([
+      db.pRReview.count({ where: { repositoryId: { in: repoIds } } }),
+      db.repository.count({ where: { userId } }),
+      db.issue.count({ where: { review: { repositoryId: { in: repoIds } } } }),
+    ]);
+
+    const finalResult = { totalReviews, totalRepos, totalIssues };
+
+    const settingCache = await redisClient.setEx(
+      `dashboardStats:${userId}`,
+      10000,
+      JSON.stringify(finalResult),
+    );
+    console.log("cache is stored for dashboard stats", settingCache);
+    return { totalReviews, totalRepos, totalIssues };
+  
 }
 
 async function recentPRs(userId: string) {
-  const userRepos = await db.repository.findMany({ where: { userId }, select: { id: true } });
+  const userRepos = await db.repository.findMany({
+    where: { userId },
+    select: { id: true },
+  });
   const repoIds = userRepos.map((r) => r.id);
 
   return db.pRReview.findMany({
@@ -56,7 +92,10 @@ async function activeRepos(userId: string) {
 }
 
 async function commonIssues(userId: string) {
-  const userRepos = await db.repository.findMany({ where: { userId }, select: { id: true } });
+  const userRepos = await db.repository.findMany({
+    where: { userId },
+    select: { id: true },
+  });
   const repoIds = userRepos.map((r) => r.id);
 
   const issues = await db.issue.findMany({

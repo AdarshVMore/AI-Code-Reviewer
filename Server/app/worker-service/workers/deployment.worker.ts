@@ -4,6 +4,7 @@ import { processDeploymentJob } from "../processors/deployment.processor.js";
 export async function deploymentWorkerOn() {
   const client = createClient();
   await client.connect();
+  console.log("webhook for Deployments is on")
 
   while (true) {
     const data = await client.brPop("deploymentQueue", 0);

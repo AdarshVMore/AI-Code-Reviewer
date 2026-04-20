@@ -120,3 +120,4 @@ declare module 'next-auth' {
     accessToken: string
   }
 }
+

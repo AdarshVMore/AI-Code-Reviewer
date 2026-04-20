@@ -19,6 +19,7 @@
     "@octokit/auth-app": "^8.2.0",
     "@octokit/rest": "^22.0.1",
     "@octokit/webhooks-types": "^7.6.1",
+    "@pinecone-database/pinecone": "^7.2.0",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "adm-zip": "^0.5.17",
@@ -30,7 +31,8 @@
     "express": "^5.2.1",
     "pg": "^8.20.0",
     "prisma": "^7.6.0",
-    "redis": "^5.11.0"
+    "redis": "^5.11.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",

@@ -88,6 +88,8 @@ export default function PRPage() {
             <div className="flex items-center gap-4 mt-2 flex-wrap">
               <span className="text-xs font-mono text-text-secondary">PR #{review.prNumber}</span>
               <span className="text-xs font-mono text-text-secondary">{new Date(review.createdAt).toLocaleDateString()}</span>
+              <span className='text-xs font-mono text-text-secondary'>by {review.author}</span>
+
             </div>
           </div>
           {review.score !== null && (

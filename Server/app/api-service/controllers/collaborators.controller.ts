@@ -26,3 +26,13 @@ export async function getCollaborators(req: Request<{ id: string }>, res: Respon
     }))
   );
 }
+
+export async function collaboratorAnalytics(author:string){
+  const scores = await db.pRReview.aggregate({
+    where: {author},
+    _avg: {score:true},
+    _count: {score:true}
+  })
+
+  return scores;
+}

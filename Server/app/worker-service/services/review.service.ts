@@ -5,6 +5,7 @@ import {
 } from "./github.service.js";
 import { getAIReview, reviewPrompt, parseAIResponse } from "./ai.service.js";
 import { db } from "../../../package/db/prisma.js";
+import {vectorDBExists, createEmbeddings, saveToVectorDB} from "./rag.service.js"
 
 function formatReviewComment(parsed: any): string {
   const score = parsed.score ?? "N/A";
@@ -52,6 +53,17 @@ export type PRReviewJobData = {
 
 export async function runPRReview(data: PRReviewJobData) {
   const { installationId, owner, repo, prNumber, prTitle } = data;
+  let dbName = ""
+
+  const createVectorDB = await vectorDBExists(dbName) as boolean
+
+  if(createVectorDB){
+    let values = {}
+    
+    const embeddings = await createEmbeddings(values) as any
+    const finalSaved = await saveToVectorDB(embeddings)
+    console.log(finalSaved)
+  }
 
   const octokit = await getOctokit(installationId);
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
