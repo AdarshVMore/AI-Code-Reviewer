@@ -11,12 +11,12 @@ async function searchFile() {
 //  we can create such Tree by telling LLM to create and then we Store it in a DB [ will do this for now => Big Context Window with Many Tokens used]
 //  Based on that Tres and Branches and Nodes => find Functions / Classes / Files and Chunk those and embed and Store in Vectore DB
 //  
-//
-//
-//
-//
-//
-//
-//
-//
-//
+//  
+//  1. Identify PR Type => Feature / Bug Fix / Update Code
+//  2. If Feature
+//  
+//  
+//  
+//  
+//  
+//  

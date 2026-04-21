@@ -39,7 +39,7 @@ function getPinecone(): Pinecone {
   return new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 }
 
-function toIndexName(owner: string, repo: string): string {
+export function toIndexName(owner: string, repo: string): string {
   return `${owner}-${repo}`
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")

@@ -1,1 +1,1 @@
-export { getAIReview, reviewPrompt, parseAIResponse } from "../../../package/ai/review.js";
+export { getAIReview, reviewPrompt, parseAIResponse, getRevieType, getCodeDiff, generateRelevantSearchQuery } from "../../../package/ai/review.js";

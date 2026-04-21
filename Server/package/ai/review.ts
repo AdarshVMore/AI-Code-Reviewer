@@ -4,6 +4,49 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
 });
 
+export async function getRevieType(diff: string) {
+  const prompt = `You are supposed to see the Code Diff ${diff} and identify the PR Type if it is a Bug Fix / New Feature / Code Update , etc and only return the name of the type in response . "Return ONLY: feature | bugfix | refactor"`;
+  const res = await anthropic.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 1500,
+    temperature: 0,
+    messages: [
+      {
+        role: "user",
+        content: prompt ? prompt : "",
+      },
+    ],
+  });
+  const block = res.content.find((b) => b.type === "text")
+  return block && block.type === "text" ? block.text.trim().toLowerCase() : ""
+}
+
+export async function getCodeDiff(diff: string) {
+  return diff
+    .split("\n")
+    .filter((line) => line.startsWith("+"))
+    .join(" ")
+    .slice(0, 500);
+}
+
+export async function generateRelevantSearchQuery(processedDiff: string) {
+  const res = await anthropic.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 1500,
+      temperature: 0,
+      system: "Convert the given git diff into a short semantic search query  to find relevant code in a repository Return ONLY a short phrase.",
+      messages: [
+        {
+          role: "user",
+          content: processedDiff,
+        },
+      ],
+  });
+
+  const block = res.content.find((b) => b.type === "text")
+  return block && block.type === "text" ? block.text.trim() : ""
+}
+
 export async function getAIReview(prompt: string | null, retries = 4) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -11,7 +54,9 @@ export async function getAIReview(prompt: string | null, retries = 4) {
     } catch (err: any) {
       if (err?.status === 529 && attempt < retries) {
         const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s, 8s
-        console.log(`Anthropic overloaded (529), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`);
+        console.log(
+          `Anthropic overloaded (529), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`,
+        );
         await new Promise((r) => setTimeout(r, delay));
       } else {
         throw err;
@@ -93,11 +138,31 @@ Do NOT include markdown, explanations, or text outside JSON.`,
   });
 
   const block = res.content.find((b) => b.type === "text");
-  if (!block || block.type !== "text") throw new Error("No text block in AI response");
+  if (!block || block.type !== "text")
+    throw new Error("No text block in AI response");
   return block.text;
 }
 
-export function reviewPrompt(diff: string, rules: any) {
+type RelevantCodeMatch = {
+  id: string
+  score: number
+  content: string
+  filePath: string
+}
+
+function formatRelevantCode(matches: RelevantCodeMatch[]): string {
+  if (!matches.length) return ""
+  return matches
+    .map((m) => `// ${m.filePath}\n${m.content}`)
+    .join("\n\n---\n\n")
+}
+
+export function reviewPrompt(diff: string, rules: any, relevantCode?: RelevantCodeMatch[] | string) {
+  const relevantSection =
+    Array.isArray(relevantCode) && relevantCode.length > 0
+      ? `\nEXISTING CODEBASE CONTEXT (retrieved for this feature):\nUse this to check for consistency, duplication, or conflicts with existing patterns.\n\n${formatRelevantCode(relevantCode)}\n`
+      : ""
+
   return `
 REPOSITORY RULES (HIGHEST PRIORITY):
 ${JSON.stringify(rules, null, 2)}
@@ -109,7 +174,7 @@ Check for:
 - Performance problems (loops, heavy operations)
 - Code quality (long functions, nesting, bad logic)
 - Maintainability (naming, duplication)
-
+${relevantSection}
 GIT DIFF:
 ${diff}
 
