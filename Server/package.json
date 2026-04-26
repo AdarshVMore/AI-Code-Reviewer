@@ -2,7 +2,6 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch app/webhook-service/index.ts",
     "dev:worker": "tsx watch app/worker-service/index.ts",

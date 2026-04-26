@@ -2,9 +2,9 @@ import { Router, Request, Response } from "express";
 import { verifySignature } from "../middleware/verifySignature.js";
 import { createClient } from "redis";
 import { db } from "../../../package/db/prisma.js";
+import { getRedisConnection } from "../../../package/lib/redis.client.js";
 
-const client = createClient();
-client.connect();
+
 
 const router = Router();
 const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
@@ -12,7 +12,7 @@ const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
 type PullRequestEvent = {
   action: "opened" | "synchronize" | "closed";
   installation: { id: number };
-  pull_request: { title: string; number: number; head: { ref: string; sha: string } };
+  pull_request: { title: string; number: number; head: { ref: string; sha: string }; user: { login: string; avatar_url: string } };
   repository: { name: string; owner: { id: number; login: string; avatar_url: string } };
 };
 
@@ -28,6 +28,13 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     console.log("invalid signature");
     return res.status(401).send("invalid signature");
   }
+
+  const client = await getRedisConnection()
+
+if (!client.isOpen){
+    await client.connect();
+  }
+  console.log("<====================== OWNER ==========================> \n", "\n", req.body.pull_request.user)
 
   const event = req.headers["x-github-event"];
   console.log("github event received:", event);
@@ -98,7 +105,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
 
       const pushed = await client.lPush(
         "reviewQueue",
-        JSON.stringify({ installationId, owner, repo, prNumber, prTitle: payload.pull_request.title })
+        JSON.stringify({ installationId, owner, repo, prNumber, prTitle: payload.pull_request.title, prAuthor: payload.pull_request.user.login })
       );
       console.log("pushed to queue, queue length:", pushed);
     }

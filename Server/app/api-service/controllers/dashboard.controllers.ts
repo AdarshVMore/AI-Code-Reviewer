@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
-import { createClient } from "redis";
+import { getRedisConnection } from "../../../package/lib/redis.client.js";
 
-const redisClient = createClient();
-await redisClient.connect();
 
 async function getDbUserId(req: Request): Promise<string | null> {
   const githubId = (req as any).githubUser?.id;
@@ -14,18 +12,27 @@ async function getDbUserId(req: Request): Promise<string | null> {
 
 export async function getAllData(req: Request, res: Response) {
   const userId = await getDbUserId(req);
+  const redisClient = await getRedisConnection()
+
+  if (!redisClient.isOpen){
+    await redisClient.connect();
+  }
+
   if (!userId) {
     res.status(401).json({ error: "unauthorized" });
     return;
   }
 
+  console.log(" ----------- userId ------------ \n", userId)
+
   const cachedData = await redisClient.get(`dashboardData:${userId}`);
 
-  if (cachedData) {
+  try{
+    if (cachedData) {
     console.log("cache for dashboard data hitttt");
     const parsedData = JSON.parse(cachedData)
     res.json(parsedData);
-  } else {
+    } else {
     const [stats, recentPR, activeRepo, issues] = await Promise.all([
       getStats(userId),
       recentPRs(userId),
@@ -35,10 +42,15 @@ export async function getAllData(req: Request, res: Response) {
 
     const dataToStore = {stats, recentPR, activeRepo, issues}
 
-    const data = redisClient.setEx(`dashboardData:${userId}`,1000, JSON.stringify(dataToStore))
+    const data = await redisClient.setEx(`dashboardData:${userId}`,1000, JSON.stringify(dataToStore))
     console.log("cache is stored for dashboard stats", data);
 
     res.json({ stats, recentPR, activeRepo, issues });
+    }
+  }
+  catch (err:any){
+    console.error(err)
+      res.status(500).json({ error: err.message})
   }
 }
 
@@ -58,12 +70,6 @@ async function getStats(userId: string) {
 
     const finalResult = { totalReviews, totalRepos, totalIssues };
 
-    const settingCache = await redisClient.setEx(
-      `dashboardStats:${userId}`,
-      10000,
-      JSON.stringify(finalResult),
-    );
-    console.log("cache is stored for dashboard stats", settingCache);
     return { totalReviews, totalRepos, totalIssues };
   
 }

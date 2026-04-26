@@ -69,10 +69,11 @@ export type PRReviewJobData = {
   repo: string;
   prNumber: number;
   prTitle?: string;
+  prAuthor?:string;
 };
 
 export async function runPRReview(data: PRReviewJobData) {
-  const { installationId, owner, repo, prNumber, prTitle } = data;
+  const { installationId, owner, repo, prNumber, prTitle, prAuthor } = data;
   let dbName = ""
 
   const createVectorDB = await vectorDBExists(dbName) as boolean
@@ -149,6 +150,7 @@ export async function runPRReview(data: PRReviewJobData) {
       score: parsedPrompt.score ?? 0,
       repositoryId: repository.id,
       author: owner,
+      prAuthor: prAuthor,
       commitSHA: "",
     },
   });

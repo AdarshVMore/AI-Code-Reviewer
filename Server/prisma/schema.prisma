@@ -44,6 +44,7 @@ model PRReview {
   summary      String?
   score        Int?
   author       String
+  prAuthor     String   @default("")
   commitSHA    String
   repositoryId String
   repository   Repository @relation(fields: [repositoryId], references: [id])

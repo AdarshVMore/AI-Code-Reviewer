@@ -5,6 +5,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ai_reviewer
+      command: sh -c "npx prisma migrate deploy && node dist/app/api-service/index.js"
     ports:
       - "5432:5432"
     volumes:
@@ -20,7 +21,7 @@ services:
       context: .
       dockerfile: app/webhook-service/Dockerfile
     ports:
-      - "3000:3000"
+      - "3002:3002"
     env_file:
       - .env
     depends_on:
@@ -43,6 +44,7 @@ services:
       dockerfile: app/api-service/Dockerfile
     ports:
       - "3001:3001"
+    command: sh -c "npx prisma migrate deploy && node dist/app/api-service/index.js"
     env_file:
       - .env
     depends_on:
