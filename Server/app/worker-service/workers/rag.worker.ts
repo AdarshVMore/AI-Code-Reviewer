@@ -1,12 +1,8 @@
-import { createClient } from "redis";
 import { runRAGPipeline } from "../services/rag.service.js";
-import { getRedisConnection } from "../../../package/lib/redis.client.js";
+import { createWorkerRedisClient } from "../../../package/lib/redis.client.js";
 
 export async function ragWorker(){
-    const client = await getRedisConnection()
-if (!client.isOpen){
-    await client.connect();
-  }
+    const client = await createWorkerRedisClient()
     while(true){
         console.log("running RAG worker...")
         const raw = await client.brPop("ragData", 0) as any
