@@ -260,30 +260,7 @@ export default function RepoPage() {
               </AreaChart>
             </ResponsiveContainer>
 
-            <SectionLabel className="mt-6">Issues by category</SectionLabel>
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={categoryData}>
-                <XAxis
-                  dataKey="category"
-                  tick={{ fill: "#555555", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: "#555555", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <CartesianGrid stroke="#262626" vertical={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar
-                  dataKey="count"
-                  fill="#5b6af0"
-                  fillOpacity={0.85}
-                  radius={[3, 3, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            
           </div>
         )}
 
