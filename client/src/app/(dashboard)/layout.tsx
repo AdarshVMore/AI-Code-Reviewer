@@ -1,18 +1,21 @@
 'use client'
 
 import { Sidebar } from '@/components/layout/Sidebar'
-import { useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import apiClient from '@/lib/api/client'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = useSession()
+  const { status } = useSession()
+  const router = useRouter()
 
-useEffect(() => {
-  if (session.status === "authenticated") {
-    apiClient.get("/api/user/me") 
-  }
-}, [session.status])
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status])
+
+  if (status === 'loading' || status === 'unauthenticated') return null
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg-base">

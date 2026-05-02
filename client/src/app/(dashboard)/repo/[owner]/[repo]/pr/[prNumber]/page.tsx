@@ -9,23 +9,23 @@ import { useRepos } from '@/hooks'
 import type { PRIssue, Severity, IssueCategory } from '@/types'
 
 const severityStyles: Record<Severity, string> = {
-  high: 'bg-red-500/10 text-red-400 border border-red-500/20',
-  medium: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-  low: 'bg-green-500/10 text-green-400 border border-green-500/20',
+  high: ' text-white border border-white/20',
+  medium: ' text-white border border-white/20',
+  low: ' text-white border border-white/20',
 }
 
 const categoryStyles: Record<IssueCategory, string> = {
-  security: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-  performance: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-  quality: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
-  maintainability: 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20',
+  security: 'text-white border border-white/20',
+  performance: 'text-white border border-white/20',
+  quality: 'text-white border border-white/20',
+  maintainability: 'text-white border border-white/20',
 }
 
 function scoreColor(score: number | null) {
   if (score === null) return 'text-text-secondary'
-  if (score >= 70) return 'text-green-400'
-  if (score >= 40) return 'text-amber-400'
-  return 'text-red-400'
+  if (score >= 70) return 'text-green-300'
+  if (score >= 40) return 'text-amber-300'
+  return 'text-red-300'
 }
 
 function IssueCard({ issue }: { issue: PRIssue }) {
@@ -108,9 +108,9 @@ export default function PRPage() {
                 <p className="text-sm text-text-secondary leading-relaxed mt-1">{review.summary}</p>
               </div>
               <div className="flex flex-col items-end gap-1.5 shrink-0 text-xs font-mono">
-                {highCount > 0 && <span className="text-red-400">{highCount} high</span>}
-                {mediumCount > 0 && <span className="text-amber-400">{mediumCount} medium</span>}
-                {lowCount > 0 && <span className="text-green-400">{lowCount} low</span>}
+                {highCount > 0 && <span className="text-white">{highCount} high</span>}
+                {mediumCount > 0 && <span className="text-white">{mediumCount} medium</span>}
+                {lowCount > 0 && <span className="text-white">{lowCount} low</span>}
               </div>
             </div>
           </Card>
