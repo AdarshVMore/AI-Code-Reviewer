@@ -13,11 +13,12 @@ const app = express()
 app.use(express.json())
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: (origin, callback) => callback(null, origin || true),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }))
+
 
 app.use("/api/dashboard/", dashboardRoutes)
 app.use("/api/repo/", repoRoutes)

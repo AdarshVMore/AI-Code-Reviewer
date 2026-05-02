@@ -43,6 +43,7 @@ services:
       dockerfile: app/api-service/Dockerfile
     ports:
       - "3001:3001"
+      - "5555:5555"
     command: sh -c "npx prisma migrate deploy && node dist/app/api-service/index.js"
     env_file:
       - .env
