@@ -97,11 +97,9 @@ export async function runPRReview(data: PRReviewJobData) {
   const indexName = toIndexName(owner, repo)
   const DBExsists = await vectorDBExists(indexName)
   let relevantCode:any
-  console.log("<============= reviewType ===============> \n", reviewType)
+  const processedDiff = await getCodeDiff(difference) as any
   if(reviewType === "feature" && DBExsists) {
-    const processedDiff = await getCodeDiff(difference) as any
     const searchQuery = await generateRelevantSearchQuery(processedDiff)
-    console.log("<=================== searchQuery ===================> \n", searchQuery)
     const query = {
       text: searchQuery,
       indexName: indexName,
@@ -109,6 +107,9 @@ export async function runPRReview(data: PRReviewJobData) {
     }
     relevantCode = await searchRelevantEmbeddings(query)
   }
+
+  console.log("<<<<<<<========== Direct DIFF =========>>>>>>> \n", difference)
+  console.log("<<<<<<<========== Processeded DIFF =========>>>>>>> \n", processedDiff)
 
   const prompt = reviewPrompt(difference, rules, relevantCode);
   const aiResponse = await getAIReview(prompt);

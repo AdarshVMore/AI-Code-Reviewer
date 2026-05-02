@@ -5,6 +5,7 @@ import {
   readCodeFiles,
   cleanup,
 } from "./repoSetup.service.js";
+import fs from "fs";
 
 const EMBEDDING_MODEL = "llama-text-embed-v2";
 const EMBEDDING_DIMENSION = 1024;
@@ -62,7 +63,6 @@ function chunkFile(filePath: string, content: string): CodeChunk[] {
     i += CHUNK_SIZE - CHUNK_OVERLAP;
     chunkIndex++;
   }
-  console.log("<============================== chunks ================================> \n", chunks)
 
   return chunks;
 }
@@ -93,19 +93,30 @@ export async function runRAGPipeline(data: object) {
   const extractedDir = extractZIP(zipPath);
 
   const files = readCodeFiles(extractedDir);
-  const chunks = files.flatMap((f) => chunkFile(f.path, f.content));
+  const filesJSONStrgified = JSON.stringify(files)
+  console.log("<<<<<<<<<<<<========== FILES JSON ============>>>>>>>>>>>>\n", files)
 
-  const vectors = await createEmbeddings({ chunks, indexName });
-  await saveToVectorDB({ vectors, indexName });
+  fs.writeFile("./data.json", filesJSONStrgified, (err) => {
+    if (err) {
+      console.error("Error writing file:", err);
+      return;
+    }
+    console.log("File created successfully!");
+  });
 
-  cleanup([zipPath, extractedDir]);
-  console.log(
-    `RAG pipeline complete for ${owner}/${repo}: ${chunks.length} chunks indexed`
-  );
+  // const chunks = files.flatMap((f) => chunkFile(f.path, f.content));
+
+  // const vectors = await createEmbeddings({ chunks, indexName });
+  // await saveToVectorDB({ vectors, indexName });
+
+  // cleanup([zipPath, extractedDir]);
+  // console.log(
+  //   `RAG pipeline complete for ${owner}/${repo}: ${chunks.length} chunks indexed`
+  // );
 }
 
 export async function createEmbeddings(
-  values: object
+  values: object,
 ): Promise<EmbeddingVector[]> {
   const { chunks, indexName } = values as {
     chunks: CodeChunk[];

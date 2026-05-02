@@ -23,7 +23,6 @@ export async function getAllData(req: Request, res: Response) {
     return;
   }
 
-  console.log(" ----------- userId ------------ \n", userId)
 
   const cachedData = await redisClient.get(`dashboardData:${userId}`);
 

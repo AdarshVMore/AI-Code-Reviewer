@@ -34,7 +34,6 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
 if (!client.isOpen){
     await client.connect();
   }
-  console.log("<====================== OWNER ==========================> \n", "\n", req.body.pull_request.user)
 
   const event = req.headers["x-github-event"];
   console.log("github event received:", event);
@@ -73,9 +72,7 @@ if (!client.isOpen){
   }
 
   if (event === "pull_request") {
-    console.log("i am in")
     const payload = req.body as PullRequestEvent;
-    console.log(payload)
     const installationId = payload.installation.id;
     const owner = payload.repository.owner.login;
     const repo = payload.repository.name;
@@ -111,10 +108,8 @@ if (!client.isOpen){
     }
   }
   
-  console.log("running the workflowwwwww")
   if (event === "workflow_run") {
     const payload = req.body as any;
-    console.log("payload recieved , here is its id", payload.workflow_run.id)
 
     if (payload.workflow_run?.conclusion === "failure") {
       const installationId = payload.installation?.id;
