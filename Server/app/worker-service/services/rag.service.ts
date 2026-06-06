@@ -40,13 +40,6 @@ function getPinecone(): Pinecone {
   return new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 }
 
-export function toIndexName(owner: string, repo: string): string {
-  return `${owner}-${repo}`
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "-")
-    .slice(0, 45);
-}
-
 function chunkFile(filePath: string, content: string): CodeChunk[] {
   const chunks: CodeChunk[] = [];
   let i = 0;
@@ -83,36 +76,6 @@ async function ensureIndexExists(pc: Pinecone, indexName: string) {
     });
     console.log(`Created Pinecone index "${indexName}"`);
   }
-}
-
-export async function runRAGPipeline(data: object) {
-  const { installationId, owner, repo } = data as RAGPipelineInput;
-
-  const indexName = toIndexName(owner, repo);
-  const zipPath = await downlaodRepoZIP(installationId, owner, repo);
-  const extractedDir = extractZIP(zipPath);
-
-  const files = readCodeFiles(extractedDir);
-  const filesJSONStrgified = JSON.stringify(files)
-  console.log("<<<<<<<<<<<<========== FILES JSON ============>>>>>>>>>>>>\n", files)
-
-  fs.writeFile("./data.json", filesJSONStrgified, (err) => {
-    if (err) {
-      console.error("Error writing file:", err);
-      return;
-    }
-    console.log("File created successfully!");
-  });
-
-  // const chunks = files.flatMap((f) => chunkFile(f.path, f.content));
-
-  // const vectors = await createEmbeddings({ chunks, indexName });
-  // await saveToVectorDB({ vectors, indexName });
-
-  // cleanup([zipPath, extractedDir]);
-  // console.log(
-  //   `RAG pipeline complete for ${owner}/${repo}: ${chunks.length} chunks indexed`
-  // );
 }
 
 export async function createEmbeddings(
@@ -175,6 +138,14 @@ export async function saveToVectorDB(embeddings: object) {
   return { indexName, count: vectors.length };
 }
 
+export function toIndexName(owner: string, repo: string): string {
+  return `${owner}-${repo}`
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .slice(0, 45);
+}
+
+
 export async function searchRelevantEmbeddings(query: object) {
   const {
     text,
@@ -213,4 +184,28 @@ export async function vectorDBExists(DBName: string): Promise<Boolean> {
   const pc = getPinecone();
   const { indexes } = await pc.listIndexes();
   return indexes?.some((idx) => idx.name === DBName) ?? false;
+}
+
+// yo bro this is the main funciton
+
+export async function runRAGPipeline(data: object) {
+  const { installationId, owner, repo } = data as RAGPipelineInput;
+
+  const indexName = toIndexName(owner, repo);
+  const zipPath = await downlaodRepoZIP(installationId, owner, repo);
+  const extractedDir = extractZIP(zipPath);
+
+  const files = readCodeFiles(extractedDir);
+  const filesJSONStrgified = JSON.stringify(files)
+
+
+  const chunks = files.flatMap((f) => chunkFile(f.path, f.content));
+
+  const vectors = await createEmbeddings({ chunks, indexName });
+  await saveToVectorDB({ vectors, indexName });
+
+  cleanup([zipPath, extractedDir]);
+  console.log(
+    `RAG pipeline complete for ${owner}/${repo}: ${chunks.length} chunks indexed`
+  );
 }
