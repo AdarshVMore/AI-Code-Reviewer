@@ -59,7 +59,7 @@ async function getStats(userId: string) {
       where: { userId },
       select: { id: true },
     });
-    const repoIds = userRepos.map((r) => r.id);
+    const repoIds = userRepos.map((r: { id: string }) => r.id);
 
     const [totalReviews, totalRepos, totalIssues] = await Promise.all([
       db.pRReview.count({ where: { repositoryId: { in: repoIds } } }),
@@ -78,7 +78,7 @@ async function recentPRs(userId: string) {
     where: { userId },
     select: { id: true },
   });
-  const repoIds = userRepos.map((r) => r.id);
+  const repoIds = userRepos.map((r: { id: string }) => r.id);
 
   return db.pRReview.findMany({
     where: { repositoryId: { in: repoIds } },
@@ -101,7 +101,7 @@ async function commonIssues(userId: string) {
     where: { userId },
     select: { id: true },
   });
-  const repoIds = userRepos.map((r) => r.id);
+  const repoIds = userRepos.map((r: { id: string }) => r.id);
 
   const issues = await db.issue.findMany({
     where: { review: { repositoryId: { in: repoIds } } },

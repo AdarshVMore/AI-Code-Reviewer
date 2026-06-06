@@ -52,10 +52,10 @@ export function useCollaborators(repoId: string) {
     if (!collaboratorName) return;
     const id = repoId
     try {
-      const data = (await fetchCollaboratorAnalysis(id, collaboratorName)) as any;
+      const data = (await fetchCollaboratorAnalysis(id, collaboratorName)) as CollaboratorAnalysis;
       setcollaboratorAnalysis(data);
       return data;
-    } catch (err: any) {
+    } catch {
       setAnalysisError("Failed to load analysis");
     } finally {
       setAnalysisLoading(false);
