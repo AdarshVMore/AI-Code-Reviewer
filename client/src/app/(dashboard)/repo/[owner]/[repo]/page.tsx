@@ -24,6 +24,8 @@ import { useCollaborators } from "@/hooks/useCollaborator";
 import type { CollaboratorAnalysis } from "@/hooks/useCollaborator";
 import { useDeployments, Deployment } from "@/hooks/useDeployments";
 import { fixDeployment } from "@/lib/api/deployments";
+import { fetchRepoSettings, updateRepoSettings } from "@/lib/api/repos";
+import ToggleSwitch from "@/components/ui/ToggleSwitch";
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -96,6 +98,12 @@ export default function RepoPage() {
   const repo = params.repo as string;
 
   const [activeTab, setActiveTab] = useState<TabId>("reviews");
+  const [allowGif, setAllowGif] = useState(false);
+  const [strictMode, setStrictMode] = useState(false);
+  const [autoComment, setAutoComment] = useState(true);
+  const [selectedReviewer, setSelectedReviewer] = useState("none");
+  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   const { repos } = useRepos();
   const currentRepo = repos.find((r) => r.owner === owner && r.name === repo);
@@ -117,9 +125,32 @@ export default function RepoPage() {
   const [fixingId, setFixingId] = useState<string | null>(null);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  useEffect(()=>{
-    console.log("<========== collaborater ka analysis dekhlo re baba ==========> \n", collaboratorAnalysis)
-  }, [collaboratorAnalysis])
+  useEffect(() => {
+    if (!repoId) return;
+    fetchRepoSettings(repoId).then((s) => {
+      setAllowGif(s.allowGif ?? false);
+      setStrictMode(s.strictMode ?? false);
+      setAutoComment(s.autoComment ?? true);
+      setSelectedReviewer(s.reviewer || "none");
+    }).catch(() => {});
+  }, [repoId]);
+
+  async function handleSaveSettings() {
+    if (!repoId) return;
+    setSettingsSaving(true);
+    try {
+      await updateRepoSettings(repoId, {
+        allowGif,
+        strictMode,
+        autoComment,
+        reviewer: selectedReviewer === "none" ? "" : selectedReviewer,
+      });
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 2500);
+    } finally {
+      setSettingsSaving(false);
+    }
+  }
 
   const reviewsData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -460,8 +491,64 @@ export default function RepoPage() {
           </div>
         )}
 
-        {activeTab === "settings" && <div>under construction</div>}
-      </div>
+{activeTab === "settings" && (
+          <div className="max-w-xl">
+            <div className="rounded-xl border border-bg-border bg-bg-raised p-5 mb-4">
+              <p className="text-xs font-mono text-text-tertiary uppercase tracking-wide mb-2">Review behaviour</p>
+              <ToggleSwitch
+                label="Allow GIF in Review"
+                description="Include a reaction GIF in the AI review comment"
+                checked={allowGif}
+                onChange={setAllowGif}
+              />
+              <ToggleSwitch
+                label="Strict Mode"
+                description="Flag low-severity issues that would normally be skipped"
+                checked={strictMode}
+                onChange={setStrictMode}
+              />
+              <ToggleSwitch
+                label="Auto-comment on PR"
+                description="Post the review comment automatically without manual approval"
+                checked={autoComment}
+                onChange={setAutoComment}
+              />
+            </div>
+
+            <div className="rounded-xl border border-bg-border bg-bg-raised p-5">
+              <p className="text-xs font-mono text-text-tertiary uppercase tracking-wide mb-3">Reviewer</p>
+              <div className="flex items-center justify-between gap-6">
+                <div>
+                  <p className="text-sm font-medium text-text-primary">Select reviewer</p>
+                  <p className="text-xs text-text-tertiary mt-0.5">Assign a team member to be notified on each review</p>
+                </div>
+                <select
+                  value={selectedReviewer}
+                  onChange={(e) => setSelectedReviewer(e.target.value)}
+                  className="bg-bg-surface border border-bg-border text-text-primary text-sm rounded-lg px-3 py-1.5 font-mono focus:outline-none focus:border-brand transition-colors shrink-0"
+                >
+                  <option value="none">None</option>
+                  {allCollaborators.map((c) => (
+                    <option key={c.login} value={c.login}>{c.login}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-4">
+              <button
+                onClick={handleSaveSettings}
+                disabled={settingsSaving}
+                className="px-4 py-2 rounded-lg bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {settingsSaving ? "Saving..." : "Save settings"}
+              </button>
+              {settingsSaved && (
+                <span className="text-xs font-mono text-green-400">Saved</span>
+              )}
+            </div>
+          </div>
+        )}      </div>
     </>
   );
 }
