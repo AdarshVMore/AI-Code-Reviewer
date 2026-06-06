@@ -6,9 +6,19 @@ import {
 import { getAIReview, reviewPrompt, parseAIResponse, getRevieType, getCodeDiff, generateRelevantSearchQuery } from "./ai.service.js";
 import { db } from "../../../package/db/prisma.js";
 import {vectorDBExists, createEmbeddings, saveToVectorDB, searchRelevantEmbeddings, toIndexName} from "./rag.service.js"
-import { diff } from "node:util";
+import { findGIF } from "./gif.service.js";
+import { getGifName } from "../../../package/ai/gif.js";
 
-export function formatReviewComment(parsed: any): string {
+export type PRReviewJobData = {
+  installationId: number;
+  owner: string;
+  repo: string;
+  prNumber: number;
+  prTitle?: string;
+  prAuthor?:string;
+};
+
+export function formatReviewComment(parsed: any, gifURL?: string | null): string {
   const score = parsed.score ?? "N/A";
   const issues: any[] = parsed.issues ?? [];
 
@@ -19,6 +29,10 @@ export function formatReviewComment(parsed: any): string {
   };
 
   let md = `## Code Review\n\n`;
+
+  if(gifURL){
+    md+= `![review-gif](${gifURL})\n\n`
+  }
 
   md += `${parsed.summary}\n\n`;
 
@@ -63,18 +77,22 @@ ${arr
 
   return md;
 }
-export type PRReviewJobData = {
-  installationId: number;
-  owner: string;
-  repo: string;
-  prNumber: number;
-  prTitle?: string;
-  prAuthor?:string;
-};
+
+async function getReviewGifUrl(summary?: string | null): Promise<string | null> {
+  try {
+    const gifQuery = await getGifName(summary);
+    return await findGIF(gifQuery);
+  } catch (error) {
+    console.error("Skipping review GIF", error);
+    return null;
+  }
+}
 
 export async function runPRReview(data: PRReviewJobData) {
   const { installationId, owner, repo, prNumber, prTitle, prAuthor } = data;
   let dbName = ""
+
+  // const isGIFEnabled =
 
   const createVectorDB = await vectorDBExists(dbName) as boolean
 
@@ -108,9 +126,6 @@ export async function runPRReview(data: PRReviewJobData) {
     relevantCode = await searchRelevantEmbeddings(query)
   }
 
-  console.log("<<<<<<<========== Direct DIFF =========>>>>>>> \n", difference)
-  console.log("<<<<<<<========== Processeded DIFF =========>>>>>>> \n", processedDiff)
-
   const prompt = reviewPrompt(difference, rules, relevantCode);
   const aiResponse = await getAIReview(prompt);
   const cleanText = aiResponse
@@ -120,11 +135,12 @@ export async function runPRReview(data: PRReviewJobData) {
   const parsedPrompt = parseAIResponse(cleanText);
 
   if (!parsedPrompt) {
-    console.log("❌ Failed to parse AI response");
+    console.log("Failed to parse AI response");
     return;
   }
+  const gifUrl = await getReviewGifUrl(parsedPrompt.summary);
 
-  const commentBody = formatReviewComment(parsedPrompt);
+  const commentBody = formatReviewComment(parsedPrompt, gifUrl);
   await octokit.issues.createComment({
     owner,
     repo,
