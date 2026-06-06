@@ -19,7 +19,7 @@ export default function DashboardPage() {
   return (
     <>
       <Topbar title="Dashboard" />
-      <div className="px-8 py-7 max-w-7xl mx-auto">
+      <div className="px-8 py-7 max-h-screen h-[100%] max-w-7xl mx-auto">
         <div className="grid grid-cols-4 gap-4 mb-8">
           <StatCard value={String(data?.stats.totalReviews ?? 0)} label="PRs reviewed" trend="" trendDirection="neutral" />
           <StatCard value={String(data?.stats.totalIssues ?? 0)} label="Issues found" trend="" trendDirection="neutral" />
@@ -27,7 +27,7 @@ export default function DashboardPage() {
         </div>
 
         <SectionLabel>Recent reviews</SectionLabel>
-        <div className="mb-6">
+        <div className="mb-6 max-h-[37%] overflow-y-scroll">
           {data?.recentPR.length === 0 && (
             <p className="text-sm text-text-secondary">No reviews yet.</p>
           )}
