@@ -32,6 +32,20 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: 'AI Usage',
+    href: '/ai-usage',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="8" cy="2" r="1.5" />
+        <circle cx="3" cy="13" r="1.5" />
+        <circle cx="13" cy="13" r="1.5" />
+        <line x1="8" y1="3.5" x2="8" y2="7" />
+        <line x1="8" y1="7" x2="3" y2="11.5" />
+        <line x1="8" y1="7" x2="13" y2="11.5" />
+      </svg>
+    ),
+  },
 ]
 
 export function Sidebar() {
