@@ -1,0 +1,8 @@
+app = "ai-code-reviewer-worker-app"
+primary_region = "bom"
+
+[build]
+  dockerfile = "app/worker-service/Dockerfile"
+
+[processes]
+  app = "node dist/app/worker-service/index.js"

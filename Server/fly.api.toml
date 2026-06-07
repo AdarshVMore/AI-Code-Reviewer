@@ -1,0 +1,15 @@
+app = "ai-code-reviewer-api-app"
+primary_region = "bom"
+
+[build]
+  dockerfile = "app/api-service/Dockerfile"
+
+[deploy]
+  release_command = "npx prisma migrate deploy"
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1

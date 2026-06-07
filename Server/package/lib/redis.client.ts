@@ -1,6 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 
-const REDIS_URL = "redis://redis:6379";
+const REDIS_URL = process.env.REDIS_URL ?? "redis://redis:6379";
 
 let redisClient : RedisClientType | null = null
 
