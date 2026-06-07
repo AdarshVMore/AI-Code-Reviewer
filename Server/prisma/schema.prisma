@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -18,21 +13,21 @@ model User {
   githubUsername String
   githubAvatar   String?
   email          String?
-  plan           String       @default("free")    
-  repos          Repository[]
+  plan           String       @default("free")
   createdAt      DateTime     @default(now())
+  repos          Repository[]
 }
 
 model Repository {
-  id             String      @id @default(cuid())
+  id             String       @id @default(cuid())
   owner          String
   name           String
   installationId Int
   userId         String
-  user           User        @relation(fields: [userId], references: [id])
-  reviews        PRReview[]
+  createdAt      DateTime     @default(now())
   deployments    Deployment[]
-  createdAt      DateTime    @default(now())
+  reviews        PRReview[]
+  user           User         @relation(fields: [userId], references: [id])
 
   @@unique([owner, name])
 }
@@ -42,64 +37,51 @@ model PRReview {
   prNumber     Int
   prTitle      String?
   summary      String?
+  repositoryId String
+  createdAt    DateTime   @default(now())
   score        Int?
   author       String
-  prAuthor     String   @default("")
   commitSHA    String
-  repositoryId String
+  prAuthor     String     @default("")
+  issues       Issue[]
   repository   Repository @relation(fields: [repositoryId], references: [id])
-
-  issues       Issue[]   
-
-  createdAt    DateTime  @default(now())
 }
 
 model Issue {
   id        String   @id @default(cuid())
-
   reviewId  String
-  review    PRReview @relation(fields: [reviewId], references: [id])
-
   file      String
   line      Int
-
   category  String
   severity  String
-
   problem   String
   fix       String
-
   createdAt DateTime @default(now())
+  review    PRReview @relation(fields: [reviewId], references: [id])
 }
 
 model Deployment {
   id           String          @id @default(cuid())
   repositoryId String
-  repository   Repository      @relation(fields: [repositoryId], references: [id])
-
   provider     String
   status       String
   deploymentId String
   prNumber     Int?
   branch       String?
-
   cause        String?
   fix          String?
   rawLogs      String?
-
-  fixes        DeploymentFix[]
-
   createdAt    DateTime        @default(now())
+  repository   Repository      @relation(fields: [repositoryId], references: [id])
+  fixes        DeploymentFix[]
 }
 
 model DeploymentFix {
   id           String     @id @default(cuid())
   deploymentId String
-  deployment   Deployment @relation(fields: [deploymentId], references: [id])
-
   status       String
   commitSha    String?
   diff         String?
-
   createdAt    DateTime   @default(now())
+  deployment   Deployment @relation(fields: [deploymentId], references: [id])
 }
