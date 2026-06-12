@@ -79,8 +79,10 @@ ${arr
 }
 
 async function getReviewGifUrl(summary?: string | null): Promise<string | null> {
+  console.log("running getReviewGifUrl .....")
   try {
     const gifQuery = await getGifName(summary);
+    console.log("found gifQuery , " , gifQuery)
     return await findGIF(gifQuery);
   } catch (error) {
     console.error("Skipping review GIF", error);
@@ -141,6 +143,7 @@ export async function runPRReview(data: PRReviewJobData) {
   const gifUrl = await getReviewGifUrl(parsedPrompt.summary);
 
   const commentBody = formatReviewComment(parsedPrompt, gifUrl);
+  console.log("adding this comment body : \n\n", commentBody)
   await octokit.issues.createComment({
     owner,
     repo,
