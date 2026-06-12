@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ReviewPilot",
+  title: "CodeRefyn",
   description: "AI code review for your team",
 };
 

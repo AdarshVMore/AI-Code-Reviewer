@@ -3,7 +3,8 @@ import { getSession } from "next-auth/react"
 import type { Session } from "next-auth"
 
 const apiClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL ?? "https://ai-code-reviewer-api-app.fly.dev",
+    // baseURL: process.env.NEXT_PUBLIC_API_URL ?? "https://ai-code-reviewer-api-app.fly.dev",
+    baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001",
 })
 
 apiClient.interceptors.request.use(async (config) => {

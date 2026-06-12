@@ -15,7 +15,7 @@ export default async function LoginPage() {
       <div className="bg-bg-surface border border-bg-border rounded-2xl p-10 w-full max-w-sm">
 
         <div className="flex flex-col gap-1.5 mb-6">
-          <span className="font-mono text-base font-medium text-brand">ReviewPilot</span>
+          <span className="font-mono text-base font-medium text-brand">CodeRefyn</span>
           <h1 className="text-2xl font-semibold text-text-primary">Sign in to your account</h1>
           <p className="text-sm text-text-secondary leading-relaxed">
             Connect your GitHub to start reviewing PRs automatically.
@@ -25,7 +25,7 @@ export default async function LoginPage() {
         <LoginButton />
 
         <p className="mt-4 text-xs text-text-tertiary text-center leading-relaxed">
-          By continuing, you agree to share your GitHub repository access with ReviewPilot.
+          By continuing, you agree to share your GitHub repository access with CodeRefyn.
         </p>
 
       </div>
