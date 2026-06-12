@@ -54,6 +54,8 @@ https://github.com/apps/reviewpilot-dev
 
 <img width="100%" src="https://github.com/user-attachments/assets/5c4bb33b-30e7-4c33-bf5d-2a308162a3c9" />
 
+<img width="1470" height="880" alt="image" src="https://github.com/user-attachments/assets/e9d6aee0-0ea5-4327-9678-32a0300d3fed" />
+
 <img width="100%" src="https://github.com/user-attachments/assets/8ffbca88-37f0-4419-a0a3-da7d37c30ec2" />
 
 <img width="100%" src="https://github.com/user-attachments/assets/fd4b07c5-30b2-467a-a423-2ea2a6fc302c" />
