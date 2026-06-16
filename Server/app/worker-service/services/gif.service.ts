@@ -9,6 +9,7 @@ export async function findGIF(query: string): Promise<string | null> {
   if (!giphyApiKey || !query.trim()) return null;
 
   try {
+    console.log("trying yo find the giphy url...")
     const response = await axios.get<GiphyResponse>(
       "https://api.giphy.com/v1/gifs/search",
       {
@@ -19,6 +20,8 @@ export async function findGIF(query: string): Promise<string | null> {
         },
       },
     );
+
+    console.log("here it is....." , response.data.data[0]?.images.fixed_height.url)
 
     return response.data.data[0]?.images.fixed_height.url ?? null;
   } catch (error) {
