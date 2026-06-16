@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { GitBranch, LayoutDashboard, Sparkles } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { Avatar } from '@/components/ui'
-import { useUser } from '@/hooks/useUser'
 
 const navItems = [
   {
