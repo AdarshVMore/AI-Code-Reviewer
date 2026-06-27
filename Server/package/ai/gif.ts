@@ -1,15 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { addUsage, createTokenAccumulator, type TokenAccumulator } from "./review.js";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
-
-export async function getGifName(summary?: string | null): Promise<string> {
+export async function getGifName(
+  summary: string | null | undefined,
+  apiKey: string,
+  usage?: TokenAccumulator,
+): Promise<string> {
   const fallback = "code review";
   const cleanSummary = summary?.trim();
 
   if (!cleanSummary) return fallback;
 
+  const anthropic = new Anthropic({ apiKey });
   const res = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 40,
@@ -23,6 +25,7 @@ export async function getGifName(summary?: string | null): Promise<string> {
       },
     ],
   });
+  addUsage(usage ?? createTokenAccumulator(), res.usage);
 
   const block = res.content.find((b) => b.type === "text");
   const text = block && block.type === "text" ? block.text.trim() : "";

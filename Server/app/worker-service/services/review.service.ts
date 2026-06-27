@@ -3,11 +3,31 @@ import {
   getDifferenceData,
   getReviewRules,
 } from "./github.service.js";
-import { getAIReview, reviewPrompt, parseAIResponse, getRevieType, getCodeDiff, generateRelevantSearchQuery } from "./ai.service.js";
+import {
+  getAIReview,
+  reviewPrompt,
+  parseAIResponse,
+  getRevieType,
+  getCodeDiff,
+  generateRelevantSearchQuery,
+  createTokenAccumulator,
+} from "./ai.service.js";
 import { db } from "../../../package/db/prisma.js";
-import {vectorDBExists, createEmbeddings, saveToVectorDB, searchRelevantEmbeddings, toIndexName} from "./rag.service.js"
+import {
+  vectorDBExists,
+  createEmbeddings,
+  saveToVectorDB,
+  searchRelevantEmbeddings,
+  toIndexName,
+} from "./rag.service.js";
 import { findGIF } from "./gif.service.js";
 import { getGifName } from "../../../package/ai/gif.js";
+import {
+  resolveReviewApiKey,
+  incrementPlatformReviewCount,
+  recordTokenUsage,
+  PLATFORM_FREE_REVIEWS,
+} from "../../../package/lib/apiKey.service.js";
 
 export type PRReviewJobData = {
   installationId: number;
@@ -15,7 +35,8 @@ export type PRReviewJobData = {
   repo: string;
   prNumber: number;
   prTitle?: string;
-  prAuthor?:string;
+  prAuthor?: string;
+  userId?: string;
 };
 
 export function formatReviewComment(parsed: any, gifURL?: string | null): string {
@@ -30,8 +51,8 @@ export function formatReviewComment(parsed: any, gifURL?: string | null): string
 
   let md = `## Code Review\n\n`;
 
-  if(gifURL){
-    md+= `![review-gif](${gifURL})\n\n`
+  if (gifURL) {
+    md += `![review-gif](${gifURL})\n\n`;
   }
 
   md += `${parsed.summary}\n\n`;
@@ -62,7 +83,7 @@ ${arr
   - Category: ${issue.category}
   - Issue: ${issue.problem}
   - Suggestion: ${issue.fix}
-`
+`,
   )
   .join("\n")}
 `;
@@ -78,9 +99,21 @@ ${arr
   return md;
 }
 
-async function getReviewGifUrl(summary?: string | null): Promise<string | null> {
+function formatQuotaExceededComment(): string {
+  return `## Code Review Unavailable
+
+You've used all **${PLATFORM_FREE_REVIEWS} free platform reviews**. To continue receiving AI code reviews, add your own Claude API key in the [CodeRefyn dashboard](https://custom-ai-code-reviewer.vercel.app/ai-usage).
+
+Once configured, all reviews will use your key and token usage will appear on the AI Usage page.`;
+}
+
+async function getReviewGifUrl(
+  summary: string | null | undefined,
+  apiKey: string,
+  usage: ReturnType<typeof createTokenAccumulator>,
+): Promise<string | null> {
   try {
-    const gifQuery = await getGifName(summary);
+    const gifQuery = await getGifName(summary, apiKey, usage);
     return await findGIF(gifQuery);
   } catch (error) {
     console.error("Skipping review GIF", error);
@@ -88,46 +121,80 @@ async function getReviewGifUrl(summary?: string | null): Promise<string | null> 
   }
 }
 
+async function resolveUserId(
+  owner: string,
+  repo: string,
+  userId?: string,
+): Promise<string | null> {
+  if (userId) return userId;
+
+  const repository = await db.repository.findUnique({
+    where: { owner_name: { owner, name: repo } },
+    select: { userId: true },
+  });
+  return repository?.userId ?? null;
+}
+
 export async function runPRReview(data: PRReviewJobData) {
   const { installationId, owner, repo, prNumber, prTitle, prAuthor } = data;
-  let dbName = ""
+  const dbName = "";
 
-  // const isGIFEnabled =
+  const createVectorDB = (await vectorDBExists(dbName)) as boolean;
 
-  const createVectorDB = await vectorDBExists(dbName) as boolean
+  if (createVectorDB) {
+    const values = {};
 
-  if(createVectorDB){
-    let values = {}
-    
-    const embeddings = await createEmbeddings(values) as any
-    const finalSaved = await saveToVectorDB(embeddings)
-    console.log(finalSaved)
+    const embeddings = (await createEmbeddings(values)) as any;
+    const finalSaved = await saveToVectorDB(embeddings);
+    console.log(finalSaved);
   }
 
   const octokit = await getOctokit(installationId);
+  const userId = await resolveUserId(owner, repo, data.userId);
+
+  if (!userId) {
+    console.log(`No user found for ${owner}/${repo} — skipping review`);
+    return;
+  }
+
+  const resolvedKey = await resolveReviewApiKey(userId);
+  if (!resolvedKey) {
+    console.log(`User ${userId} has no API key and free reviews exhausted`);
+    await octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: prNumber,
+      body: formatQuotaExceededComment(),
+    });
+    return;
+  }
+
+  const { apiKey, source } = resolvedKey;
+  const tokenUsage = createTokenAccumulator();
+
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
-  const { data: collaborators } = await octokit.rest.repos.listCollaborators({
+  await octokit.rest.repos.listCollaborators({
     owner,
     repo,
   });
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
-  const reviewType = await getRevieType(difference) as any
-  const indexName = toIndexName(owner, repo)
-  const DBExsists = await vectorDBExists(indexName)
-  let relevantCode:any
-  const processedDiff = await getCodeDiff(difference) as any
-  if(reviewType === "feature" && DBExsists) {
-    const searchQuery = await generateRelevantSearchQuery(processedDiff)
+  const reviewType = (await getRevieType(difference, apiKey, tokenUsage)) as any;
+  const indexName = toIndexName(owner, repo);
+  const DBExsists = await vectorDBExists(indexName);
+  let relevantCode: any;
+  const processedDiff = (await getCodeDiff(difference)) as any;
+  if (reviewType === "feature" && DBExsists) {
+    const searchQuery = await generateRelevantSearchQuery(processedDiff, apiKey, tokenUsage);
     const query = {
       text: searchQuery,
       indexName: indexName,
       topK: 5,
-    }
-    relevantCode = await searchRelevantEmbeddings(query)
+    };
+    relevantCode = await searchRelevantEmbeddings(query);
   }
 
   const prompt = reviewPrompt(difference, rules, relevantCode);
-  const aiResponse = await getAIReview(prompt);
+  const aiResponse = await getAIReview(prompt, apiKey, tokenUsage);
   const cleanText = aiResponse
     .replace(/```json/g, "")
     .replace(/```/g, "")
@@ -138,7 +205,7 @@ export async function runPRReview(data: PRReviewJobData) {
     console.log("Failed to parse AI response");
     return;
   }
-  const gifUrl = await getReviewGifUrl(parsedPrompt.summary);
+  const gifUrl = await getReviewGifUrl(parsedPrompt.summary, apiKey, tokenUsage);
 
   const commentBody = formatReviewComment(parsedPrompt, gifUrl);
   await octokit.issues.createComment({
@@ -186,6 +253,20 @@ export async function runPRReview(data: PRReviewJobData) {
     });
   }
 
-  console.log(`review saved to DB for ${owner}/${repo}#${prNumber}`);
+  await recordTokenUsage({
+    userId,
+    reviewId: savedReview.id,
+    inputTokens: tokenUsage.inputTokens,
+    outputTokens: tokenUsage.outputTokens,
+    source,
+  });
+
+  if (source === "platform") {
+    await incrementPlatformReviewCount(userId);
+  }
+
+  console.log(
+    `review saved to DB for ${owner}/${repo}#${prNumber} (${tokenUsage.inputTokens + tokenUsage.outputTokens} tokens, ${source})`,
+  );
   return aiResponse;
 }
