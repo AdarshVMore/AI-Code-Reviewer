@@ -5,7 +5,6 @@ import { db } from "../../../package/db/prisma.js";
 import { getRedisConnection } from "../../../package/lib/redis.client.js";
 
 
-
 const router = Router();
 const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
 
@@ -100,9 +99,22 @@ if (!client.isOpen){
         create: { owner, name: repo, installationId, userId: user.id },
       });
 
+      const repository = await db.repository.findUnique({
+        where: { owner_name: { owner, name: repo } },
+        select: { userId: true },
+      });
+
       const pushed = await client.lPush(
         "reviewQueue",
-        JSON.stringify({ installationId, owner, repo, prNumber, prTitle: payload.pull_request.title, prAuthor: payload.pull_request.user.login })
+        JSON.stringify({
+          installationId,
+          owner,
+          repo,
+          prNumber,
+          prTitle: payload.pull_request.title,
+          prAuthor: payload.pull_request.user.login,
+          userId: repository?.userId ?? user.id,
+        }),
       );
       console.log("pushed to queue, queue length:", pushed);
     }

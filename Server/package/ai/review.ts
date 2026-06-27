@@ -1,10 +1,26 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+export type TokenAccumulator = {
+  inputTokens: number;
+  outputTokens: number;
+};
 
-export async function getRevieType(diff: string) {
+export function createTokenAccumulator(): TokenAccumulator {
+  return { inputTokens: 0, outputTokens: 0 };
+}
+
+export function addUsage(acc: TokenAccumulator, usage?: Anthropic.Messages.Usage | null) {
+  if (!usage) return;
+  acc.inputTokens += usage.input_tokens ?? 0;
+  acc.outputTokens += usage.output_tokens ?? 0;
+}
+
+function createClient(apiKey: string) {
+  return new Anthropic({ apiKey });
+}
+
+export async function getRevieType(diff: string, apiKey: string, usage?: TokenAccumulator) {
+  const anthropic = createClient(apiKey);
   const prompt = `You are supposed to see the Code Diff ${diff} and identify the PR Type if it is a Bug Fix / New Feature / Code Update , etc and only return the name of the type in response . "Return ONLY: feature | bugfix | refactor"`;
   const res = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
@@ -17,8 +33,9 @@ export async function getRevieType(diff: string) {
       },
     ],
   });
-  const block = res.content.find((b) => b.type === "text")
-  return block && block.type === "text" ? block.text.trim().toLowerCase() : ""
+  addUsage(usage ?? createTokenAccumulator(), res.usage);
+  const block = res.content.find((b) => b.type === "text");
+  return block && block.type === "text" ? block.text.trim().toLowerCase() : "";
 }
 
 export async function getCodeDiff(diff: string) {
@@ -29,31 +46,42 @@ export async function getCodeDiff(diff: string) {
     .slice(0, 500);
 }
 
-export async function generateRelevantSearchQuery(processedDiff: string) {
+export async function generateRelevantSearchQuery(
+  processedDiff: string,
+  apiKey: string,
+  usage?: TokenAccumulator,
+) {
+  const anthropic = createClient(apiKey);
   const res = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 1500,
-      temperature: 0,
-      system: "Convert the given git diff into a short semantic search query  to find relevant code in a repository Return ONLY a short phrase.",
-      messages: [
-        {
-          role: "user",
-          content: processedDiff,
-        },
-      ],
+    model: "claude-sonnet-4-5",
+    max_tokens: 1500,
+    temperature: 0,
+    system:
+      "Convert the given git diff into a short semantic search query  to find relevant code in a repository Return ONLY a short phrase.",
+    messages: [
+      {
+        role: "user",
+        content: processedDiff,
+      },
+    ],
   });
-
-  const block = res.content.find((b) => b.type === "text")
-  return block && block.type === "text" ? block.text.trim() : ""
+  addUsage(usage ?? createTokenAccumulator(), res.usage);
+  const block = res.content.find((b) => b.type === "text");
+  return block && block.type === "text" ? block.text.trim() : "";
 }
 
-export async function getAIReview(prompt: string | null, retries = 4) {
+export async function getAIReview(
+  prompt: string | null,
+  apiKey: string,
+  usage?: TokenAccumulator,
+  retries = 4,
+) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await _callAI(prompt);
+      return await _callAI(prompt, apiKey, usage);
     } catch (err: any) {
       if (err?.status === 529 && attempt < retries) {
-        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s, 8s
+        const delay = Math.pow(2, attempt) * 1000;
         console.log(
           `Anthropic overloaded (529), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`,
         );
@@ -66,7 +94,8 @@ export async function getAIReview(prompt: string | null, retries = 4) {
   throw new Error("Max retries exceeded for AI review");
 }
 
-async function _callAI(prompt: string | null) {
+async function _callAI(prompt: string | null, apiKey: string, usage?: TokenAccumulator) {
+  const anthropic = createClient(apiKey);
   const res = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
     max_tokens: 1500,
@@ -136,6 +165,7 @@ Do NOT include markdown, explanations, or text outside JSON.`,
       },
     ],
   });
+  addUsage(usage ?? createTokenAccumulator(), res.usage);
 
   const block = res.content.find((b) => b.type === "text");
   if (!block || block.type !== "text")
@@ -144,24 +174,28 @@ Do NOT include markdown, explanations, or text outside JSON.`,
 }
 
 type RelevantCodeMatch = {
-  id: string
-  score: number
-  content: string
-  filePath: string
-}
+  id: string;
+  score: number;
+  content: string;
+  filePath: string;
+};
 
 function formatRelevantCode(matches: RelevantCodeMatch[]): string {
-  if (!matches.length) return ""
+  if (!matches.length) return "";
   return matches
     .map((m) => `// ${m.filePath}\n${m.content}`)
-    .join("\n\n---\n\n")
+    .join("\n\n---\n\n");
 }
 
-export function reviewPrompt(diff: string, rules: any, relevantCode?: RelevantCodeMatch[] | string) {
+export function reviewPrompt(
+  diff: string,
+  rules: any,
+  relevantCode?: RelevantCodeMatch[] | string,
+) {
   const relevantSection =
     Array.isArray(relevantCode) && relevantCode.length > 0
       ? `\nEXISTING CODEBASE CONTEXT (retrieved for this feature):\nUse this to check for consistency, duplication, or conflicts with existing patterns.\n\n${formatRelevantCode(relevantCode)}\n`
-      : ""
+      : "";
 
   return `
 REPOSITORY RULES (HIGHEST PRIORITY):

@@ -48,7 +48,7 @@ export default function AIUsagePage() {
 
   if (loading) return <div className="flex items-center justify-center h-full"><Spinner /></div>
   if (error)   return <div className="px-8 py-7 text-sm text-text-secondary">{error}</div>
-
+   
   async function onAdd(e: React.FormEvent) {
     e.preventDefault()
     if (!keyValue.trim() || !keyName.trim()) return
@@ -82,11 +82,32 @@ export default function AIUsagePage() {
       <div className="px-8 py-7 max-w-5xl">
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard value={(usage?.totalTokensThisMonth ?? 0).toLocaleString()} label="Tokens this month"   trend="" trendDirection="neutral" />
           <StatCard value={(usage?.avgTokensPerPR        ?? 0).toLocaleString()} label="Avg tokens per PR"   trend="" trendDirection="neutral" />
           <StatCard value={`$${estimatedCost}`}                                  label="Est. cost this month" trend="Based on $3 / 1M tokens" trendDirection="neutral" />
+          <StatCard
+            value={keys.length > 0 ? 'Your key' : `${usage?.platformReviewsRemaining ?? 0} / ${usage?.platformFreeLimit ?? 5}`}
+            label={keys.length > 0 ? 'Billing source' : 'Free reviews left'}
+            trend={keys.length > 0 ? 'Reviews use your Claude API key' : 'Platform key until limit reached'}
+            trendDirection="neutral"
+          />
         </div>
+
+        {keys.length === 0 && (
+          <Card className="mb-8 border-brand/20">
+            <p className="text-sm text-text-primary">
+              No API key configured. You have{' '}
+              <span className="text-brand font-mono">{usage?.platformReviewsRemaining ?? 0}</span>{' '}
+              of{' '}
+              <span className="text-brand font-mono">{usage?.platformFreeLimit ?? 5}</span>{' '}
+              free platform reviews remaining.
+            </p>
+            <p className="text-xs text-text-tertiary mt-2 font-mono">
+              Add your Claude API key below for unlimited reviews billed to your account.
+            </p>
+          </Card>
+        )}
 
         {/* Usage chart */}
         <Card className="mb-8">

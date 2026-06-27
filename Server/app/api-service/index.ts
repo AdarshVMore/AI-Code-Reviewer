@@ -7,6 +7,7 @@ import repoRoutes from "./routes/repos.route.js"
 import prRoutes from "./routes/pr.routes.js"
 import userRoutes from "./routes/user.routes.js"
 import deploymentRoutes from "./routes/deployment.routes.js"
+import aiUsageRoutes from "./routes/aiUsage.routes.js"
 
 const app = express()
 
@@ -25,5 +26,6 @@ app.use("/api/repo/", repoRoutes)
 app.use("/api/pr/", prRoutes)
 app.use("/api/user/", userRoutes)
 app.use("/api/deployment/", deploymentRoutes)
+app.use("/api/ai-usage/", aiUsageRoutes)
 
 app.listen(3001, () => console.log("API service listening on port 3001"))

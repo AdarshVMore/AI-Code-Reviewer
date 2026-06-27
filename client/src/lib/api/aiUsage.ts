@@ -16,6 +16,9 @@ export type AIUsageSummary = {
   totalTokensThisMonth: number
   avgTokensPerPR: number
   usageOverTime: AIUsagePoint[]
+  platformReviewsUsed: number
+  platformReviewsRemaining: number
+  platformFreeLimit: number
 }
 
 export type AIUsageData = {
@@ -29,6 +32,9 @@ export const emptyAIUsage: AIUsageData = {
     totalTokensThisMonth: 0,
     avgTokensPerPR: 0,
     usageOverTime: [],
+    platformReviewsUsed: 0,
+    platformReviewsRemaining: 5,
+    platformFreeLimit: 5,
   },
 }
 
@@ -40,6 +46,9 @@ export async function fetchAIUsage(): Promise<AIUsageData> {
       totalTokensThisMonth: data.usage?.totalTokensThisMonth ?? 0,
       avgTokensPerPR: data.usage?.avgTokensPerPR ?? 0,
       usageOverTime: data.usage?.usageOverTime ?? [],
+      platformReviewsUsed: data.usage?.platformReviewsUsed ?? 0,
+      platformReviewsRemaining: data.usage?.platformReviewsRemaining ?? 5,
+      platformFreeLimit: data.usage?.platformFreeLimit ?? 5,
     },
   }
 }

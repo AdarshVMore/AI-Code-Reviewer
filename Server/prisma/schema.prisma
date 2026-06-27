@@ -8,14 +8,44 @@ datasource db {
 }
 
 model User {
-  id             String       @id @default(cuid())
-  githubId       Int          @unique
-  githubUsername String
-  githubAvatar   String?
-  email          String?
-  plan           String       @default("free")
-  createdAt      DateTime     @default(now())
-  repos          Repository[]
+  id                   String       @id @default(cuid())
+  githubId             Int          @unique
+  githubUsername       String
+  githubAvatar         String?
+  email                String?
+  plan                 String       @default("free")
+  platformReviewsUsed  Int          @default(0)
+  createdAt            DateTime     @default(now())
+  repos                Repository[]
+  apiKeys              UserApiKey[]
+  tokenUsage           TokenUsage[]
+}
+
+model UserApiKey {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  encryptedKey String
+  maskedKey    String
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model TokenUsage {
+  id           String    @id @default(cuid())
+  userId       String
+  reviewId     String?
+  inputTokens  Int       @default(0)
+  outputTokens Int       @default(0)
+  totalTokens  Int       @default(0)
+  source       String    @default("user_key")
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review       PRReview? @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
 }
 
 model Repository {
@@ -33,18 +63,19 @@ model Repository {
 }
 
 model PRReview {
-  id           String     @id @default(cuid())
+  id           String       @id @default(cuid())
   prNumber     Int
   prTitle      String?
   summary      String?
   repositoryId String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime     @default(now())
   score        Int?
   author       String
   commitSHA    String
-  prAuthor     String     @default("")
+  prAuthor     String       @default("")
   issues       Issue[]
-  repository   Repository @relation(fields: [repositoryId], references: [id])
+  tokenUsage   TokenUsage[]
+  repository   Repository   @relation(fields: [repositoryId], references: [id])
 }
 
 model Issue {
