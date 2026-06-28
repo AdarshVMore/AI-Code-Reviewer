@@ -15,9 +15,8 @@ import {
 import { db } from "../../../package/db/prisma.js";
 import {
   vectorDBExists,
-  createEmbeddings,
-  saveToVectorDB,
-  searchRelevantEmbeddings,
+  waitForVectorIndex,
+  retrieveContextForDiff,
   toIndexName,
 } from "./rag.service.js";
 import { findGIF } from "./gif.service.js";
@@ -137,17 +136,6 @@ async function resolveUserId(
 
 export async function runPRReview(data: PRReviewJobData) {
   const { installationId, owner, repo, prNumber, prTitle, prAuthor } = data;
-  const dbName = "";
-
-  const createVectorDB = (await vectorDBExists(dbName)) as boolean;
-
-  if (createVectorDB) {
-    const values = {};
-
-    const embeddings = (await createEmbeddings(values)) as any;
-    const finalSaved = await saveToVectorDB(embeddings);
-    console.log(finalSaved);
-  }
 
   const octokit = await getOctokit(installationId);
   const userId = await resolveUserId(owner, repo, data.userId);
@@ -180,17 +168,34 @@ export async function runPRReview(data: PRReviewJobData) {
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
   const reviewType = (await getRevieType(difference, apiKey, tokenUsage)) as any;
   const indexName = toIndexName(owner, repo);
-  const DBExsists = await vectorDBExists(indexName);
-  let relevantCode: any;
+  let relevantCode: Awaited<ReturnType<typeof retrieveContextForDiff>> | undefined;
   const processedDiff = (await getCodeDiff(difference)) as any;
-  if (reviewType === "feature" && DBExsists) {
-    const searchQuery = await generateRelevantSearchQuery(processedDiff, apiKey, tokenUsage);
-    const query = {
-      text: searchQuery,
-      indexName: indexName,
-      topK: 5,
-    };
-    relevantCode = await searchRelevantEmbeddings(query);
+
+  if (reviewType === "feature") {
+    const indexReady =
+      (await vectorDBExists(indexName)) ||
+      (await waitForVectorIndex(indexName));
+
+    if (indexReady) {
+      const searchQuery = await generateRelevantSearchQuery(
+        processedDiff,
+        apiKey,
+        tokenUsage,
+      );
+      relevantCode = await retrieveContextForDiff({
+        diff: difference,
+        semanticQuery: searchQuery,
+        indexName,
+        topK: 8,
+      });
+      console.log(
+        `RAG context for ${owner}/${repo}#${prNumber}: ${relevantCode.length} AST chunks`,
+      );
+    } else {
+      console.log(
+        `Vector index "${indexName}" not ready — reviewing without RAG context`,
+      );
+    }
   }
 
   const prompt = reviewPrompt(difference, rules, relevantCode);

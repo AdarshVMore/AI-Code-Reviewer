@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { CLAUDE_MODEL } from "./models.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -6,7 +7,7 @@ const anthropic = new Anthropic({
 
 export async function analyzeDeploymentLogs(logs: string, provider: string) {
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
+    model: CLAUDE_MODEL,
     max_tokens: 1500,
     system: `You are a senior DevOps engineer analyzing CI/CD deployment failure logs.
 
@@ -44,7 +45,7 @@ Do NOT include markdown or text outside the JSON.`,
 
 export async function generateDeploymentFix(fileContent: string, cause: string, fix: string, fileName: string) {
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
+    model: CLAUDE_MODEL,
     max_tokens: 4000,
     system: `You are a senior software engineer. You will be given a file and a description of a bug causing a deployment failure. Apply the fix and return the complete corrected file content.
 
