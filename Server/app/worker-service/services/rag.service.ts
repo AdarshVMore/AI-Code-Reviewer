@@ -1,4 +1,5 @@
 import { Pinecone } from "@pinecone-database/pinecone";
+import fs from "fs";
 import {
   downlaodRepoZIP,
   extractZIP,
@@ -265,6 +266,10 @@ export async function retrieveContextForDiff(options: {
     topK: topK * 2,
   });
 
+  console.log("<====== Semantic Matches =====> \n", semanticMatches)
+
+  fs.writeFileSync('semanticMatche.json', JSON.stringify(semanticMatches, null, 2))
+
   const fileMatches: RelevantCodeMatch[] = [];
   for (const filePath of changedFiles.slice(0, 5)) {
     const matches = await searchRelevantEmbeddings({
@@ -276,6 +281,10 @@ export async function retrieveContextForDiff(options: {
     fileMatches.push(...matches);
   }
 
+  console.log("<====== File Matches =====> \n", fileMatches)
+
+  fs.writeFileSync('fileMatches.json', JSON.stringify(fileMatches, null, 2))
+
   const symbolMatches: RelevantCodeMatch[] = [];
   for (const symbol of changedSymbols.slice(0, 5)) {
     const matches = await searchRelevantEmbeddings({
@@ -285,6 +294,10 @@ export async function retrieveContextForDiff(options: {
     });
     symbolMatches.push(...matches);
   }
+
+  fs.writeFileSync('symbolMatches.json', JSON.stringify(symbolMatches, null, 2))
+
+  console.log("<====== Symbol Matches =====> \n", symbolMatches)
 
   const combined = dedupeMatches([
     ...semanticMatches,
