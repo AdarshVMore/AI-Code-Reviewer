@@ -174,17 +174,29 @@ Do NOT include markdown, explanations, or text outside JSON.`,
 }
 
 type RelevantCodeMatch = {
-  id: string;
-  score: number;
-  content: string;
-  filePath: string;
-};
+  id: string
+  score: number
+  content: string
+  filePath: string
+  nodeType?: string
+  symbolName?: string
+  startLine?: number
+  endLine?: number
+}
 
 function formatRelevantCode(matches: RelevantCodeMatch[]): string {
   if (!matches.length) return "";
   return matches
-    .map((m) => `// ${m.filePath}\n${m.content}`)
-    .join("\n\n---\n\n");
+    .map((m) => {
+      const header = [
+        m.symbolName ? `// ${m.filePath} — ${m.symbolName} (${m.nodeType ?? "symbol"})` : `// ${m.filePath}`,
+        m.startLine && m.endLine ? `// Lines ${m.startLine}-${m.endLine}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n")
+      return `${header}\n${m.content}`
+    })
+    .join("\n\n---\n\n")
 }
 
 export function reviewPrompt(
