@@ -5,12 +5,15 @@ import {
   readCodeFiles,
   cleanup,
 } from "./repoSetup.service.js";
-import fs from "fs";
+import {
+  parseFileToASTChunks,
+  parseChangedFilesFromDiff,
+  parseChangedSymbolsFromDiff,
+  type ASTCodeChunk,
+} from "../../../package/ast/parser.js";
 
 const EMBEDDING_MODEL = "llama-text-embed-v2";
 const EMBEDDING_DIMENSION = 1024;
-const CHUNK_SIZE = 800;
-const CHUNK_OVERLAP = 100;
 const EMBED_BATCH_SIZE = 96;
 
 type RAGPipelineInput = {
@@ -19,12 +22,7 @@ type RAGPipelineInput = {
   repo: string;
 };
 
-type CodeChunk = {
-  id: string;
-  content: string;
-  filePath: string;
-  chunkIndex: number;
-};
+export type CodeChunk = ASTCodeChunk;
 
 type EmbeddingVector = {
   id: string;
@@ -33,31 +31,33 @@ type EmbeddingVector = {
     content: string;
     filePath: string;
     chunkIndex: number;
+    nodeType: string;
+    symbolName: string;
+    startLine: number;
+    endLine: number;
+    imports: string;
   };
+};
+
+export type RelevantCodeMatch = {
+  id: string;
+  score: number;
+  content: string;
+  filePath: string;
+  nodeType?: string;
+  symbolName?: string;
+  startLine?: number;
+  endLine?: number;
 };
 
 function getPinecone(): Pinecone {
   return new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 }
 
-function chunkFile(filePath: string, content: string): CodeChunk[] {
-  const chunks: CodeChunk[] = [];
-  let i = 0;
-  let chunkIndex = 0;
-
-  while (i < content.length) {
-    const chunk = content.slice(i, i + CHUNK_SIZE);
-    chunks.push({
-      id: `${filePath}::${chunkIndex}`,
-      content: chunk,
-      filePath,
-      chunkIndex,
-    });
-    i += CHUNK_SIZE - CHUNK_OVERLAP;
-    chunkIndex++;
-  }
-
-  return chunks;
+function chunkFilesWithAST(
+  files: { path: string; content: string }[],
+): CodeChunk[] {
+  return files.flatMap((file) => parseFileToASTChunks(file.path, file.content));
 }
 
 async function ensureIndexExists(pc: Pinecone, indexName: string) {
@@ -106,11 +106,16 @@ export async function createEmbeddings(
       const embedding = result.data[j];
       vectors.push({
         id: chunk.id,
-        values: (embedding as any).values as number[],
+        values: (embedding as { values: number[] }).values,
         metadata: {
           content: chunk.content,
           filePath: chunk.filePath,
           chunkIndex: chunk.chunkIndex,
+          nodeType: chunk.nodeType,
+          symbolName: chunk.symbolName,
+          startLine: chunk.startLine,
+          endLine: chunk.endLine,
+          imports: JSON.stringify(chunk.imports),
         },
       });
     }
@@ -145,48 +150,163 @@ export function toIndexName(owner: string, repo: string): string {
     .slice(0, 45);
 }
 
+function toMatch(m: {
+  id?: string;
+  score?: number;
+  metadata?: Record<string, unknown>;
+}): RelevantCodeMatch {
+  return {
+    id: m.id ?? "",
+    score: m.score ?? 0,
+    content: (m.metadata?.content as string) ?? "",
+    filePath: (m.metadata?.filePath as string) ?? "",
+    nodeType: m.metadata?.nodeType as string | undefined,
+    symbolName: m.metadata?.symbolName as string | undefined,
+    startLine: m.metadata?.startLine as number | undefined,
+    endLine: m.metadata?.endLine as number | undefined,
+  };
+}
+
+async function embedQuery(text: string): Promise<number[]> {
+  const pc = getPinecone();
+  const result = await pc.inference.embed({
+    model: EMBEDDING_MODEL,
+    inputs: [text],
+    parameters: { inputType: "query", truncate: "END" },
+  });
+  return (result.data[0] as { values: number[] }).values;
+}
 
 export async function searchRelevantEmbeddings(query: object) {
   const {
     text,
     indexName,
     topK = 5,
-  } = query as { text: string; indexName: string; topK?: number };
+    filter,
+  } = query as {
+    text: string;
+    indexName: string;
+    topK?: number;
+    filter?: Record<string, unknown>;
+  };
 
+  const queryVector = await embedQuery(text);
   const pc = getPinecone();
-
-  const result = await pc.inference.embed({
-    model: EMBEDDING_MODEL,
-    inputs: [text],
-    parameters: { inputType: "query", truncate: "END" },
-  });
-
-  const queryVector = (result.data[0] as any).values as number[];
   const index = pc.index({ name: indexName });
 
   const searchResult = await index.query({
     vector: queryVector,
     topK,
     includeMetadata: true,
+    ...(filter ? { filter } : {}),
   });
 
-  return searchResult.matches.map((m) => ({
-    id: m.id,
-    score: m.score,
-    content: m.metadata?.content as string,
-    filePath: m.metadata?.filePath as string,
-  }));
+  return searchResult.matches.map(toMatch);
 }
 
-export async function vectorDBExists(DBName: string): Promise<Boolean> {
+function dedupeMatches(matches: RelevantCodeMatch[]): RelevantCodeMatch[] {
+  const seen = new Set<string>();
+  const ranked = [...matches].sort((a, b) => b.score - a.score);
+  const unique: RelevantCodeMatch[] = [];
+
+  for (const match of ranked) {
+    const key = `${match.filePath}::${match.symbolName ?? match.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(match);
+  }
+
+  return unique;
+}
+
+function scoreMatchForDiff(
+  match: RelevantCodeMatch,
+  changedFiles: string[],
+  changedSymbols: string[],
+): number {
+  let boost = match.score;
+
+  if (changedFiles.some((file) => match.filePath.endsWith(file) || file.endsWith(match.filePath))) {
+    boost += 0.15;
+  }
+
+  if (
+    match.symbolName &&
+    changedSymbols.some(
+      (symbol) =>
+        symbol === match.symbolName ||
+        match.symbolName?.includes(symbol) ||
+        symbol.includes(match.symbolName ?? ""),
+    )
+  ) {
+    boost += 0.2;
+  }
+
+  if (match.nodeType === "import" || match.nodeType === "export") {
+    boost += 0.05;
+  }
+
+  return boost;
+}
+
+export async function retrieveContextForDiff(options: {
+  diff: string;
+  semanticQuery: string;
+  indexName: string;
+  topK?: number;
+}): Promise<RelevantCodeMatch[]> {
+  const { diff, semanticQuery, indexName, topK = 8 } = options;
+  const changedFiles = parseChangedFilesFromDiff(diff);
+  const changedSymbols = parseChangedSymbolsFromDiff(diff);
+
+  const semanticMatches = await searchRelevantEmbeddings({
+    text: semanticQuery,
+    indexName,
+    topK: topK * 2,
+  });
+
+  const fileMatches: RelevantCodeMatch[] = [];
+  for (const filePath of changedFiles.slice(0, 5)) {
+    const matches = await searchRelevantEmbeddings({
+      text: `${semanticQuery} ${filePath}`,
+      indexName,
+      topK: 4,
+      filter: { filePath: { $eq: filePath } },
+    });
+    fileMatches.push(...matches);
+  }
+
+  const symbolMatches: RelevantCodeMatch[] = [];
+  for (const symbol of changedSymbols.slice(0, 5)) {
+    const matches = await searchRelevantEmbeddings({
+      text: `${semanticQuery} ${symbol}`,
+      indexName,
+      topK: 3,
+    });
+    symbolMatches.push(...matches);
+  }
+
+  const combined = dedupeMatches([
+    ...semanticMatches,
+    ...fileMatches,
+    ...symbolMatches,
+  ]).map((match) => ({
+    ...match,
+    score: scoreMatchForDiff(match, changedFiles, changedSymbols),
+  }));
+
+  return combined
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topK);
+}
+
+export async function vectorDBExists(DBName: string): Promise<boolean> {
   if (!DBName) return false;
 
   const pc = getPinecone();
   const { indexes } = await pc.listIndexes();
   return indexes?.some((idx) => idx.name === DBName) ?? false;
 }
-
-// yo bro this is the main funciton
 
 export async function runRAGPipeline(data: object) {
   const { installationId, owner, repo } = data as RAGPipelineInput;
@@ -196,16 +316,13 @@ export async function runRAGPipeline(data: object) {
   const extractedDir = extractZIP(zipPath);
 
   const files = readCodeFiles(extractedDir);
-  const filesJSONStrgified = JSON.stringify(files)
-
-
-  const chunks = files.flatMap((f) => chunkFile(f.path, f.content));
+  const chunks = chunkFilesWithAST(files);
 
   const vectors = await createEmbeddings({ chunks, indexName });
   await saveToVectorDB({ vectors, indexName });
 
   cleanup([zipPath, extractedDir]);
   console.log(
-    `RAG pipeline complete for ${owner}/${repo}: ${chunks.length} chunks indexed`
+    `RAG pipeline complete for ${owner}/${repo}: ${files.length} files → ${chunks.length} AST chunks indexed`,
   );
 }

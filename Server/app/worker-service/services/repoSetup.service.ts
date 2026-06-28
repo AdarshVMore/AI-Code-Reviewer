@@ -51,8 +51,18 @@ export function extractZIP(zipPath: string): string {
   return destDir;
 }
 
+function resolveRepoRoot(extractedDir: string): string {
+  const entries = fs.readdirSync(extractedDir);
+  if (entries.length === 1) {
+    const nested = path.join(extractedDir, entries[0]);
+    if (fs.statSync(nested).isDirectory()) return nested;
+  }
+  return extractedDir;
+}
+
 export function readCodeFiles(dir: string) {
   const files: { path: string; content: string }[] = [];
+  const repoRoot = resolveRepoRoot(dir);
 
   function walk(current: string) {
     const items = fs.readdirSync(current);
@@ -61,20 +71,25 @@ export function readCodeFiles(dir: string) {
       const fullPath = path.join(current, item);
 
       if (fs.statSync(fullPath).isDirectory()) {
-        if (item === "node_modules" || item === ".git" || item === "dist") {
+        if (
+          item === "node_modules" ||
+          item === ".git" ||
+          item === "dist" ||
+          item === "build" ||
+          item === "coverage"
+        ) {
           continue;
         }
         walk(fullPath);
-      } else {
-        if (ALLOWED_EXT.includes(path.extname(fullPath))) {
-          const content = fs.readFileSync(fullPath, "utf-8");
-          files.push({ path: fullPath, content });
-        }
+      } else if (ALLOWED_EXT.includes(path.extname(fullPath))) {
+        const content = fs.readFileSync(fullPath, "utf-8");
+        const relativePath = path.relative(repoRoot, fullPath);
+        files.push({ path: relativePath, content });
       }
     }
   }
 
-  walk(dir);
+  walk(repoRoot);
   return files;
 }
 
