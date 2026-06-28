@@ -5,8 +5,12 @@ export async function workersOn(){
     const client = await createWorkerRedisClient()
     console.log("webhook for PR is on")
 
-    while(true){
-        const gettingData = await client.brPop("reviewQueue", 0)
-        processPRReviewJob(JSON.parse(gettingData!.element))
+    while (true) {
+        const gettingData = await client.brPop("reviewQueue", 0);
+        try {
+            await processPRReviewJob(JSON.parse(gettingData!.element));
+        } catch (err) {
+            console.error("PR review job error:", err);
+        }
     }
 }

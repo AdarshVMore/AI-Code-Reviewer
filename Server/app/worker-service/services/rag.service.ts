@@ -308,6 +308,24 @@ export async function vectorDBExists(DBName: string): Promise<boolean> {
   return indexes?.some((idx) => idx.name === DBName) ?? false;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function waitForVectorIndex(
+  indexName: string,
+  options: { timeoutMs?: number; intervalMs?: number } = {},
+): Promise<boolean> {
+  const { timeoutMs = 10 * 60 * 1000, intervalMs = 5000 } = options;
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    if (await vectorDBExists(indexName)) return true;
+    console.log(`Waiting for vector index "${indexName}"...`);
+    await sleep(intervalMs);
+  }
+
+  return false;
+}
+
 export async function runRAGPipeline(data: object) {
   const { installationId, owner, repo } = data as RAGPipelineInput;
 

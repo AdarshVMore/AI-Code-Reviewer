@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { CLAUDE_MODEL } from "./models.js";
 
 export type TokenAccumulator = {
   inputTokens: number;
@@ -21,15 +22,16 @@ function createClient(apiKey: string) {
 
 export async function getRevieType(diff: string, apiKey: string, usage?: TokenAccumulator) {
   const anthropic = createClient(apiKey);
-  const prompt = `You are supposed to see the Code Diff ${diff} and identify the PR Type if it is a Bug Fix / New Feature / Code Update , etc and only return the name of the type in response . "Return ONLY: feature | bugfix | refactor"`;
+  const diffPreview = diff.slice(0, 3000);
+  const prompt = `Identify the PR type from this code diff snippet. Return ONLY one word: feature | bugfix | refactor\n\n${diffPreview}`;
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 1500,
+    model: CLAUDE_MODEL,
+    max_tokens: 16,
     temperature: 0,
     messages: [
       {
         role: "user",
-        content: prompt ? prompt : "",
+        content: prompt,
       },
     ],
   });
@@ -53,8 +55,8 @@ export async function generateRelevantSearchQuery(
 ) {
   const anthropic = createClient(apiKey);
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 1500,
+    model: CLAUDE_MODEL,
+    max_tokens: 100,
     temperature: 0,
     system:
       "Convert the given git diff into a short semantic search query  to find relevant code in a repository Return ONLY a short phrase.",
@@ -97,8 +99,8 @@ export async function getAIReview(
 async function _callAI(prompt: string | null, apiKey: string, usage?: TokenAccumulator) {
   const anthropic = createClient(apiKey);
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 1500,
+    model: CLAUDE_MODEL,
+    max_tokens: 4096,
     temperature: 0,
     system: `You are a strict senior software engineer performing code reviews.
 
@@ -167,6 +169,10 @@ Do NOT include markdown, explanations, or text outside JSON.`,
   });
   addUsage(usage ?? createTokenAccumulator(), res.usage);
 
+  if (res.stop_reason === "max_tokens") {
+    console.warn("AI review response was truncated (max_tokens reached)");
+  }
+
   const block = res.content.find((b) => b.type === "text");
   if (!block || block.type !== "text")
     throw new Error("No text block in AI response");
@@ -199,6 +205,8 @@ function formatRelevantCode(matches: RelevantCodeMatch[]): string {
     .join("\n\n---\n\n")
 }
 
+const MAX_DIFF_CHARS = 80_000;
+
 export function reviewPrompt(
   diff: string,
   rules: any,
@@ -208,6 +216,11 @@ export function reviewPrompt(
     Array.isArray(relevantCode) && relevantCode.length > 0
       ? `\nEXISTING CODEBASE CONTEXT (retrieved for this feature):\nUse this to check for consistency, duplication, or conflicts with existing patterns.\n\n${formatRelevantCode(relevantCode)}\n`
       : "";
+
+  const truncatedDiff =
+    diff.length > MAX_DIFF_CHARS
+      ? `${diff.slice(0, MAX_DIFF_CHARS)}\n\n[... diff truncated at ${MAX_DIFF_CHARS} chars ...]`
+      : diff;
 
   return `
 REPOSITORY RULES (HIGHEST PRIORITY):
@@ -222,7 +235,7 @@ Check for:
 - Maintainability (naming, duplication)
 ${relevantSection}
 GIT DIFF:
-${diff}
+${truncatedDiff}
 
 Analyze ONLY the changed code.
 
@@ -230,11 +243,29 @@ Return strictly valid JSON.
 `;
 }
 
+function extractJsonObject(text: string): string | null {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced?.[1]) return fenced[1].trim();
+
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end > start) return text.slice(start, end + 1);
+
+  return null;
+}
+
 export function parseAIResponse(text: string) {
-  try {
-    return JSON.parse(text);
-  } catch (err) {
-    console.log("❌ Failed to parse AI response");
-    return null;
+  const candidates = [text.trim(), extractJsonObject(text)].filter(Boolean) as string[];
+
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // try next candidate
+    }
   }
+
+  console.log("❌ Failed to parse AI response");
+  console.log("Response preview:", text.slice(0, 500));
+  return null;
 }

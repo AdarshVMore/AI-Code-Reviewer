@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { addUsage, createTokenAccumulator, type TokenAccumulator } from "./review.js";
+import { CLAUDE_MODEL } from "./models.js";
 
 export async function getGifName(
   summary: string | null | undefined,
@@ -13,7 +14,7 @@ export async function getGifName(
 
   const anthropic = new Anthropic({ apiKey });
   const res = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
+    model: CLAUDE_MODEL,
     max_tokens: 40,
     temperature: 0,
     system:
