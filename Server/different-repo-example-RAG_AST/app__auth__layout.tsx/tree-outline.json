@@ -1,0 +1,95 @@
+{
+  "filePath": "app/(auth)/layout.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 14,
+    "children": [
+      {
+        "type": "export_statement",
+        "startLine": 1,
+        "endLine": 13,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 1,
+            "endLine": 13,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 1,
+                "endLine": 1
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 1,
+                "endLine": 5,
+                "children": [
+                  {
+                    "type": "required_parameter",
+                    "startLine": 1,
+                    "endLine": 5,
+                    "children": [
+                      {
+                        "type": "object_pattern",
+                        "startLine": 1,
+                        "endLine": 3,
+                        "children": [
+                          {
+                            "type": "shorthand_property_identifier_pattern",
+                            "startLine": 2,
+                            "endLine": 2
+                          }
+                        ]
+                      },
+                      {
+                        "type": "type_annotation",
+                        "startLine": 3,
+                        "endLine": 5,
+                        "children": [
+                          {
+                            "type": "object_type",
+                            "startLine": 3,
+                            "endLine": 5
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "statement_block",
+                "startLine": 5,
+                "endLine": 13,
+                "children": [
+                  {
+                    "type": "return_statement",
+                    "startLine": 6,
+                    "endLine": 12,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 6,
+                        "endLine": 12,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 7,
+                            "endLine": 11
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

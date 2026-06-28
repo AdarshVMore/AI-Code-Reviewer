@@ -1,0 +1,6 @@
+{
+  "filePath": "components/banner.tsx",
+  "imports": [
+    "import { useState } from 'react'"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "filePath": "components/banner.tsx",
+  "count": 4,
+  "chunks": [
+    {
+      "id": "components/banner.tsx::import::react::0",
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "content": "// File: components/banner.tsx\n// Symbol: react (import)\n// Lines: 3-3\n// Imports: import { useState } from 'react'\nimport { useState } from 'react'"
+    },
+    {
+      "id": "components/banner.tsx::export::export_statement::1",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 5,
+      "endLine": 24,
+      "content": "// File: components/banner.tsx\n// Symbol: export_statement (export)\n// Lines: 5-24\n// Imports: import { useState } from 'react'\nexport default function Banner() {\n\n  const [bannerOpen, setBannerOpen] = useState<boolean>(true)\n\n  return (\n    <>\n      {bannerOpen && (\n        <div className=\"fixed bottom-0 right-0 w-full md:bottom-8 md:right-12 md:w-auto z-50\">\n          <div className=\"bg-slate-800 text-slate-50 text-sm p-3 md:rounded shadow-lg flex justify-between\">\n            <div className='text-slate-500 inline-flex'><a className=\"font-medium hover:underline text-slate-50\" href=\"https://github.com/cruip/tailwind-landing-page-template\" target=\"_blank\" rel=\"noreferrer\">Download<span className=\"hidden sm:inline\"> on GitHub</span></a> <span className=\"italic px-1.5\">or</span> <a className=\"font-medium hover:underline text-emerald-400\" href=\"https://cruip.com/simple/\" target=\"_blank\" rel=\"noreferrer\">Check Premium Version</a></div>\n            \n              <svg className=\"w-4 h-4 shrink-0 fill-current\" viewBox=\"0 0 16 16\">\n                \n            </button>\n          </div>\n        </div>\n      )}\n    </>\n  )\n}"
+    },
+    {
+      "id": "components/banner.tsx::function::Banner::2",
+      "nodeType": "function",
+      "symbolName": "Banner",
+      "startLine": 5,
+      "endLine": 24,
+      "content": "// File: components/banner.tsx\n// Symbol: Banner (function)\n// Lines: 5-24\n// Imports: import { useState } from 'react'\nfunction Banner() {\n\n  const [bannerOpen, setBannerOpen] = useState<boolean>(true)\n\n  return (\n    <>\n      {bannerOpen && (\n        <div className=\"fixed bottom-0 right-0 w-full md:bottom-8 md:right-12 md:w-auto z-50\">\n          <div className=\"bg-slate-800 text-slate-50 text-sm p-3 md:rounded shadow-lg flex justify-between\">\n            <div className='text-slate-500 inline-flex'><a className=\"font-medium hover:underline text-slate-50\" href=\"https://github.com/cruip/tailwind-landing-page-template\" target=\"_blank\" rel=\"noreferrer\">Download<span className=\"hidden sm:inline\"> on GitHub</span></a> <span className=\"italic px-1.5\">or</span> <a className=\"font-medium hover:underline text-emerald-400\" href=\"https://cruip.com/simple/\" target=\"_blank\" rel=\"noreferrer\">Check Premium Version</a></div>\n            \n              <svg className=\"w-4 h-4 shrink-0 fill-current\" viewBox=\"0 0 16 16\">\n                \n            </button>\n          </div>\n        </div>\n      )}\n    </>\n  )\n}"
+    },
+    {
+      "id": "components/banner.tsx::variable::[bannerOpen, setBannerOpen]::3",
+      "nodeType": "variable",
+      "symbolName": "[bannerOpen, setBannerOpen]",
+      "startLine": 7,
+      "endLine": 7,
+      "content": "// File: components/banner.tsx\n// Symbol: [bannerOpen, setBannerOpen] (variable)\n// Lines: 7-7\n// Imports: import { useState } from 'react'\nconst [bannerOpen, setBannerOpen] = useState<boolean>(true)"
+    }
+  ]
+}

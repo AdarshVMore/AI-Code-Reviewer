@@ -1,0 +1,80 @@
+[
+  {
+    "id": "",
+    "content": "import axios from \"axios\";",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 0,
+    "nodeType": "import",
+    "symbolName": "axios",
+    "startLine": 1,
+    "endLine": 1,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  },
+  {
+    "id": "",
+    "content": "type GiphyResponse = {\n  data: Array<{ images: { fixed_height: { url: string } } }>;\n};",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 1,
+    "nodeType": "type",
+    "symbolName": "GiphyResponse",
+    "startLine": 3,
+    "endLine": 5,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  },
+  {
+    "id": "",
+    "content": "export async function findGIF(query: string): Promise<string | null> {\n  const giphyApiKey = process.env.GIPHY_API_KEY;\n  if (!giphyApiKey || !query.trim()) return null;\n\n  try {\n    const response = await axios.get<GiphyResponse>(\n      \"https://api.giphy.com/v1/gifs/search\",\n      {\n        params: {\n          api_key: giphyApiKey,\n          q: query,\n          limit: 1,\n        },\n      },\n    );\n\n    return response.data.data[0]?.images.fixed_height.url ?? null;\n  } catch (error) {\n    console.error(\"Failed to find GIF for review comment\", error);\n    return null;\n  }\n}",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 2,
+    "nodeType": "export",
+    "symbolName": "export_statement",
+    "startLine": 7,
+    "endLine": 28,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  },
+  {
+    "id": "",
+    "content": "async function findGIF(query: string): Promise<string | null> {\n  const giphyApiKey = process.env.GIPHY_API_KEY;\n  if (!giphyApiKey || !query.trim()) return null;\n\n  try {\n    const response = await axios.get<GiphyResponse>(\n      \"https://api.giphy.com/v1/gifs/search\",\n      {\n        params: {\n          api_key: giphyApiKey,\n          q: query,\n          limit: 1,\n        },\n      },\n    );\n\n    return response.data.data[0]?.images.fixed_height.url ?? null;\n  } catch (error) {\n    console.error(\"Failed to find GIF for review comment\", error);\n    return null;\n  }\n}",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 3,
+    "nodeType": "function",
+    "symbolName": "findGIF",
+    "startLine": 7,
+    "endLine": 28,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  },
+  {
+    "id": "",
+    "content": "const giphyApiKey = process.env.GIPHY_API_KEY;",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 4,
+    "nodeType": "variable",
+    "symbolName": "giphyApiKey",
+    "startLine": 8,
+    "endLine": 8,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  },
+  {
+    "id": "",
+    "content": "const response = await axios.get<GiphyResponse>(\n      \"https://api.giphy.com/v1/gifs/search\",\n      {\n        params: {\n          api_key: giphyApiKey,\n          q: query,\n          limit: 1,\n        },\n      },\n    );",
+    "filePath": "app/worker-service/services/gif.service.ts",
+    "chunkIndex": 5,
+    "nodeType": "variable",
+    "symbolName": "response",
+    "startLine": 12,
+    "endLine": 21,
+    "imports": [
+      "import axios from \"axios\";"
+    ]
+  }
+]

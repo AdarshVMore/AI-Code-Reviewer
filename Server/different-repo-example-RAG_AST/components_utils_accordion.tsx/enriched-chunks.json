@@ -1,0 +1,62 @@
+{
+  "filePath": "components/utils/accordion.tsx",
+  "count": 7,
+  "chunks": [
+    {
+      "id": "components/utils/accordion.tsx::import::react::0",
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: react (import)\n// Lines: 3-3\n// Imports: import { useState, useRef, useEffect } from 'react'\nimport { useState, useRef, useEffect } from 'react'"
+    },
+    {
+      "id": "components/utils/accordion.tsx::type::AccordionpProps::1",
+      "nodeType": "type",
+      "symbolName": "AccordionpProps",
+      "startLine": 5,
+      "endLine": 10,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: AccordionpProps (type)\n// Lines: 5-10\n// Imports: import { useState, useRef, useEffect } from 'react'\ntype AccordionpProps = {\n  children: React.ReactNode\n  tag?: string\n  title: string\n  active?: boolean\n}"
+    },
+    {
+      "id": "components/utils/accordion.tsx::export::export_statement::2",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 12,
+      "endLine": 49,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: export_statement (export)\n// Lines: 12-49\n// Imports: import { useState, useRef, useEffect } from 'react'\nexport default function Accordion({\n  children,\n  tag = 'li',\n  title,\n  active = false\n}: AccordionpProps) {\n\n  const [accordionOpen, setAccordionOpen] = useState<boolean>(false)\n  const accordion = useRef<HTMLDivElement>(null)\n  const Component = tag as keyof JSX.IntrinsicElements\n\n  useEffect(() => {\n    setAccordionOpen(active)\n  }, [accordion])\n\n  return (\n    <Component>\n      <button\n        className=\"flex items-center w-full text-lg font-medium text-left py-5 border-t border-gray-200\"\n        onClick={(e) => { e.preventDefault(); setAccordionOpen(!accordionOpen); }}\n        aria-expanded={accordionOpen}\n      >\n        <svg className=\"w-4 h-4 fill-current text-blue-500 shrink-0 mr-8 -ml-12\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\">\n          <rect y=\"7\" width=\"16\" height=\"2\" rx=\"1\" className={`transform origin-center transition duration-200 ease-out ${accordionOpen && '!rotate-180'}`} />\n          <rect y=\"7\" width=\"16\" height=\"2\" rx=\"1\" className={`transform origin-center rotate-90 transition duration-200 ease-out ${accordionOpen && '!rotate-180'}`} />\n        </svg>\n        <span>{title}</span>\n      </button>\n      <div\n        ref={accordion}\n        className=\"text-gray-600 overflow-hidden transition-all duration-300 ease-in-out\"\n        style={accordionOpen ? { maxHeight: accordion.current?.scrollHeight, opacity: 1 } : { maxHeight: 0, opacity: 0 }}\n      >\n        <p className=\"pb-5\">{children}</p>\n      </div>\n    </Component>\n  )\n}"
+    },
+    {
+      "id": "components/utils/accordion.tsx::function::Accordion::3",
+      "nodeType": "function",
+      "symbolName": "Accordion",
+      "startLine": 12,
+      "endLine": 49,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: Accordion (function)\n// Lines: 12-49\n// Imports: import { useState, useRef, useEffect } from 'react'\nfunction Accordion({\n  children,\n  tag = 'li',\n  title,\n  active = false\n}: AccordionpProps) {\n\n  const [accordionOpen, setAccordionOpen] = useState<boolean>(false)\n  const accordion = useRef<HTMLDivElement>(null)\n  const Component = tag as keyof JSX.IntrinsicElements\n\n  useEffect(() => {\n    setAccordionOpen(active)\n  }, [accordion])\n\n  return (\n    <Component>\n      <button\n        className=\"flex items-center w-full text-lg font-medium text-left py-5 border-t border-gray-200\"\n        onClick={(e) => { e.preventDefault(); setAccordionOpen(!accordionOpen); }}\n        aria-expanded={accordionOpen}\n      >\n        <svg className=\"w-4 h-4 fill-current text-blue-500 shrink-0 mr-8 -ml-12\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\">\n          <rect y=\"7\" width=\"16\" height=\"2\" rx=\"1\" className={`transform origin-center transition duration-200 ease-out ${accordionOpen && '!rotate-180'}`} />\n          <rect y=\"7\" width=\"16\" height=\"2\" rx=\"1\" className={`transform origin-center rotate-90 transition duration-200 ease-out ${accordionOpen && '!rotate-180'}`} />\n        </svg>\n        <span>{title}</span>\n      </button>\n      <div\n        ref={accordion}\n        className=\"text-gray-600 overflow-hidden transition-all duration-300 ease-in-out\"\n        style={accordionOpen ? { maxHeight: accordion.current?.scrollHeight, opacity: 1 } : { maxHeight: 0, opacity: 0 }}\n      >\n        <p className=\"pb-5\">{children}</p>\n      </div>\n    </Component>\n  )\n}"
+    },
+    {
+      "id": "components/utils/accordion.tsx::variable::[accordionOpen, setAccordionOpen]::4",
+      "nodeType": "variable",
+      "symbolName": "[accordionOpen, setAccordionOpen]",
+      "startLine": 19,
+      "endLine": 19,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: [accordionOpen, setAccordionOpen] (variable)\n// Lines: 19-19\n// Imports: import { useState, useRef, useEffect } from 'react'\nconst [accordionOpen, setAccordionOpen] = useState<boolean>(false)"
+    },
+    {
+      "id": "components/utils/accordion.tsx::variable::accordion::5",
+      "nodeType": "variable",
+      "symbolName": "accordion",
+      "startLine": 20,
+      "endLine": 20,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: accordion (variable)\n// Lines: 20-20\n// Imports: import { useState, useRef, useEffect } from 'react'\nconst accordion = useRef<HTMLDivElement>(null)"
+    },
+    {
+      "id": "components/utils/accordion.tsx::variable::Component::6",
+      "nodeType": "variable",
+      "symbolName": "Component",
+      "startLine": 21,
+      "endLine": 21,
+      "content": "// File: components/utils/accordion.tsx\n// Symbol: Component (variable)\n// Lines: 21-21\n// Imports: import { useState, useRef, useEffect } from 'react'\nconst Component = tag as keyof JSX.IntrinsicElements"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "filePath": "components/utils/accordion.tsx",
+  "imports": [
+    "import { useState, useRef, useEffect } from 'react'"
+  ]
+}

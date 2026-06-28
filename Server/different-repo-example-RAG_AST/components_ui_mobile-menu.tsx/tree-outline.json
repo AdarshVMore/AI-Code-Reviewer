@@ -1,0 +1,413 @@
+{
+  "filePath": "components/ui/mobile-menu.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 126,
+    "children": [
+      {
+        "type": "expression_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 3,
+        "endLine": 3,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 3,
+                "endLine": 3,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 3,
+                "endLine": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 4,
+        "endLine": 4,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 4,
+            "endLine": 4,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 4,
+                "endLine": 4,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 4,
+                    "endLine": 4,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 4,
+                        "endLine": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 4,
+            "endLine": 4,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 4,
+                "endLine": 4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 5,
+        "endLine": 5,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 6,
+        "endLine": 6,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 8,
+        "endLine": 125,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 8,
+            "endLine": 125,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 8,
+                "endLine": 8
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 8,
+                "endLine": 8
+              },
+              {
+                "type": "statement_block",
+                "startLine": 8,
+                "endLine": 125,
+                "children": [
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 9,
+                    "endLine": 9,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 9,
+                        "endLine": 9,
+                        "children": [
+                          {
+                            "type": "array_pattern",
+                            "startLine": 9,
+                            "endLine": 9
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 9,
+                            "endLine": 9
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 11,
+                    "endLine": 11,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 11,
+                        "endLine": 11,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 11,
+                            "endLine": 11
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 11,
+                            "endLine": 11
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 12,
+                    "endLine": 12,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 12,
+                        "endLine": 12,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 12,
+                            "endLine": 12
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 12,
+                            "endLine": 12
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 14,
+                    "endLine": 16,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 14,
+                        "endLine": 16,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 14,
+                            "endLine": 14
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 14,
+                            "endLine": 16
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 18,
+                    "endLine": 20,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 18,
+                        "endLine": 20,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 18,
+                            "endLine": 18
+                          },
+                          {
+                            "type": "arrow_function",
+                            "startLine": 18,
+                            "endLine": 20
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "expression_statement",
+                    "startLine": 22,
+                    "endLine": 50,
+                    "children": [
+                      {
+                        "type": "call_expression",
+                        "startLine": 22,
+                        "endLine": 50,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 22,
+                            "endLine": 22
+                          },
+                          {
+                            "type": "arguments",
+                            "startLine": 22,
+                            "endLine": 50
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "return_statement",
+                    "startLine": 52,
+                    "endLine": 124,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 52,
+                        "endLine": 124,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 53,
+                            "endLine": 123
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,10 +2,6 @@ import Parser from "tree-sitter";
 import JavaScript from "tree-sitter-javascript";
 import TypeScript from "tree-sitter-typescript";
 import Python from "tree-sitter-python";
-import Go from "tree-sitter-go";
-// import Java from "tree-sitter-java";
-import Rust from "tree-sitter-rust";
-import Ruby from "tree-sitter-ruby";
 
 export type ASTNodeType =
   | "function"
@@ -122,66 +118,6 @@ const LANGUAGE_CONFIG: Record<string, LanguageConfig> = {
       function_definition: "name",
       class_definition: "name",
       decorated_definition: "definition",
-    },
-  },
-  ".go": {
-    language: Go as TreeSitterLanguage,
-    chunkNodeTypes: new Set([
-      "function_declaration",
-      "method_declaration",
-      "type_declaration",
-      "import_declaration",
-    ]),
-    nameFields: {
-      function_declaration: "name",
-      method_declaration: "name",
-      type_declaration: "type_spec",
-    },
-  },
-  // ".java": {
-  //   language: Java as TreeSitterLanguage,
-  //   chunkNodeTypes: new Set([
-  //     "method_declaration",
-  //     "class_declaration",
-  //     "interface_declaration",
-  //     "import_declaration",
-  //   ]),
-  //   nameFields: {
-  //     method_declaration: "name",
-  //     class_declaration: "name",
-  //     interface_declaration: "name",
-  //   },
-  // },
-  ".rs": {
-    language: Rust as TreeSitterLanguage,
-    chunkNodeTypes: new Set([
-      "function_item",
-      "impl_item",
-      "struct_item",
-      "enum_item",
-      "mod_item",
-      "use_declaration",
-    ]),
-    nameFields: {
-      function_item: "name",
-      struct_item: "name",
-      enum_item: "name",
-      mod_item: "name",
-    },
-  },
-  ".rb": {
-    language: Ruby as TreeSitterLanguage,
-    chunkNodeTypes: new Set([
-      "method",
-      "class",
-      "module",
-      "singleton_method",
-    ]),
-    nameFields: {
-      method: "name",
-      class: "name",
-      module: "name",
-      singleton_method: "name",
     },
   },
 };

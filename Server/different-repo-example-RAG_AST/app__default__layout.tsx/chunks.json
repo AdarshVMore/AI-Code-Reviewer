@@ -1,0 +1,102 @@
+{
+  "filePath": "app/(default)/layout.tsx",
+  "count": 6,
+  "chunks": [
+    {
+      "id": "",
+      "content": "import { useEffect } from 'react'",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 0,
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import AOS from 'aos'",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 1,
+      "nodeType": "import",
+      "symbolName": "aos",
+      "startLine": 5,
+      "endLine": 5,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import 'aos/dist/aos.css'",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 2,
+      "nodeType": "import",
+      "symbolName": "aos/dist/aos.css",
+      "startLine": 6,
+      "endLine": 6,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Footer from '@/components/ui/footer'",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 3,
+      "nodeType": "import",
+      "symbolName": "@/components/ui/footer",
+      "startLine": 8,
+      "endLine": 8,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "export default function DefaultLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n\n  useEffect(() => {\n    AOS.init({\n      once: true,\n      disable: 'phone',\n      duration: 700,\n      easing: 'ease-out-cubic',\n    })\n  })\n\n  return (\n    <>\n      <main className=\"grow\">\n\n        {children}\n\n      </main>\n\n      <Footer />\n    </>\n  )\n}",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 4,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 10,
+      "endLine": 36,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "function DefaultLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n\n  useEffect(() => {\n    AOS.init({\n      once: true,\n      disable: 'phone',\n      duration: 700,\n      easing: 'ease-out-cubic',\n    })\n  })\n\n  return (\n    <>\n      <main className=\"grow\">\n\n        {children}\n\n      </main>\n\n      <Footer />\n    </>\n  )\n}",
+      "filePath": "app/(default)/layout.tsx",
+      "chunkIndex": 5,
+      "nodeType": "function",
+      "symbolName": "DefaultLayout",
+      "startLine": 10,
+      "endLine": 36,
+      "imports": [
+        "import { useEffect } from 'react'",
+        "import AOS from 'aos'",
+        "import 'aos/dist/aos.css'",
+        "import Footer from '@/components/ui/footer'"
+      ]
+    }
+  ]
+}

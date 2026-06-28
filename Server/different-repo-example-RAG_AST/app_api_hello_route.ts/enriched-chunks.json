@@ -1,0 +1,22 @@
+{
+  "filePath": "app/api/hello/route.ts",
+  "count": 2,
+  "chunks": [
+    {
+      "id": "app/api/hello/route.ts::export::export_statement::0",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 1,
+      "endLine": 2,
+      "content": "// File: app/api/hello/route.ts\n// Symbol: export_statement (export)\n// Lines: 1-2\nexport async function GET(request: Request) {\n}"
+    },
+    {
+      "id": "app/api/hello/route.ts::function::GET::1",
+      "nodeType": "function",
+      "symbolName": "GET",
+      "startLine": 1,
+      "endLine": 2,
+      "content": "// File: app/api/hello/route.ts\n// Symbol: GET (function)\n// Lines: 1-2\nasync function GET(request: Request) {\n}"
+    }
+  ]
+}

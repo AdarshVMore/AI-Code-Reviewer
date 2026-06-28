@@ -1,0 +1,159 @@
+{
+  "filePath": "app/(default)/page.tsx",
+  "count": 9,
+  "chunks": [
+    {
+      "id": "",
+      "content": "export const metadata = {\n  title: \"Home - Simple\",\n  description: \"Page description\",\n};",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 0,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 1,
+      "endLine": 4,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "const metadata = {\n  title: \"Home - Simple\",\n  description: \"Page description\",\n};",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 1,
+      "nodeType": "variable",
+      "symbolName": "metadata",
+      "startLine": 1,
+      "endLine": 4,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Hero from \"@/components/hero\";",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 2,
+      "nodeType": "import",
+      "symbolName": "@/components/hero",
+      "startLine": 6,
+      "endLine": 6,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Features from \"@/components/features\";",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 3,
+      "nodeType": "import",
+      "symbolName": "@/components/features",
+      "startLine": 7,
+      "endLine": 7,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import FeaturesBlocks from \"@/components/features-blocks\";",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 4,
+      "nodeType": "import",
+      "symbolName": "@/components/features-blocks",
+      "startLine": 8,
+      "endLine": 8,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Testimonials from \"@/components/testimonials\";",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 5,
+      "nodeType": "import",
+      "symbolName": "@/components/testimonials",
+      "startLine": 9,
+      "endLine": 9,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Newsletter from \"@/components/newsletter\";",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 6,
+      "nodeType": "import",
+      "symbolName": "@/components/newsletter",
+      "startLine": 10,
+      "endLine": 10,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "export default function Home() {\n  return (\n    <>\n      <Hero />\n      <Features />\n      <FeaturesBlocks />\n      {/* <Testimonials /> */}\n      <Newsletter />\n    </>\n  );\n}",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 7,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 12,
+      "endLine": 22,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "function Home() {\n  return (\n    <>\n      <Hero />\n      <Features />\n      <FeaturesBlocks />\n      {/* <Testimonials /> */}\n      <Newsletter />\n    </>\n  );\n}",
+      "filePath": "app/(default)/page.tsx",
+      "chunkIndex": 8,
+      "nodeType": "function",
+      "symbolName": "Home",
+      "startLine": 12,
+      "endLine": 22,
+      "imports": [
+        "import Hero from \"@/components/hero\";",
+        "import Features from \"@/components/features\";",
+        "import FeaturesBlocks from \"@/components/features-blocks\";",
+        "import Testimonials from \"@/components/testimonials\";",
+        "import Newsletter from \"@/components/newsletter\";"
+      ]
+    }
+  ]
+}

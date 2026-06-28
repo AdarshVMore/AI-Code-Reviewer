@@ -1,0 +1,45 @@
+{
+  "filePath": "components/ui/logo.tsx",
+  "count": 3,
+  "chunks": [
+    {
+      "id": "",
+      "content": "import Link from 'next/link'",
+      "filePath": "components/ui/logo.tsx",
+      "chunkIndex": 0,
+      "nodeType": "import",
+      "symbolName": "next/link",
+      "startLine": 1,
+      "endLine": 1,
+      "imports": [
+        "import Link from 'next/link'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "export default function Logo() {\n  return (\n    <Link href=\"/\" className=\"block\" aria-label=\"Cruip\">\n      <svg className=\"w-8 h-8\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n        <defs>\n          <radialGradient cx=\"21.152%\" cy=\"86.063%\" fx=\"21.152%\" fy=\"86.063%\" r=\"79.941%\" id=\"footer-logo\">\n            <stop stopColor=\"#4FD1C5\" offset=\"0%\" />\n            <stop stopColor=\"#81E6D9\" offset=\"25.871%\" />\n            <stop stopColor=\"#338CF5\" offset=\"100%\" />\n          </radialGradient>\n        </defs>\n        <rect width=\"32\" height=\"32\" rx=\"16\" fill=\"url(#footer-logo)\" fillRule=\"nonzero\" />\n      </svg>\n    </Link>\n  )\n}",
+      "filePath": "components/ui/logo.tsx",
+      "chunkIndex": 1,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 3,
+      "endLine": 18,
+      "imports": [
+        "import Link from 'next/link'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "function Logo() {\n  return (\n    <Link href=\"/\" className=\"block\" aria-label=\"Cruip\">\n      <svg className=\"w-8 h-8\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n        <defs>\n          <radialGradient cx=\"21.152%\" cy=\"86.063%\" fx=\"21.152%\" fy=\"86.063%\" r=\"79.941%\" id=\"footer-logo\">\n            <stop stopColor=\"#4FD1C5\" offset=\"0%\" />\n            <stop stopColor=\"#81E6D9\" offset=\"25.871%\" />\n            <stop stopColor=\"#338CF5\" offset=\"100%\" />\n          </radialGradient>\n        </defs>\n        <rect width=\"32\" height=\"32\" rx=\"16\" fill=\"url(#footer-logo)\" fillRule=\"nonzero\" />\n      </svg>\n    </Link>\n  )\n}",
+      "filePath": "components/ui/logo.tsx",
+      "chunkIndex": 2,
+      "nodeType": "function",
+      "symbolName": "Logo",
+      "startLine": 3,
+      "endLine": 18,
+      "imports": [
+        "import Link from 'next/link'"
+      ]
+    }
+  ]
+}

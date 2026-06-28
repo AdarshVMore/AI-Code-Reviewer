@@ -1,0 +1,150 @@
+{
+  "filePath": "components/banner.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 25,
+    "children": [
+      {
+        "type": "expression_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 3,
+        "endLine": 3,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 3,
+                "endLine": 3,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 3,
+                "endLine": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 5,
+        "endLine": 24,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 5,
+            "endLine": 24,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 5,
+                "endLine": 5
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 5,
+                "endLine": 5
+              },
+              {
+                "type": "statement_block",
+                "startLine": 5,
+                "endLine": 24,
+                "children": [
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 7,
+                    "endLine": 7,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 7,
+                        "endLine": 7,
+                        "children": [
+                          {
+                            "type": "array_pattern",
+                            "startLine": 7,
+                            "endLine": 7
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 7,
+                            "endLine": 7
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "return_statement",
+                    "startLine": 9,
+                    "endLine": 23,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 9,
+                        "endLine": 23,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 10,
+                            "endLine": 22
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

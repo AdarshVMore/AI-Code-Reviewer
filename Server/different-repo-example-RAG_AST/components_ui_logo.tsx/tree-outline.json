@@ -1,0 +1,93 @@
+{
+  "filePath": "components/ui/logo.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 19,
+    "children": [
+      {
+        "type": "import_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 3,
+        "endLine": 18,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 3,
+            "endLine": 18,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 3,
+                "endLine": 3
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 3,
+                "endLine": 3
+              },
+              {
+                "type": "statement_block",
+                "startLine": 3,
+                "endLine": 18,
+                "children": [
+                  {
+                    "type": "return_statement",
+                    "startLine": 4,
+                    "endLine": 17,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 4,
+                        "endLine": 17,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 5,
+                            "endLine": 16
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "header": [
+    "// File: app/worker-service/services/gif.service.ts",
+    "// Symbol: response (variable)",
+    "// Lines: 12-21",
+    "// Imports: import axios from \"axios\";"
+  ],
+  "content": "const response = await axios.get<GiphyResponse>(\n      \"https://api.giphy.com/v1/gifs/search\",\n      {\n        params: {\n          api_key: giphyApiKey,\n          q: query,\n          limit: 1,\n        },\n      },\n    );"
+}

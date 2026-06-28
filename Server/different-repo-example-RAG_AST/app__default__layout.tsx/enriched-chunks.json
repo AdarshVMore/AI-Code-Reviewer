@@ -1,0 +1,54 @@
+{
+  "filePath": "app/(default)/layout.tsx",
+  "count": 6,
+  "chunks": [
+    {
+      "id": "app/(default)/layout.tsx::import::react::0",
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: react (import)\n// Lines: 3-3\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nimport { useEffect } from 'react'"
+    },
+    {
+      "id": "app/(default)/layout.tsx::import::aos::1",
+      "nodeType": "import",
+      "symbolName": "aos",
+      "startLine": 5,
+      "endLine": 5,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: aos (import)\n// Lines: 5-5\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nimport AOS from 'aos'"
+    },
+    {
+      "id": "app/(default)/layout.tsx::import::aos/dist/aos.css::2",
+      "nodeType": "import",
+      "symbolName": "aos/dist/aos.css",
+      "startLine": 6,
+      "endLine": 6,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: aos/dist/aos.css (import)\n// Lines: 6-6\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nimport 'aos/dist/aos.css'"
+    },
+    {
+      "id": "app/(default)/layout.tsx::import::@/components/ui/footer::3",
+      "nodeType": "import",
+      "symbolName": "@/components/ui/footer",
+      "startLine": 8,
+      "endLine": 8,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: @/components/ui/footer (import)\n// Lines: 8-8\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nimport Footer from '@/components/ui/footer'"
+    },
+    {
+      "id": "app/(default)/layout.tsx::export::export_statement::4",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 10,
+      "endLine": 36,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: export_statement (export)\n// Lines: 10-36\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nexport default function DefaultLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n\n  useEffect(() => {\n    AOS.init({\n      once: true,\n      disable: 'phone',\n      duration: 700,\n      easing: 'ease-out-cubic',\n    })\n  })\n\n  return (\n    <>\n      <main className=\"grow\">\n\n        {children}\n\n      </main>\n\n      <Footer />\n    </>\n  )\n}"
+    },
+    {
+      "id": "app/(default)/layout.tsx::function::DefaultLayout::5",
+      "nodeType": "function",
+      "symbolName": "DefaultLayout",
+      "startLine": 10,
+      "endLine": 36,
+      "content": "// File: app/(default)/layout.tsx\n// Symbol: DefaultLayout (function)\n// Lines: 10-36\n// Imports: import { useEffect } from 'react', import AOS from 'aos', import 'aos/dist/aos.css', import Footer from '@/components/ui/footer'\nfunction DefaultLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n\n  useEffect(() => {\n    AOS.init({\n      once: true,\n      disable: 'phone',\n      duration: 700,\n      easing: 'ease-out-cubic',\n    })\n  })\n\n  return (\n    <>\n      <main className=\"grow\">\n\n        {children}\n\n      </main>\n\n      <Footer />\n    </>\n  )\n}"
+    }
+  ]
+}

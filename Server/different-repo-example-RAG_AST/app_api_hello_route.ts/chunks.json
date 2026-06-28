@@ -1,0 +1,28 @@
+{
+  "filePath": "app/api/hello/route.ts",
+  "count": 2,
+  "chunks": [
+    {
+      "id": "",
+      "content": "export async function GET(request: Request) {\n}",
+      "filePath": "app/api/hello/route.ts",
+      "chunkIndex": 0,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 1,
+      "endLine": 2,
+      "imports": []
+    },
+    {
+      "id": "",
+      "content": "async function GET(request: Request) {\n}",
+      "filePath": "app/api/hello/route.ts",
+      "chunkIndex": 1,
+      "nodeType": "function",
+      "symbolName": "GET",
+      "startLine": 1,
+      "endLine": 2,
+      "imports": []
+    }
+  ]
+}

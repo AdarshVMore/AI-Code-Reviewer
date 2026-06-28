@@ -265,6 +265,7 @@ export async function retrieveContextForDiff(options: {
     topK: topK * 2,
   });
 
+
   const fileMatches: RelevantCodeMatch[] = [];
   for (const filePath of changedFiles.slice(0, 5)) {
     const matches = await searchRelevantEmbeddings({

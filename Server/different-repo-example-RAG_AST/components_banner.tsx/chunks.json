@@ -1,0 +1,58 @@
+{
+  "filePath": "components/banner.tsx",
+  "count": 4,
+  "chunks": [
+    {
+      "id": "",
+      "content": "import { useState } from 'react'",
+      "filePath": "components/banner.tsx",
+      "chunkIndex": 0,
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "imports": [
+        "import { useState } from 'react'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "export default function Banner() {\n\n  const [bannerOpen, setBannerOpen] = useState<boolean>(true)\n\n  return (\n    <>\n      {bannerOpen && (\n        <div className=\"fixed bottom-0 right-0 w-full md:bottom-8 md:right-12 md:w-auto z-50\">\n          <div className=\"bg-slate-800 text-slate-50 text-sm p-3 md:rounded shadow-lg flex justify-between\">\n            <div className='text-slate-500 inline-flex'><a className=\"font-medium hover:underline text-slate-50\" href=\"https://github.com/cruip/tailwind-landing-page-template\" target=\"_blank\" rel=\"noreferrer\">Download<span className=\"hidden sm:inline\"> on GitHub</span></a> <span className=\"italic px-1.5\">or</span> <a className=\"font-medium hover:underline text-emerald-400\" href=\"https://cruip.com/simple/\" target=\"_blank\" rel=\"noreferrer\">Check Premium Version</a></div>\n            \n              <svg className=\"w-4 h-4 shrink-0 fill-current\" viewBox=\"0 0 16 16\">\n                \n            </button>\n          </div>\n        </div>\n      )}\n    </>\n  )\n}",
+      "filePath": "components/banner.tsx",
+      "chunkIndex": 1,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 5,
+      "endLine": 24,
+      "imports": [
+        "import { useState } from 'react'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "function Banner() {\n\n  const [bannerOpen, setBannerOpen] = useState<boolean>(true)\n\n  return (\n    <>\n      {bannerOpen && (\n        <div className=\"fixed bottom-0 right-0 w-full md:bottom-8 md:right-12 md:w-auto z-50\">\n          <div className=\"bg-slate-800 text-slate-50 text-sm p-3 md:rounded shadow-lg flex justify-between\">\n            <div className='text-slate-500 inline-flex'><a className=\"font-medium hover:underline text-slate-50\" href=\"https://github.com/cruip/tailwind-landing-page-template\" target=\"_blank\" rel=\"noreferrer\">Download<span className=\"hidden sm:inline\"> on GitHub</span></a> <span className=\"italic px-1.5\">or</span> <a className=\"font-medium hover:underline text-emerald-400\" href=\"https://cruip.com/simple/\" target=\"_blank\" rel=\"noreferrer\">Check Premium Version</a></div>\n            \n              <svg className=\"w-4 h-4 shrink-0 fill-current\" viewBox=\"0 0 16 16\">\n                \n            </button>\n          </div>\n        </div>\n      )}\n    </>\n  )\n}",
+      "filePath": "components/banner.tsx",
+      "chunkIndex": 2,
+      "nodeType": "function",
+      "symbolName": "Banner",
+      "startLine": 5,
+      "endLine": 24,
+      "imports": [
+        "import { useState } from 'react'"
+      ]
+    },
+    {
+      "id": "",
+      "content": "const [bannerOpen, setBannerOpen] = useState<boolean>(true)",
+      "filePath": "components/banner.tsx",
+      "chunkIndex": 3,
+      "nodeType": "variable",
+      "symbolName": "[bannerOpen, setBannerOpen]",
+      "startLine": 7,
+      "endLine": 7,
+      "imports": [
+        "import { useState } from 'react'"
+      ]
+    }
+  ]
+}

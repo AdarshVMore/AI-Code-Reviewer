@@ -1,0 +1,176 @@
+{
+  "filePath": "components/features.tsx",
+  "count": 10,
+  "chunks": [
+    {
+      "id": "",
+      "content": "import { useState, useRef, useEffect } from \"react\";",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 0,
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import { Transition } from \"@headlessui/react\";",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 1,
+      "nodeType": "import",
+      "symbolName": "@headlessui/react",
+      "startLine": 4,
+      "endLine": 4,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import Image from \"next/image\";",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 2,
+      "nodeType": "import",
+      "symbolName": "next/image",
+      "startLine": 5,
+      "endLine": 5,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import FeaturesBg from \"@/public/images/features-bg.png\";",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 3,
+      "nodeType": "import",
+      "symbolName": "@/public/images/features-bg.png",
+      "startLine": 6,
+      "endLine": 6,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "import FeaturesElement from \"@/public/images/features-element.png\";",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 4,
+      "nodeType": "import",
+      "symbolName": "@/public/images/features-element.png",
+      "startLine": 7,
+      "endLine": 7,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "export default function Features() {\n  const [tab, setTab] = useState<number>(1);\n\n  const tabs = useRef<HTMLDivElement>(null);\n\n  const heightFix = () => {\n    if (tabs.current && tabs.current.parentElement)\n      tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`;\n  };\n\n  useEffect(() => {\n    heightFix();\n  }, []);\n\n  return (\n    <section className=\"relative\">\n      {/* Section background (needs .relative class on parent and next sibling elements) */}\n      <div\n        className=\"absolute inset-0 bg-gray-100 pointer-events-none mb-16\"\n        aria-hidden=\"true\"\n      ></div>\n      <div className=\"absolute left-0 right-0 m-auto w-px p-px h-20 bg-gray-200 transform -translate-y-1/2\"></div>\n\n      <div className=\"relative max-w-6xl mx-auto px-4 sm:px-6\">\n        <div className=\"pt-12 md:pt-20\">\n          {/* Section header */}\n          <div className=\"max-w-3xl mx-auto text-center pb-12 md:pb-16\">\n            <h1 className=\"h2 mb-4\">Explore the Features</h1>\n            <p className=\"text-xl text-gray-600\">\n              Discover the Cutting-Edge Capabilities of Our AI-Powered Content\n              Creator\n            </p>\n          </div>\n\n          {/* Section content */}\n          <div className=\"md:grid md:grid-cols-12 md:gap-6\">\n            {/* Content */}\n            <div\n              className=\"max-w-xl md:max-w-none md:w-full mx-auto md:col-span-7 lg:col-span-6 md:mt-6\"\n              data-aos=\"fade-right\"\n            >\n              <div className=\"mb-8 md:mb-0\">\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 1\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(1);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      AI-powered Video Generation\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Create engaging videos from trending Reddit posts and\n                      comments.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path d=\"M11.953 4.29a.5.5 0 00-.454-.292H6.14L6.984.62A.5.5 0 006.12.173l-6 7a.5.5 0 00.379.825h5.359l-.844 3.38a.5.5 0 00.864.445l6-7a.5.5 0 00.075-.534z\" />\n                    </svg>\n                  </div>\n                </a>\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 2\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(2);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      Background Integration\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Seamlessly merge background videos with content for a\n                      captivating result.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path\n                        d=\"M11.854.146a.5.5 0 00-.525-.116l-11 4a.5.5 0 00-.015.934l4.8 1.921 1.921 4.8A.5.5 0 007.5 12h.008a.5.5 0 00.462-.329l4-11a.5.5 0 00-.116-.525z\"\n                        fillRule=\"nonzero\"\n                      />\n                    </svg>\n                  </div>\n                </a>\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 3\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(3);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      Text-to-Audio Conversion\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Convert text into clear, audible speech using Google TTS\n                      API.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path\n                        d=\"M11.334 8.06a.5.5 0 00-.421-.237 6.023 6.023 0 01-5.905-6c0-.41.042-.82.125-1.221a.5.5 0 00-.614-.586 6 6 0 106.832 8.529.5.5 0 00-.017-.485z\"\n                        fill=\"#191919\"\n                        fillRule=\"nonzero\"\n                      />\n                    </svg>\n                  </div>\n                </a>\n              </div>\n            </div>\n\n            {/* Tabs items */}\n            <div className=\"max-w-xl md:max-w-none md:w-full mx-auto md:col-span-5 lg:col-span-6 mb-8 md:mb-0 md:order-1\">\n              <div className=\"transition-all\">\n                <div\n                  className=\"relative flex flex-col text-center lg:text-right\"\n                  data-aos=\"zoom-y-out\"\n                  ref={tabs}\n                >\n                  {/* Item 1 */}\n                  <Transition\n                    show={tab === 1}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                  {/* Item 2 */}\n                  <Transition\n                    show={tab === 2}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                  {/* Item 3 */}\n                  <Transition\n                    show={tab === 3}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n  );\n}",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 5,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 9,
+      "endLine": 266,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "function Features() {\n  const [tab, setTab] = useState<number>(1);\n\n  const tabs = useRef<HTMLDivElement>(null);\n\n  const heightFix = () => {\n    if (tabs.current && tabs.current.parentElement)\n      tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`;\n  };\n\n  useEffect(() => {\n    heightFix();\n  }, []);\n\n  return (\n    <section className=\"relative\">\n      {/* Section background (needs .relative class on parent and next sibling elements) */}\n      <div\n        className=\"absolute inset-0 bg-gray-100 pointer-events-none mb-16\"\n        aria-hidden=\"true\"\n      ></div>\n      <div className=\"absolute left-0 right-0 m-auto w-px p-px h-20 bg-gray-200 transform -translate-y-1/2\"></div>\n\n      <div className=\"relative max-w-6xl mx-auto px-4 sm:px-6\">\n        <div className=\"pt-12 md:pt-20\">\n          {/* Section header */}\n          <div className=\"max-w-3xl mx-auto text-center pb-12 md:pb-16\">\n            <h1 className=\"h2 mb-4\">Explore the Features</h1>\n            <p className=\"text-xl text-gray-600\">\n              Discover the Cutting-Edge Capabilities of Our AI-Powered Content\n              Creator\n            </p>\n          </div>\n\n          {/* Section content */}\n          <div className=\"md:grid md:grid-cols-12 md:gap-6\">\n            {/* Content */}\n            <div\n              className=\"max-w-xl md:max-w-none md:w-full mx-auto md:col-span-7 lg:col-span-6 md:mt-6\"\n              data-aos=\"fade-right\"\n            >\n              <div className=\"mb-8 md:mb-0\">\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 1\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(1);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      AI-powered Video Generation\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Create engaging videos from trending Reddit posts and\n                      comments.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path d=\"M11.953 4.29a.5.5 0 00-.454-.292H6.14L6.984.62A.5.5 0 006.12.173l-6 7a.5.5 0 00.379.825h5.359l-.844 3.38a.5.5 0 00.864.445l6-7a.5.5 0 00.075-.534z\" />\n                    </svg>\n                  </div>\n                </a>\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 2\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(2);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      Background Integration\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Seamlessly merge background videos with content for a\n                      captivating result.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path\n                        d=\"M11.854.146a.5.5 0 00-.525-.116l-11 4a.5.5 0 00-.015.934l4.8 1.921 1.921 4.8A.5.5 0 007.5 12h.008a.5.5 0 00.462-.329l4-11a.5.5 0 00-.116-.525z\"\n                        fillRule=\"nonzero\"\n                      />\n                    </svg>\n                  </div>\n                </a>\n                <a\n                  className={`flex items-center text-lg p-5 rounded border transition duration-300 ease-in-out mb-3 ${\n                    tab !== 3\n                      ? \"bg-white shadow-md border-gray-200 hover:shadow-lg\"\n                      : \"bg-gray-200 border-transparent\"\n                  }`}\n                  href=\"#0\"\n                  onClick={(e) => {\n                    e.preventDefault();\n                    setTab(3);\n                  }}\n                >\n                  <div>\n                    <div className=\"font-bold leading-snug tracking-tight mb-1\">\n                      Text-to-Audio Conversion\n                    </div>\n                    <div className=\"text-gray-600\">\n                      Convert text into clear, audible speech using Google TTS\n                      API.\n                    </div>\n                  </div>\n                  <div className=\"flex justify-center items-center w-8 h-8 bg-white rounded-full shadow flex-shrink-0 ml-3\">\n                    <svg\n                      className=\"w-3 h-3 fill-current\"\n                      viewBox=\"0 0 12 12\"\n                      xmlns=\"http://www.w3.org/2000/svg\"\n                    >\n                      <path\n                        d=\"M11.334 8.06a.5.5 0 00-.421-.237 6.023 6.023 0 01-5.905-6c0-.41.042-.82.125-1.221a.5.5 0 00-.614-.586 6 6 0 106.832 8.529.5.5 0 00-.017-.485z\"\n                        fill=\"#191919\"\n                        fillRule=\"nonzero\"\n                      />\n                    </svg>\n                  </div>\n                </a>\n              </div>\n            </div>\n\n            {/* Tabs items */}\n            <div className=\"max-w-xl md:max-w-none md:w-full mx-auto md:col-span-5 lg:col-span-6 mb-8 md:mb-0 md:order-1\">\n              <div className=\"transition-all\">\n                <div\n                  className=\"relative flex flex-col text-center lg:text-right\"\n                  data-aos=\"zoom-y-out\"\n                  ref={tabs}\n                >\n                  {/* Item 1 */}\n                  <Transition\n                    show={tab === 1}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                  {/* Item 2 */}\n                  <Transition\n                    show={tab === 2}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                  {/* Item 3 */}\n                  <Transition\n                    show={tab === 3}\n                    appear={true}\n                    className=\"w-full\"\n                    enter=\"transition ease-in-out duration-700 transform order-first\"\n                    enterFrom=\"opacity-0 translate-y-16\"\n                    enterTo=\"opacity-100 translate-y-0\"\n                    leave=\"transition ease-in-out duration-300 transform absolute\"\n                    leaveFrom=\"opacity-100 translate-y-0\"\n                    leaveTo=\"opacity-0 -translate-y-16\"\n                    beforeEnter={() => heightFix()}\n                    unmount={false}\n                  >\n                    <div className=\"relative inline-flex flex-col\">\n                      <Image\n                        className=\"md:max-w-none mx-auto rounded\"\n                        src={FeaturesBg}\n                        width={500}\n                        height=\"462\"\n                        alt=\"Features bg\"\n                      />\n                      <Image\n                        className=\"md:max-w-none absolute w-full left-0 transform animate-float\"\n                        src={FeaturesElement}\n                        width={500}\n                        height=\"44\"\n                        alt=\"Element\"\n                        style={{ top: \"30%\" }}\n                      />\n                    </div>\n                  </Transition>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </section>\n  );\n}",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 6,
+      "nodeType": "function",
+      "symbolName": "Features",
+      "startLine": 9,
+      "endLine": 266,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "const [tab, setTab] = useState<number>(1);",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 7,
+      "nodeType": "variable",
+      "symbolName": "[tab, setTab]",
+      "startLine": 10,
+      "endLine": 10,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "const tabs = useRef<HTMLDivElement>(null);",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 8,
+      "nodeType": "variable",
+      "symbolName": "tabs",
+      "startLine": 12,
+      "endLine": 12,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    },
+    {
+      "id": "",
+      "content": "const heightFix = () => {\n    if (tabs.current && tabs.current.parentElement)\n      tabs.current.parentElement.style.height = `${tabs.current.clientHeight}px`;\n  };",
+      "filePath": "components/features.tsx",
+      "chunkIndex": 9,
+      "nodeType": "variable",
+      "symbolName": "heightFix",
+      "startLine": 14,
+      "endLine": 17,
+      "imports": [
+        "import { useState, useRef, useEffect } from \"react\";",
+        "import { Transition } from \"@headlessui/react\";",
+        "import Image from \"next/image\";",
+        "import FeaturesBg from \"@/public/images/features-bg.png\";",
+        "import FeaturesElement from \"@/public/images/features-element.png\";"
+      ]
+    }
+  ]
+}

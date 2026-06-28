@@ -1,0 +1,6 @@
+{
+  "filePath": "components/ui/logo.tsx",
+  "imports": [
+    "import Link from 'next/link'"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "filePath": "components/ui/mobile-menu.tsx",
+  "imports": [
+    "import { useState, useRef, useEffect, useCallback } from 'react'",
+    "import { Transition } from '@headlessui/react'",
+    "import Link from 'next/link'",
+    "import clsx from 'clsx'"
+  ]
+}
