@@ -1,0 +1,339 @@
+{
+  "filePath": "components/ui/header.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 61,
+    "children": [
+      {
+        "type": "expression_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 3,
+        "endLine": 3,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 3,
+                "endLine": 3,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 3,
+                "endLine": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 5,
+        "endLine": 5,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 6,
+        "endLine": 6,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 7,
+        "endLine": 7,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 7,
+            "endLine": 7,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 7,
+                "endLine": 7
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 7,
+            "endLine": 7,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 7,
+                "endLine": 7
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 8,
+        "endLine": 8,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 8,
+            "endLine": 8,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 8,
+                "endLine": 8
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 8,
+            "endLine": 8,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 8,
+                "endLine": 8
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 10,
+        "endLine": 60,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 10,
+            "endLine": 60,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 10,
+                "endLine": 10
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 10,
+                "endLine": 10
+              },
+              {
+                "type": "statement_block",
+                "startLine": 10,
+                "endLine": 60,
+                "children": [
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 12,
+                    "endLine": 12,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 12,
+                        "endLine": 12,
+                        "children": [
+                          {
+                            "type": "array_pattern",
+                            "startLine": 12,
+                            "endLine": 12
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 12,
+                            "endLine": 12
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "comment",
+                    "startLine": 14,
+                    "endLine": 14
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 15,
+                    "endLine": 17,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 15,
+                        "endLine": 17,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 15,
+                            "endLine": 15
+                          },
+                          {
+                            "type": "arrow_function",
+                            "startLine": 15,
+                            "endLine": 17
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "expression_statement",
+                    "startLine": 19,
+                    "endLine": 23,
+                    "children": [
+                      {
+                        "type": "call_expression",
+                        "startLine": 19,
+                        "endLine": 23,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 19,
+                            "endLine": 19
+                          },
+                          {
+                            "type": "arguments",
+                            "startLine": 19,
+                            "endLine": 23
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "return_statement",
+                    "startLine": 25,
+                    "endLine": 59,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 25,
+                        "endLine": 59,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 26,
+                            "endLine": 58
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

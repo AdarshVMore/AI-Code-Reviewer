@@ -1,0 +1,77 @@
+{
+  "filePath": "next.config.js",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 5,
+    "children": [
+      {
+        "type": "comment",
+        "startLine": 1,
+        "endLine": 1
+      },
+      {
+        "type": "lexical_declaration",
+        "startLine": 2,
+        "endLine": 2,
+        "children": [
+          {
+            "type": "variable_declarator",
+            "startLine": 2,
+            "endLine": 2,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 2,
+                "endLine": 2
+              },
+              {
+                "type": "object",
+                "startLine": 2,
+                "endLine": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "expression_statement",
+        "startLine": 4,
+        "endLine": 4,
+        "children": [
+          {
+            "type": "assignment_expression",
+            "startLine": 4,
+            "endLine": 4,
+            "children": [
+              {
+                "type": "member_expression",
+                "startLine": 4,
+                "endLine": 4,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 4,
+                    "endLine": 4
+                  },
+                  {
+                    "type": "property_identifier",
+                    "startLine": 4,
+                    "endLine": 4
+                  }
+                ]
+              },
+              {
+                "type": "identifier",
+                "startLine": 4,
+                "endLine": 4
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

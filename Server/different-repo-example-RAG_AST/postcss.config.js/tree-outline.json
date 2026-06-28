@@ -1,0 +1,84 @@
+{
+  "filePath": "postcss.config.js",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 8,
+    "children": [
+      {
+        "type": "expression_statement",
+        "startLine": 1,
+        "endLine": 7,
+        "children": [
+          {
+            "type": "assignment_expression",
+            "startLine": 1,
+            "endLine": 7,
+            "children": [
+              {
+                "type": "member_expression",
+                "startLine": 1,
+                "endLine": 1,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 1,
+                    "endLine": 1
+                  },
+                  {
+                    "type": "property_identifier",
+                    "startLine": 1,
+                    "endLine": 1
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "startLine": 1,
+                "endLine": 7,
+                "children": [
+                  {
+                    "type": "pair",
+                    "startLine": 2,
+                    "endLine": 6,
+                    "children": [
+                      {
+                        "type": "property_identifier",
+                        "startLine": 2,
+                        "endLine": 2
+                      },
+                      {
+                        "type": "object",
+                        "startLine": 2,
+                        "endLine": 6,
+                        "children": [
+                          {
+                            "type": "pair",
+                            "startLine": 3,
+                            "endLine": 3
+                          },
+                          {
+                            "type": "pair",
+                            "startLine": 4,
+                            "endLine": 4
+                          },
+                          {
+                            "type": "pair",
+                            "startLine": 5,
+                            "endLine": 5
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+"// File: app/worker-service/services/gif.service.ts\n// Symbol: response (variable)\n// Lines: 12-21\n// Imports: import axios from \"axios\";\nconst response = await axios.get<GiphyResponse>(\n      \"https://api.giphy.com/v1/gifs/search\",\n      {\n        params: {\n          api_key: giphyApiKey,\n          q: query,\n          limit: 1,\n        },\n      },\n    );"

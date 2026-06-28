@@ -1,0 +1,348 @@
+{
+  "filePath": "app/layout.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 38,
+    "children": [
+      {
+        "type": "import_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 3,
+        "endLine": 3,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 3,
+                "endLine": 3,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 3,
+                "endLine": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 5,
+        "endLine": 5,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 5,
+            "endLine": 5,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 5,
+                "endLine": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 6,
+        "endLine": 6,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "lexical_declaration",
+        "startLine": 8,
+        "endLine": 12,
+        "children": [
+          {
+            "type": "variable_declarator",
+            "startLine": 8,
+            "endLine": 12,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 8,
+                "endLine": 8
+              },
+              {
+                "type": "call_expression",
+                "startLine": 8,
+                "endLine": 12,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 8,
+                    "endLine": 8
+                  },
+                  {
+                    "type": "arguments",
+                    "startLine": 8,
+                    "endLine": 12,
+                    "children": [
+                      {
+                        "type": "object",
+                        "startLine": 8,
+                        "endLine": 12,
+                        "children": [
+                          {
+                            "type": "pair",
+                            "startLine": 9,
+                            "endLine": 9
+                          },
+                          {
+                            "type": "pair",
+                            "startLine": 10,
+                            "endLine": 10
+                          },
+                          {
+                            "type": "pair",
+                            "startLine": 11,
+                            "endLine": 11
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 14,
+        "endLine": 17,
+        "children": [
+          {
+            "type": "lexical_declaration",
+            "startLine": 14,
+            "endLine": 17,
+            "children": [
+              {
+                "type": "variable_declarator",
+                "startLine": 14,
+                "endLine": 17,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 14,
+                    "endLine": 14
+                  },
+                  {
+                    "type": "object",
+                    "startLine": 14,
+                    "endLine": 17,
+                    "children": [
+                      {
+                        "type": "pair",
+                        "startLine": 15,
+                        "endLine": 15,
+                        "children": [
+                          {
+                            "type": "property_identifier",
+                            "startLine": 15,
+                            "endLine": 15
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 15,
+                            "endLine": 15
+                          }
+                        ]
+                      },
+                      {
+                        "type": "pair",
+                        "startLine": 16,
+                        "endLine": 16,
+                        "children": [
+                          {
+                            "type": "property_identifier",
+                            "startLine": 16,
+                            "endLine": 16
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 16,
+                            "endLine": 16
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 19,
+        "endLine": 37,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 19,
+            "endLine": 37,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 19,
+                "endLine": 19
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 19,
+                "endLine": 23,
+                "children": [
+                  {
+                    "type": "required_parameter",
+                    "startLine": 19,
+                    "endLine": 23,
+                    "children": [
+                      {
+                        "type": "object_pattern",
+                        "startLine": 19,
+                        "endLine": 21,
+                        "children": [
+                          {
+                            "type": "shorthand_property_identifier_pattern",
+                            "startLine": 20,
+                            "endLine": 20
+                          }
+                        ]
+                      },
+                      {
+                        "type": "type_annotation",
+                        "startLine": 21,
+                        "endLine": 23,
+                        "children": [
+                          {
+                            "type": "object_type",
+                            "startLine": 21,
+                            "endLine": 23
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "statement_block",
+                "startLine": 23,
+                "endLine": 37,
+                "children": [
+                  {
+                    "type": "return_statement",
+                    "startLine": 24,
+                    "endLine": 36,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 24,
+                        "endLine": 36,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 25,
+                            "endLine": 35
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

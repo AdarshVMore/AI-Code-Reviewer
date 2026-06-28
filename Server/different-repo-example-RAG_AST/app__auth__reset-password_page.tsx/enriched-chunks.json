@@ -1,0 +1,38 @@
+{
+  "filePath": "app/(auth)/reset-password/page.tsx",
+  "count": 4,
+  "chunks": [
+    {
+      "id": "app/(auth)/reset-password/page.tsx::export::export_statement::0",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 1,
+      "endLine": 4,
+      "content": "// File: app/(auth)/reset-password/page.tsx\n// Symbol: export_statement (export)\n// Lines: 1-4\nexport const metadata = {\n  title: 'Reset Password - Simple',\n  description: 'Page description',\n}"
+    },
+    {
+      "id": "app/(auth)/reset-password/page.tsx::variable::metadata::1",
+      "nodeType": "variable",
+      "symbolName": "metadata",
+      "startLine": 1,
+      "endLine": 4,
+      "content": "// File: app/(auth)/reset-password/page.tsx\n// Symbol: metadata (variable)\n// Lines: 1-4\nconst metadata = {\n  title: 'Reset Password - Simple',\n  description: 'Page description',\n}"
+    },
+    {
+      "id": "app/(auth)/reset-password/page.tsx::export::export_statement::2",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 6,
+      "endLine": 39,
+      "content": "// File: app/(auth)/reset-password/page.tsx\n// Symbol: export_statement (export)\n// Lines: 6-39\nexport default function ResetPassword() {\n  return (\n    <section className=\"bg-gradient-to-b from-gray-100 to-white\">\n      <div className=\"max-w-6xl mx-auto px-4 sm:px-6\">\n        <div className=\"pt-32 pb-12 md:pt-40 md:pb-20\">\n\n          {/* Page header */}\n          <div className=\"max-w-3xl mx-auto text-center pb-12 md:pb-20\">\n            <h1 className=\"h1 mb-4\">Let's get you back up on your feet</h1>\n            <p className=\"text-xl text-gray-600\">Enter the email address you used when you signed up for your account, and we'll email you a link to reset your password.</p>\n          </div>\n\n          {/* Form */}\n          <div className=\"max-w-sm mx-auto\">\n            <form>\n              <div className=\"flex flex-wrap -mx-3 mb-4\">\n                <div className=\"w-full px-3\">\n                  <label className=\"block text-gray-800 text-sm font-medium mb-1\" htmlFor=\"email\">Email <span className=\"text-red-600\">*</span></label>\n                  <input id=\"email\" type=\"email\" className=\"form-input w-full text-gray-800\" placeholder=\"Enter your email address\" required />\n                </div>\n              </div>\n              <div className=\"flex flex-wrap -mx-3 mt-6\">\n                <div className=\"w-full px-3\">\n                  <button className=\"btn text-white bg-blue-600 hover:bg-blue-700 w-full\">Send reset link</button>\n                </div>\n              </div>\n            </form>\n          </div>\n\n        </div>\n      </div>\n    </section>\n  )\n}"
+    },
+    {
+      "id": "app/(auth)/reset-password/page.tsx::function::ResetPassword::3",
+      "nodeType": "function",
+      "symbolName": "ResetPassword",
+      "startLine": 6,
+      "endLine": 39,
+      "content": "// File: app/(auth)/reset-password/page.tsx\n// Symbol: ResetPassword (function)\n// Lines: 6-39\nfunction ResetPassword() {\n  return (\n    <section className=\"bg-gradient-to-b from-gray-100 to-white\">\n      <div className=\"max-w-6xl mx-auto px-4 sm:px-6\">\n        <div className=\"pt-32 pb-12 md:pt-40 md:pb-20\">\n\n          {/* Page header */}\n          <div className=\"max-w-3xl mx-auto text-center pb-12 md:pb-20\">\n            <h1 className=\"h1 mb-4\">Let's get you back up on your feet</h1>\n            <p className=\"text-xl text-gray-600\">Enter the email address you used when you signed up for your account, and we'll email you a link to reset your password.</p>\n          </div>\n\n          {/* Form */}\n          <div className=\"max-w-sm mx-auto\">\n            <form>\n              <div className=\"flex flex-wrap -mx-3 mb-4\">\n                <div className=\"w-full px-3\">\n                  <label className=\"block text-gray-800 text-sm font-medium mb-1\" htmlFor=\"email\">Email <span className=\"text-red-600\">*</span></label>\n                  <input id=\"email\" type=\"email\" className=\"form-input w-full text-gray-800\" placeholder=\"Enter your email address\" required />\n                </div>\n              </div>\n              <div className=\"flex flex-wrap -mx-3 mt-6\">\n                <div className=\"w-full px-3\">\n                  <button className=\"btn text-white bg-blue-600 hover:bg-blue-700 w-full\">Send reset link</button>\n                </div>\n              </div>\n            </form>\n          </div>\n\n        </div>\n      </div>\n    </section>\n  )\n}"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "filePath": "app/(auth)/layout.tsx",
+  "count": 2,
+  "chunks": [
+    {
+      "id": "",
+      "content": "export default function AuthLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n  return (\n    <main className=\"grow\">\n\n      {children}\n\n    </main>\n  )\n}",
+      "filePath": "app/(auth)/layout.tsx",
+      "chunkIndex": 0,
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 1,
+      "endLine": 13,
+      "imports": []
+    },
+    {
+      "id": "",
+      "content": "function AuthLayout({\n  children,\n}: {\n  children: React.ReactNode\n}) {  \n  return (\n    <main className=\"grow\">\n\n      {children}\n\n    </main>\n  )\n}",
+      "filePath": "app/(auth)/layout.tsx",
+      "chunkIndex": 1,
+      "nodeType": "function",
+      "symbolName": "AuthLayout",
+      "startLine": 1,
+      "endLine": 13,
+      "imports": []
+    }
+  ]
+}

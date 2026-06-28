@@ -1,0 +1,78 @@
+{
+  "filePath": "components/ui/header.tsx",
+  "count": 9,
+  "chunks": [
+    {
+      "id": "components/ui/header.tsx::import::react::0",
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "content": "// File: components/ui/header.tsx\n// Symbol: react (import)\n// Lines: 3-3\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nimport { useState, useEffect } from 'react'"
+    },
+    {
+      "id": "components/ui/header.tsx::import::next/link::1",
+      "nodeType": "import",
+      "symbolName": "next/link",
+      "startLine": 5,
+      "endLine": 5,
+      "content": "// File: components/ui/header.tsx\n// Symbol: next/link (import)\n// Lines: 5-5\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nimport Link from 'next/link'"
+    },
+    {
+      "id": "components/ui/header.tsx::import::./logo::2",
+      "nodeType": "import",
+      "symbolName": "./logo",
+      "startLine": 6,
+      "endLine": 6,
+      "content": "// File: components/ui/header.tsx\n// Symbol: ./logo (import)\n// Lines: 6-6\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nimport Logo from './logo'"
+    },
+    {
+      "id": "components/ui/header.tsx::import::@/components/utils/dropdown::3",
+      "nodeType": "import",
+      "symbolName": "@/components/utils/dropdown",
+      "startLine": 7,
+      "endLine": 7,
+      "content": "// File: components/ui/header.tsx\n// Symbol: @/components/utils/dropdown (import)\n// Lines: 7-7\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nimport Dropdown from '@/components/utils/dropdown'"
+    },
+    {
+      "id": "components/ui/header.tsx::import::./mobile-menu::4",
+      "nodeType": "import",
+      "symbolName": "./mobile-menu",
+      "startLine": 8,
+      "endLine": 8,
+      "content": "// File: components/ui/header.tsx\n// Symbol: ./mobile-menu (import)\n// Lines: 8-8\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nimport MobileMenu from './mobile-menu'"
+    },
+    {
+      "id": "components/ui/header.tsx::export::export_statement::5",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 10,
+      "endLine": 60,
+      "content": "// File: components/ui/header.tsx\n// Symbol: export_statement (export)\n// Lines: 10-60\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nexport default function Header() {\n\n  const [top, setTop] = useState<boolean>(true)\n\n  // detect whether user has scrolled the page down by 10px\n  const scrollHandler = () => {\n    window.pageYOffset > 10 ? setTop(false) : setTop(true)\n  }  \n\n  useEffect(() => {\n    scrollHandler()\n    window.addEventListener('scroll', scrollHandler)\n    return () => window.removeEventListener('scroll', scrollHandler)\n  }, [top])\n\n  return (\n    <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? 'bg-white backdrop-blur-sm shadow-lg' : ''}`}>\n      <div className=\"max-w-6xl mx-auto px-5 sm:px-6\">\n        <div className=\"flex items-center justify-between h-16 md:h-20\">\n\n          {/* Site branding */}\n          <div className=\"shrink-0 mr-4\">\n            <Logo />\n          </div>\n\n          {/* Desktop navigation */}\n          <nav className=\"hidden md:flex md:grow\">\n            {/* Desktop sign in links */}\n            <ul className=\"flex grow justify-end flex-wrap items-center\">\n              <li>\n                <Link href=\"/signin\" className=\"font-medium text-gray-600 hover:text-gray-900 px-5 py-3 flex items-center transition duration-150 ease-in-out\">Sign in</Link>\n              </li>\n              <li>\n                <Link href=\"/signup\" className=\"btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 ml-3\">\n                  <span>Sign up</span>\n                  <svg className=\"w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n                    <path d=\"M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z\" fillRule=\"nonzero\" />\n                  </svg>\n                </Link>\n              </li>\n            </ul>\n\n          </nav>\n\n          <MobileMenu />\n\n        </div>\n      </div>\n    </header>\n  )\n}"
+    },
+    {
+      "id": "components/ui/header.tsx::function::Header::6",
+      "nodeType": "function",
+      "symbolName": "Header",
+      "startLine": 10,
+      "endLine": 60,
+      "content": "// File: components/ui/header.tsx\n// Symbol: Header (function)\n// Lines: 10-60\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nfunction Header() {\n\n  const [top, setTop] = useState<boolean>(true)\n\n  // detect whether user has scrolled the page down by 10px\n  const scrollHandler = () => {\n    window.pageYOffset > 10 ? setTop(false) : setTop(true)\n  }  \n\n  useEffect(() => {\n    scrollHandler()\n    window.addEventListener('scroll', scrollHandler)\n    return () => window.removeEventListener('scroll', scrollHandler)\n  }, [top])\n\n  return (\n    <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? 'bg-white backdrop-blur-sm shadow-lg' : ''}`}>\n      <div className=\"max-w-6xl mx-auto px-5 sm:px-6\">\n        <div className=\"flex items-center justify-between h-16 md:h-20\">\n\n          {/* Site branding */}\n          <div className=\"shrink-0 mr-4\">\n            <Logo />\n          </div>\n\n          {/* Desktop navigation */}\n          <nav className=\"hidden md:flex md:grow\">\n            {/* Desktop sign in links */}\n            <ul className=\"flex grow justify-end flex-wrap items-center\">\n              <li>\n                <Link href=\"/signin\" className=\"font-medium text-gray-600 hover:text-gray-900 px-5 py-3 flex items-center transition duration-150 ease-in-out\">Sign in</Link>\n              </li>\n              <li>\n                <Link href=\"/signup\" className=\"btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 ml-3\">\n                  <span>Sign up</span>\n                  <svg className=\"w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n                    <path d=\"M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z\" fillRule=\"nonzero\" />\n                  </svg>\n                </Link>\n              </li>\n            </ul>\n\n          </nav>\n\n          <MobileMenu />\n\n        </div>\n      </div>\n    </header>\n  )\n}"
+    },
+    {
+      "id": "components/ui/header.tsx::variable::[top, setTop]::7",
+      "nodeType": "variable",
+      "symbolName": "[top, setTop]",
+      "startLine": 12,
+      "endLine": 12,
+      "content": "// File: components/ui/header.tsx\n// Symbol: [top, setTop] (variable)\n// Lines: 12-12\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nconst [top, setTop] = useState<boolean>(true)"
+    },
+    {
+      "id": "components/ui/header.tsx::variable::scrollHandler::8",
+      "nodeType": "variable",
+      "symbolName": "scrollHandler",
+      "startLine": 15,
+      "endLine": 17,
+      "content": "// File: components/ui/header.tsx\n// Symbol: scrollHandler (variable)\n// Lines: 15-17\n// Imports: import { useState, useEffect } from 'react', import Link from 'next/link', import Logo from './logo', import Dropdown from '@/components/utils/dropdown', import MobileMenu from './mobile-menu'\nconst scrollHandler = () => {\n    window.pageYOffset > 10 ? setTop(false) : setTop(true)\n  }"
+    }
+  ]
+}

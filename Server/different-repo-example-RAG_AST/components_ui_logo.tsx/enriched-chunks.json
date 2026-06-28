@@ -1,0 +1,30 @@
+{
+  "filePath": "components/ui/logo.tsx",
+  "count": 3,
+  "chunks": [
+    {
+      "id": "components/ui/logo.tsx::import::next/link::0",
+      "nodeType": "import",
+      "symbolName": "next/link",
+      "startLine": 1,
+      "endLine": 1,
+      "content": "// File: components/ui/logo.tsx\n// Symbol: next/link (import)\n// Lines: 1-1\n// Imports: import Link from 'next/link'\nimport Link from 'next/link'"
+    },
+    {
+      "id": "components/ui/logo.tsx::export::export_statement::1",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 3,
+      "endLine": 18,
+      "content": "// File: components/ui/logo.tsx\n// Symbol: export_statement (export)\n// Lines: 3-18\n// Imports: import Link from 'next/link'\nexport default function Logo() {\n  return (\n    <Link href=\"/\" className=\"block\" aria-label=\"Cruip\">\n      <svg className=\"w-8 h-8\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n        <defs>\n          <radialGradient cx=\"21.152%\" cy=\"86.063%\" fx=\"21.152%\" fy=\"86.063%\" r=\"79.941%\" id=\"footer-logo\">\n            <stop stopColor=\"#4FD1C5\" offset=\"0%\" />\n            <stop stopColor=\"#81E6D9\" offset=\"25.871%\" />\n            <stop stopColor=\"#338CF5\" offset=\"100%\" />\n          </radialGradient>\n        </defs>\n        <rect width=\"32\" height=\"32\" rx=\"16\" fill=\"url(#footer-logo)\" fillRule=\"nonzero\" />\n      </svg>\n    </Link>\n  )\n}"
+    },
+    {
+      "id": "components/ui/logo.tsx::function::Logo::2",
+      "nodeType": "function",
+      "symbolName": "Logo",
+      "startLine": 3,
+      "endLine": 18,
+      "content": "// File: components/ui/logo.tsx\n// Symbol: Logo (function)\n// Lines: 3-18\n// Imports: import Link from 'next/link'\nfunction Logo() {\n  return (\n    <Link href=\"/\" className=\"block\" aria-label=\"Cruip\">\n      <svg className=\"w-8 h-8\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n        <defs>\n          <radialGradient cx=\"21.152%\" cy=\"86.063%\" fx=\"21.152%\" fy=\"86.063%\" r=\"79.941%\" id=\"footer-logo\">\n            <stop stopColor=\"#4FD1C5\" offset=\"0%\" />\n            <stop stopColor=\"#81E6D9\" offset=\"25.871%\" />\n            <stop stopColor=\"#338CF5\" offset=\"100%\" />\n          </radialGradient>\n        </defs>\n        <rect width=\"32\" height=\"32\" rx=\"16\" fill=\"url(#footer-logo)\" fillRule=\"nonzero\" />\n      </svg>\n    </Link>\n  )\n}"
+    }
+  ]
+}

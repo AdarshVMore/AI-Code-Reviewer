@@ -1,0 +1,421 @@
+{
+  "filePath": "components/utils/accordion.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 50,
+    "children": [
+      {
+        "type": "expression_statement",
+        "startLine": 1,
+        "endLine": 1,
+        "children": [
+          {
+            "type": "string",
+            "startLine": 1,
+            "endLine": 1,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 1,
+                "endLine": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 3,
+        "endLine": 3,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "named_imports",
+                "startLine": 3,
+                "endLine": 3,
+                "children": [
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  },
+                  {
+                    "type": "import_specifier",
+                    "startLine": 3,
+                    "endLine": 3,
+                    "children": [
+                      {
+                        "type": "identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 3,
+            "endLine": 3,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 3,
+                "endLine": 3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "type_alias_declaration",
+        "startLine": 5,
+        "endLine": 10,
+        "children": [
+          {
+            "type": "type_identifier",
+            "startLine": 5,
+            "endLine": 5
+          },
+          {
+            "type": "object_type",
+            "startLine": 5,
+            "endLine": 10,
+            "children": [
+              {
+                "type": "property_signature",
+                "startLine": 6,
+                "endLine": 6,
+                "children": [
+                  {
+                    "type": "property_identifier",
+                    "startLine": 6,
+                    "endLine": 6
+                  },
+                  {
+                    "type": "type_annotation",
+                    "startLine": 6,
+                    "endLine": 6,
+                    "children": [
+                      {
+                        "type": "nested_type_identifier",
+                        "startLine": 6,
+                        "endLine": 6,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 6,
+                            "endLine": 6
+                          },
+                          {
+                            "type": "type_identifier",
+                            "startLine": 6,
+                            "endLine": 6
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "property_signature",
+                "startLine": 7,
+                "endLine": 7,
+                "children": [
+                  {
+                    "type": "property_identifier",
+                    "startLine": 7,
+                    "endLine": 7
+                  },
+                  {
+                    "type": "type_annotation",
+                    "startLine": 7,
+                    "endLine": 7,
+                    "children": [
+                      {
+                        "type": "predefined_type",
+                        "startLine": 7,
+                        "endLine": 7
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "property_signature",
+                "startLine": 8,
+                "endLine": 8,
+                "children": [
+                  {
+                    "type": "property_identifier",
+                    "startLine": 8,
+                    "endLine": 8
+                  },
+                  {
+                    "type": "type_annotation",
+                    "startLine": 8,
+                    "endLine": 8,
+                    "children": [
+                      {
+                        "type": "predefined_type",
+                        "startLine": 8,
+                        "endLine": 8
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "property_signature",
+                "startLine": 9,
+                "endLine": 9,
+                "children": [
+                  {
+                    "type": "property_identifier",
+                    "startLine": 9,
+                    "endLine": 9
+                  },
+                  {
+                    "type": "type_annotation",
+                    "startLine": 9,
+                    "endLine": 9,
+                    "children": [
+                      {
+                        "type": "predefined_type",
+                        "startLine": 9,
+                        "endLine": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 12,
+        "endLine": 49,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 12,
+            "endLine": 49,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 12,
+                "endLine": 12
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 12,
+                "endLine": 17,
+                "children": [
+                  {
+                    "type": "required_parameter",
+                    "startLine": 12,
+                    "endLine": 17,
+                    "children": [
+                      {
+                        "type": "object_pattern",
+                        "startLine": 12,
+                        "endLine": 17,
+                        "children": [
+                          {
+                            "type": "shorthand_property_identifier_pattern",
+                            "startLine": 13,
+                            "endLine": 13
+                          },
+                          {
+                            "type": "object_assignment_pattern",
+                            "startLine": 14,
+                            "endLine": 14
+                          },
+                          {
+                            "type": "shorthand_property_identifier_pattern",
+                            "startLine": 15,
+                            "endLine": 15
+                          },
+                          {
+                            "type": "object_assignment_pattern",
+                            "startLine": 16,
+                            "endLine": 16
+                          }
+                        ]
+                      },
+                      {
+                        "type": "type_annotation",
+                        "startLine": 17,
+                        "endLine": 17,
+                        "children": [
+                          {
+                            "type": "type_identifier",
+                            "startLine": 17,
+                            "endLine": 17
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "statement_block",
+                "startLine": 17,
+                "endLine": 49,
+                "children": [
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 19,
+                    "endLine": 19,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 19,
+                        "endLine": 19,
+                        "children": [
+                          {
+                            "type": "array_pattern",
+                            "startLine": 19,
+                            "endLine": 19
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 19,
+                            "endLine": 19
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 20,
+                    "endLine": 20,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 20,
+                        "endLine": 20,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 20,
+                            "endLine": 20
+                          },
+                          {
+                            "type": "call_expression",
+                            "startLine": 20,
+                            "endLine": 20
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "lexical_declaration",
+                    "startLine": 21,
+                    "endLine": 21,
+                    "children": [
+                      {
+                        "type": "variable_declarator",
+                        "startLine": 21,
+                        "endLine": 21,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 21,
+                            "endLine": 21
+                          },
+                          {
+                            "type": "as_expression",
+                            "startLine": 21,
+                            "endLine": 21
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "expression_statement",
+                    "startLine": 23,
+                    "endLine": 25,
+                    "children": [
+                      {
+                        "type": "call_expression",
+                        "startLine": 23,
+                        "endLine": 25,
+                        "children": [
+                          {
+                            "type": "identifier",
+                            "startLine": 23,
+                            "endLine": 23
+                          },
+                          {
+                            "type": "arguments",
+                            "startLine": 23,
+                            "endLine": 25
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "return_statement",
+                    "startLine": 27,
+                    "endLine": 48,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 27,
+                        "endLine": 48,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 28,
+                            "endLine": 47
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

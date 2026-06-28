@@ -1,0 +1,160 @@
+{
+  "filePath": "app/(auth)/signin/page.tsx",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 90,
+    "children": [
+      {
+        "type": "export_statement",
+        "startLine": 1,
+        "endLine": 4,
+        "children": [
+          {
+            "type": "lexical_declaration",
+            "startLine": 1,
+            "endLine": 4,
+            "children": [
+              {
+                "type": "variable_declarator",
+                "startLine": 1,
+                "endLine": 4,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 1,
+                    "endLine": 1
+                  },
+                  {
+                    "type": "object",
+                    "startLine": 1,
+                    "endLine": 4,
+                    "children": [
+                      {
+                        "type": "pair",
+                        "startLine": 2,
+                        "endLine": 2,
+                        "children": [
+                          {
+                            "type": "property_identifier",
+                            "startLine": 2,
+                            "endLine": 2
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 2,
+                            "endLine": 2
+                          }
+                        ]
+                      },
+                      {
+                        "type": "pair",
+                        "startLine": 3,
+                        "endLine": 3,
+                        "children": [
+                          {
+                            "type": "property_identifier",
+                            "startLine": 3,
+                            "endLine": 3
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 3,
+                            "endLine": 3
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "import_statement",
+        "startLine": 6,
+        "endLine": 6,
+        "children": [
+          {
+            "type": "import_clause",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          },
+          {
+            "type": "string",
+            "startLine": 6,
+            "endLine": 6,
+            "children": [
+              {
+                "type": "string_fragment",
+                "startLine": 6,
+                "endLine": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "export_statement",
+        "startLine": 8,
+        "endLine": 89,
+        "children": [
+          {
+            "type": "function_declaration",
+            "startLine": 8,
+            "endLine": 89,
+            "children": [
+              {
+                "type": "identifier",
+                "startLine": 8,
+                "endLine": 8
+              },
+              {
+                "type": "formal_parameters",
+                "startLine": 8,
+                "endLine": 8
+              },
+              {
+                "type": "statement_block",
+                "startLine": 8,
+                "endLine": 89,
+                "children": [
+                  {
+                    "type": "return_statement",
+                    "startLine": 9,
+                    "endLine": 88,
+                    "children": [
+                      {
+                        "type": "parenthesized_expression",
+                        "startLine": 9,
+                        "endLine": 88,
+                        "children": [
+                          {
+                            "type": "jsx_element",
+                            "startLine": 10,
+                            "endLine": 87
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "filePath": "components/utils/dropdown.tsx",
+  "imports": [
+    "import { useState } from 'react'",
+    "import { Transition } from '@headlessui/react'"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "filePath": "app/(auth)/signin/page.tsx",
+  "imports": [
+    "import Link from 'next/link'"
+  ]
+}

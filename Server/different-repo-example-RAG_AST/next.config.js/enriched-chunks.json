@@ -1,0 +1,14 @@
+{
+  "filePath": "next.config.js",
+  "count": 1,
+  "chunks": [
+    {
+      "id": "next.config.js::variable::nextConfig::0",
+      "nodeType": "variable",
+      "symbolName": "nextConfig",
+      "startLine": 2,
+      "endLine": 2,
+      "content": "// File: next.config.js\n// Symbol: nextConfig (variable)\n// Lines: 2-2\nconst nextConfig = {};"
+    }
+  ]
+}

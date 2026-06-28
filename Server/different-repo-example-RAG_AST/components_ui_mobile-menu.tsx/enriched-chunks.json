@@ -1,0 +1,118 @@
+{
+  "filePath": "components/ui/mobile-menu.tsx",
+  "count": 14,
+  "chunks": [
+    {
+      "id": "components/ui/mobile-menu.tsx::import::react::0",
+      "nodeType": "import",
+      "symbolName": "react",
+      "startLine": 3,
+      "endLine": 3,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: react (import)\n// Lines: 3-3\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nimport { useState, useRef, useEffect, useCallback } from 'react'"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::import::@headlessui/react::1",
+      "nodeType": "import",
+      "symbolName": "@headlessui/react",
+      "startLine": 4,
+      "endLine": 4,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: @headlessui/react (import)\n// Lines: 4-4\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nimport { Transition } from '@headlessui/react'"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::import::next/link::2",
+      "nodeType": "import",
+      "symbolName": "next/link",
+      "startLine": 5,
+      "endLine": 5,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: next/link (import)\n// Lines: 5-5\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nimport Link from 'next/link'"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::import::clsx::3",
+      "nodeType": "import",
+      "symbolName": "clsx",
+      "startLine": 6,
+      "endLine": 6,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: clsx (import)\n// Lines: 6-6\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nimport clsx from 'clsx'"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::export::export_statement::4",
+      "nodeType": "export",
+      "symbolName": "export_statement",
+      "startLine": 8,
+      "endLine": 125,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: export_statement (export)\n// Lines: 8-125\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nexport default function MobileMenu() {\n  const [isOpen, setIsOpen] = useState(false)\n\n  const triggerRef = useRef<HTMLButtonElement>(null)\n  const menuRef = useRef<HTMLDivElement>(null)\n\n  const closeMenu = useCallback(() => {\n    setIsOpen(false)\n  }, [])\n\n  const toggleMenu = () => {\n    setIsOpen(prev => !prev)\n  }\n\n  useEffect(() => {\n    const handleClickOutside = (event: MouseEvent) => {\n      const target = event.target as Node\n\n      if (\n        !isOpen ||\n        menuRef.current?.contains(target) ||\n        triggerRef.current?.contains(target)\n      ) {\n        return\n      }\n\n      closeMenu()\n    }\n\n    const handleEscape = (event: KeyboardEvent) => {\n      if (event.key === 'Escape') {\n        closeMenu()\n      }\n    }\n\n    document.addEventListener('click', handleClickOutside)\n    document.addEventListener('keydown', handleEscape)\n\n    return () => {\n      document.removeEventListener('click', handleClickOutside)\n      document.removeEventListener('keydown', handleEscape)\n    }\n  }, [isOpen, closeMenu])\n\n  return (\n    <div className=\"flex md:hidden\">\n      {/* Hamburger button */}\n      <button\n        ref={triggerRef}\n        className={clsx('hamburger', {\n          active: isOpen,\n        })}\n        aria-controls=\"mobile-nav\"\n        aria-expanded={isOpen}\n        onClick={toggleMenu}\n      >\n        <span className=\"sr-only\">Menu</span>\n\n        <svg\n          className=\"h-6 w-6 fill-current text-gray-900\"\n          viewBox=\"0 0 24 24\"\n        >\n          <rect y=\"4\" width=\"24\" height=\"2\" />\n          <rect y=\"11\" width=\"24\" height=\"2\" />\n          <rect y=\"18\" width=\"24\" height=\"2\" />\n        </svg>\n      </button>\n\n      {/* Mobile Navigation */}\n      <div ref={menuRef}>\n        <Transition\n          show={isOpen}\n          as=\"nav\"\n          id=\"mobile-nav\"\n          className=\"absolute left-0 top-full z-20 h-screen w-full overflow-scroll bg-white pb-16\"\n          enter=\"transition duration-200 ease-out transform\"\n          enterFrom=\"opacity-0 -translate-y-2\"\n          enterTo=\"opacity-100 translate-y-0\"\n          leave=\"transition duration-200 ease-out\"\n          leaveFrom=\"opacity-100\"\n          leaveTo=\"opacity-0\"\n        >\n          <ul className=\"px-5 py-2\">\n            <li>\n              <Link\n                href=\"/signin\"\n                className=\"flex w-full justify-center py-2 font-medium text-gray-600 hover:text-gray-900\"\n                onClick={closeMenu}\n              >\n                Sign in\n              </Link>\n            </li>\n\n            <li>\n              <Link\n                href=\"/signup\"\n                className=\"btn-sm my-2 w-full bg-gray-900 text-gray-200 hover:bg-gray-800\"\n                onClick={closeMenu}\n              >\n                <span>Sign up</span>\n\n                <svg\n                  className=\"ml-2 mr-1 h-3 w-3 shrink-0 fill-current text-gray-400\"\n                  viewBox=\"0 0 12 12\"\n                >\n                  <path\n                    d=\"M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z\"\n                    fillRule=\"nonzero\"\n                  />\n                </svg>\n              </Link>\n            </li>\n          </ul>\n        </Transition>\n      </div>\n    </div>\n  )\n}"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::function::MobileMenu::5",
+      "nodeType": "function",
+      "symbolName": "MobileMenu",
+      "startLine": 8,
+      "endLine": 125,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: MobileMenu (function)\n// Lines: 8-125\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nfunction MobileMenu() {\n  const [isOpen, setIsOpen] = useState(false)\n\n  const triggerRef = useRef<HTMLButtonElement>(null)\n  const menuRef = useRef<HTMLDivElement>(null)\n\n  const closeMenu = useCallback(() => {\n    setIsOpen(false)\n  }, [])\n\n  const toggleMenu = () => {\n    setIsOpen(prev => !prev)\n  }\n\n  useEffect(() => {\n    const handleClickOutside = (event: MouseEvent) => {\n      const target = event.target as Node\n\n      if (\n        !isOpen ||\n        menuRef.current?.contains(target) ||\n        triggerRef.current?.contains(target)\n      ) {\n        return\n      }\n\n      closeMenu()\n    }\n\n    const handleEscape = (event: KeyboardEvent) => {\n      if (event.key === 'Escape') {\n        closeMenu()\n      }\n    }\n\n    document.addEventListener('click', handleClickOutside)\n    document.addEventListener('keydown', handleEscape)\n\n    return () => {\n      document.removeEventListener('click', handleClickOutside)\n      document.removeEventListener('keydown', handleEscape)\n    }\n  }, [isOpen, closeMenu])\n\n  return (\n    <div className=\"flex md:hidden\">\n      {/* Hamburger button */}\n      <button\n        ref={triggerRef}\n        className={clsx('hamburger', {\n          active: isOpen,\n        })}\n        aria-controls=\"mobile-nav\"\n        aria-expanded={isOpen}\n        onClick={toggleMenu}\n      >\n        <span className=\"sr-only\">Menu</span>\n\n        <svg\n          className=\"h-6 w-6 fill-current text-gray-900\"\n          viewBox=\"0 0 24 24\"\n        >\n          <rect y=\"4\" width=\"24\" height=\"2\" />\n          <rect y=\"11\" width=\"24\" height=\"2\" />\n          <rect y=\"18\" width=\"24\" height=\"2\" />\n        </svg>\n      </button>\n\n      {/* Mobile Navigation */}\n      <div ref={menuRef}>\n        <Transition\n          show={isOpen}\n          as=\"nav\"\n          id=\"mobile-nav\"\n          className=\"absolute left-0 top-full z-20 h-screen w-full overflow-scroll bg-white pb-16\"\n          enter=\"transition duration-200 ease-out transform\"\n          enterFrom=\"opacity-0 -translate-y-2\"\n          enterTo=\"opacity-100 translate-y-0\"\n          leave=\"transition duration-200 ease-out\"\n          leaveFrom=\"opacity-100\"\n          leaveTo=\"opacity-0\"\n        >\n          <ul className=\"px-5 py-2\">\n            <li>\n              <Link\n                href=\"/signin\"\n                className=\"flex w-full justify-center py-2 font-medium text-gray-600 hover:text-gray-900\"\n                onClick={closeMenu}\n              >\n                Sign in\n              </Link>\n            </li>\n\n            <li>\n              <Link\n                href=\"/signup\"\n                className=\"btn-sm my-2 w-full bg-gray-900 text-gray-200 hover:bg-gray-800\"\n                onClick={closeMenu}\n              >\n                <span>Sign up</span>\n\n                <svg\n                  className=\"ml-2 mr-1 h-3 w-3 shrink-0 fill-current text-gray-400\"\n                  viewBox=\"0 0 12 12\"\n                >\n                  <path\n                    d=\"M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z\"\n                    fillRule=\"nonzero\"\n                  />\n                </svg>\n              </Link>\n            </li>\n          </ul>\n        </Transition>\n      </div>\n    </div>\n  )\n}"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::[isOpen, setIsOpen]::6",
+      "nodeType": "variable",
+      "symbolName": "[isOpen, setIsOpen]",
+      "startLine": 9,
+      "endLine": 9,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: [isOpen, setIsOpen] (variable)\n// Lines: 9-9\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst [isOpen, setIsOpen] = useState(false)"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::triggerRef::7",
+      "nodeType": "variable",
+      "symbolName": "triggerRef",
+      "startLine": 11,
+      "endLine": 11,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: triggerRef (variable)\n// Lines: 11-11\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst triggerRef = useRef<HTMLButtonElement>(null)"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::menuRef::8",
+      "nodeType": "variable",
+      "symbolName": "menuRef",
+      "startLine": 12,
+      "endLine": 12,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: menuRef (variable)\n// Lines: 12-12\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst menuRef = useRef<HTMLDivElement>(null)"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::closeMenu::9",
+      "nodeType": "variable",
+      "symbolName": "closeMenu",
+      "startLine": 14,
+      "endLine": 16,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: closeMenu (variable)\n// Lines: 14-16\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst closeMenu = useCallback(() => {\n    setIsOpen(false)\n  }, [])"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::toggleMenu::10",
+      "nodeType": "variable",
+      "symbolName": "toggleMenu",
+      "startLine": 18,
+      "endLine": 20,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: toggleMenu (variable)\n// Lines: 18-20\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst toggleMenu = () => {\n    setIsOpen(prev => !prev)\n  }"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::handleClickOutside::11",
+      "nodeType": "variable",
+      "symbolName": "handleClickOutside",
+      "startLine": 23,
+      "endLine": 35,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: handleClickOutside (variable)\n// Lines: 23-35\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst handleClickOutside = (event: MouseEvent) => {\n      const target = event.target as Node\n\n      if (\n        !isOpen ||\n        menuRef.current?.contains(target) ||\n        triggerRef.current?.contains(target)\n      ) {\n        return\n      }\n\n      closeMenu()\n    }"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::target::12",
+      "nodeType": "variable",
+      "symbolName": "target",
+      "startLine": 24,
+      "endLine": 24,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: target (variable)\n// Lines: 24-24\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst target = event.target as Node"
+    },
+    {
+      "id": "components/ui/mobile-menu.tsx::variable::handleEscape::13",
+      "nodeType": "variable",
+      "symbolName": "handleEscape",
+      "startLine": 37,
+      "endLine": 41,
+      "content": "// File: components/ui/mobile-menu.tsx\n// Symbol: handleEscape (variable)\n// Lines: 37-41\n// Imports: import { useState, useRef, useEffect, useCallback } from 'react', import { Transition } from '@headlessui/react', import Link from 'next/link', import clsx from 'clsx'\nconst handleEscape = (event: KeyboardEvent) => {\n      if (event.key === 'Escape') {\n        closeMenu()\n      }\n    }"
+    }
+  ]
+}

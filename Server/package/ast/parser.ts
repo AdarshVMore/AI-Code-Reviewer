@@ -2,8 +2,6 @@ import Parser from "tree-sitter";
 import JavaScript from "tree-sitter-javascript";
 import TypeScript from "tree-sitter-typescript";
 import Python from "tree-sitter-python";
-import fs from "fs";
-import { error } from "console";
 
 export type ASTNodeType =
   | "function"
@@ -166,8 +164,6 @@ function getParser(ext: string): Parser | null {
     parser.setLanguage(config.language);
     parserCache.set(ext, parser);
   }
-  console.log("<=============================== recieved Parser is ===============================> \n ", parserCache.get(ext))
-  fs.writeFileSync('parserCache.json', JSON.stringify(parserCache.get(ext), null, 2))
   return parserCache.get(ext)!;
 }
 
@@ -179,8 +175,6 @@ function extractSymbolName(
   node: Parser.SyntaxNode,
   config: LanguageConfig,
 ): string {
-  console.log("<=============================== Node and Config ===============================> \n ", node, config)
-  fs.writeFileSync('nodeAndConfig.json', JSON.stringify({node, config}, null, 2))
   if (
     node.type === "import_statement" ||
     node.type === "import_from_statement" ||
@@ -188,8 +182,6 @@ function extractSymbolName(
     node.type === "use_declaration"
   ) {
     const source = node.childForFieldName("source") ?? node.childForFieldName("path");
-    console.log("<====== SOURCE =====> \n", source?.text)
-    fs.writeFileSync('source.json', JSON.stringify(source?.text, null, 2))
     if (source) return source.text.replace(/['"]/g, "").slice(0, 120);
   }
 
@@ -201,7 +193,6 @@ function extractSymbolName(
         const id = nameNode.childForFieldName("name");
         if (id) return id.text.slice(0, 120);
       }
-      console.log("<====== NameNode Text =====> \n", nameNode?.text)
       return nameNode.text.slice(0, 120);
     }
   }
@@ -212,7 +203,6 @@ function extractSymbolName(
       child.type === "type_identifier" ||
       child.type === "property_identifier"
     ) {
-      console.log("<====== Child Text =====> \n", child.text)
       return child.text.slice(0, 120);
     }
     if (child.type === "variable_declarator") {
@@ -243,17 +233,11 @@ function extractImports(content: string, ext: string): string[] {
     for (const child of node.namedChildren) walk(child);
   }
 
-  console.log("<====== Tree Root Node =====> \n", tree.rootNode.type)
-  fs.writeFileSync('treeRootNode.json', JSON.stringify(tree.rootNode.type, null, 2))
   walk(tree.rootNode);
-  console.log("<====== Imports =====> \n", imports)
-  fs.writeFileSync('imports.json', JSON.stringify(imports, null, 2))
   return imports;
 }
 
 function mapNodeType(tsType: string): ASTNodeType {
-  console.log("<====== Mapping Node Type =====> \n", tsType, NODE_TYPE_MAP[tsType])
-  fs.writeFileSync('mapNodeType.json', JSON.stringify({tsType, mapped: NODE_TYPE_MAP[tsType]}, null, 2))
   return NODE_TYPE_MAP[tsType] ?? "file";
 }
 
@@ -268,7 +252,6 @@ function formatChunkForEmbedding(
   if (chunk.imports.length > 0) {
     header.push(`// Imports: ${chunk.imports.slice(0, 8).join(", ")}`);
   }
-  fs.writeFileSync('formatChunkForEmbedding.json', JSON.stringify({header, content: chunk?.content}, null, 2))
   return `${header.join("\n")}\n${chunk.content}`;
 }
 
@@ -325,7 +308,6 @@ export function parseFileToASTChunks(
 
   try {
     const tree = parser.parse(content);
-    console.log("<====== Tree Root Node =====> \n", tree.rootNode.type)
     if (tree.rootNode.hasError) {
       return fallbackChunk(filePath, content);
     }
@@ -341,16 +323,13 @@ export function parseFileToASTChunks(
       chunks,
       new Set(),
     );
-    console.log("<====== Chunks =====> \n", chunks)
-    fs.writeFileSync('chunks.json', JSON.stringify(chunks, null, 2))
+
     if (chunks.length === 0) {
       return fallbackChunk(filePath, content);
     }
 
     return chunks.map((chunk, index) => {
       const enriched = formatChunkForEmbedding(chunk);
-      console.log("<====== Enriched Chunk =====> \n", enriched)
-      fs.writeFileSync('enrichedChunk.json', JSON.stringify(enriched, null, 2))
       return {
         ...chunk,
         chunkIndex: index,
@@ -359,8 +338,7 @@ export function parseFileToASTChunks(
       };
     });
   } catch {
-    fs.writeFileSync('error.json', JSON.stringify(new Error(), null, 2))
-    throw error;
+    return fallbackChunk(filePath, content);
   }
 }
 

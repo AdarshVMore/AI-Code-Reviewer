@@ -1,0 +1,137 @@
+{
+  "filePath": "tailwind.config.js",
+  "rootType": "program",
+  "hasError": false,
+  "outline": {
+    "type": "program",
+    "startLine": 1,
+    "endLine": 134,
+    "children": [
+      {
+        "type": "comment",
+        "startLine": 1,
+        "endLine": 1
+      },
+      {
+        "type": "expression_statement",
+        "startLine": 2,
+        "endLine": 133,
+        "children": [
+          {
+            "type": "assignment_expression",
+            "startLine": 2,
+            "endLine": 133,
+            "children": [
+              {
+                "type": "member_expression",
+                "startLine": 2,
+                "endLine": 2,
+                "children": [
+                  {
+                    "type": "identifier",
+                    "startLine": 2,
+                    "endLine": 2
+                  },
+                  {
+                    "type": "property_identifier",
+                    "startLine": 2,
+                    "endLine": 2
+                  }
+                ]
+              },
+              {
+                "type": "object",
+                "startLine": 2,
+                "endLine": 133,
+                "children": [
+                  {
+                    "type": "pair",
+                    "startLine": 3,
+                    "endLine": 7,
+                    "children": [
+                      {
+                        "type": "property_identifier",
+                        "startLine": 3,
+                        "endLine": 3
+                      },
+                      {
+                        "type": "array",
+                        "startLine": 3,
+                        "endLine": 7,
+                        "children": [
+                          {
+                            "type": "string",
+                            "startLine": 4,
+                            "endLine": 4
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 5,
+                            "endLine": 5
+                          },
+                          {
+                            "type": "string",
+                            "startLine": 6,
+                            "endLine": 6
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "pair",
+                    "startLine": 8,
+                    "endLine": 129,
+                    "children": [
+                      {
+                        "type": "property_identifier",
+                        "startLine": 8,
+                        "endLine": 8
+                      },
+                      {
+                        "type": "object",
+                        "startLine": 8,
+                        "endLine": 129,
+                        "children": [
+                          {
+                            "type": "pair",
+                            "startLine": 9,
+                            "endLine": 128
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "pair",
+                    "startLine": 130,
+                    "endLine": 132,
+                    "children": [
+                      {
+                        "type": "property_identifier",
+                        "startLine": 130,
+                        "endLine": 130
+                      },
+                      {
+                        "type": "array",
+                        "startLine": 130,
+                        "endLine": 132,
+                        "children": [
+                          {
+                            "type": "call_expression",
+                            "startLine": 131,
+                            "endLine": 131
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

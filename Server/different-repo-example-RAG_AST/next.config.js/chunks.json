@@ -1,0 +1,17 @@
+{
+  "filePath": "next.config.js",
+  "count": 1,
+  "chunks": [
+    {
+      "id": "",
+      "content": "const nextConfig = {};",
+      "filePath": "next.config.js",
+      "chunkIndex": 0,
+      "nodeType": "variable",
+      "symbolName": "nextConfig",
+      "startLine": 2,
+      "endLine": 2,
+      "imports": []
+    }
+  ]
+}
