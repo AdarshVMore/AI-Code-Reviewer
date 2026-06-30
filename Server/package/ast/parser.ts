@@ -3,19 +3,7 @@ import JavaScript from "tree-sitter-javascript";
 import TypeScript from "tree-sitter-typescript";
 import Python from "tree-sitter-python";
 
-export type ASTNodeType =
-  | "function"
-  | "class"
-  | "method"
-  | "interface"
-  | "type"
-  | "import"
-  | "export"
-  | "variable"
-  | "struct"
-  | "enum"
-  | "module"
-  | "file";
+export type ASTNodeType = | "function" | "class" | "method" | "interface" | "type" | "import" | "export" | "variable" | "struct" | "enum" | "module" | "file";
 
 export type ASTCodeChunk = {
   id: string;
