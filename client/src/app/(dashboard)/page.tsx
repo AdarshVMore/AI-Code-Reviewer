@@ -5,6 +5,7 @@ import { Topbar } from '@/components/layout/Topbar'
 import {TakeAction} from '@/components/layout/takeAction'
 import { useDashboard } from '@/hooks/useDashboard'
 import type { fetchDashboardData } from '@/lib/api/dashboard'
+import {useRouter} from 'next/navigation'
 
 type DashboardData = Awaited<ReturnType<typeof fetchDashboardData>>
 type PR = DashboardData['recentPR'][number]
@@ -13,6 +14,7 @@ type Repo = DashboardData['activeRepo'][number]
 
 export default function DashboardPage() {
   const { data, loading, error } = useDashboard()
+  const router = useRouter()
 
   if (loading) return <div className="flex items-center justify-center h-full"><Spinner /></div>
   if (error) return <div className="px-8 py-7 text-sm text-text-secondary">{error}</div>
@@ -35,10 +37,12 @@ export default function DashboardPage() {
           {data?.recentPR.map((pr: PR) => (
             <Card hoverable key={pr.id} className="mb-3 p-4">
               <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
+                <div className="min-w-0" onClick={()=>{
+                  router.push(`/repo/${pr.repository.owner}/${pr.repository.name}/pr/${pr.prNumber}`)
+                }}>
                   <p className="text-sm font-medium text-text-primary truncate">{pr.prTitle ?? `PR #${pr.prNumber}`}</p>
                   <p className="text-xs font-mono text-text-secondary mt-0.5">
-                    {pr.repository.owner}/{pr.repository.name} · PR #{pr.prNumber}
+                    {pr.repository.owner}/{pr.repository.owner} · PR #{pr.prNumber}
                   </p>
                 </div>
                 <span className="text-xs font-mono text-text-tertiary shrink-0">
