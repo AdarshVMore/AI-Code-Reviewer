@@ -9,14 +9,14 @@ Built for teams and developers who want **faster, consistent, and intelligent co
 ## 🌐 Live Demo
 
 **Web App:**
-http://custom-ai-code-reviewer.vercel.app/
+http://coderefyn.vercel.app/
 
 **GitHub App Installation:**
 
 > GitHub Marketplace listing is not published yet.
 
 Install the public GitHub App here:
-https://github.com/apps/reviewpilot-dev
+https://github.com/apps/coderefyn
 
 ---
 
