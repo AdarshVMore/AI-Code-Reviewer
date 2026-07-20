@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Issue" ADD COLUMN IF NOT EXISTS "status" TEXT NOT NULL DEFAULT 'open';
+ALTER TABLE "Issue" ADD COLUMN IF NOT EXISTS "appliedCommitSha" TEXT;

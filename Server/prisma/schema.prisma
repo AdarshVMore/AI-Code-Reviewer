@@ -79,16 +79,18 @@ model PRReview {
 }
 
 model Issue {
-  id        String   @id @default(cuid())
-  reviewId  String
-  file      String
-  line      Int
-  category  String
-  severity  String
-  problem   String
-  fix       String
-  createdAt DateTime @default(now())
-  review    PRReview @relation(fields: [reviewId], references: [id])
+  id                String   @id @default(cuid())
+  reviewId          String
+  file              String
+  line              Int
+  category          String
+  severity          String
+  problem           String
+  fix               String
+  status            String   @default("open") // open | applied | failed
+  appliedCommitSha  String?
+  createdAt         DateTime @default(now())
+  review            PRReview @relation(fields: [reviewId], references: [id])
 }
 
 model Deployment {
