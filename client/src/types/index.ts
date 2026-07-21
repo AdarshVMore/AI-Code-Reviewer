@@ -36,6 +36,8 @@ export interface ReviewIssue {
   suggestion: string
 }
 
+export type IssueFixStatus = 'open' | 'applied' | 'failed'
+
 export interface PRIssue {
   id: string
   reviewId: string
@@ -45,6 +47,8 @@ export interface PRIssue {
   severity: Severity
   problem: string
   fix: string
+  status: IssueFixStatus
+  appliedCommitSha: string | null
   createdAt: string
 }
 
