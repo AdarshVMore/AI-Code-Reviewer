@@ -51,7 +51,7 @@ export function extractZIP(zipPath: string): string {
   return destDir;
 }
 
-function resolveRepoRoot(extractedDir: string): string {
+export function resolveRepoRoot(extractedDir: string): string {
   const entries = fs.readdirSync(extractedDir);
   if (entries.length === 1) {
     const nested = path.join(extractedDir, entries[0]);
