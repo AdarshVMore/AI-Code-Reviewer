@@ -4,13 +4,20 @@ import {
   extractZIP,
   readCodeFiles,
   cleanup,
+  resolveRepoRoot,
 } from "./repoSetup.service.js";
 import {
-  parseFileToASTChunks,
+  buildCodeGraph,
   parseChangedFilesFromDiff,
   parseChangedSymbolsFromDiff,
   type ASTCodeChunk,
 } from "../../../package/ast/parser.js";
+import {
+  findGraphNeighbors,
+  replaceRepositoryGraph,
+  toRepoKey,
+} from "../../../package/graph/codeGraph.repository.js";
+import { isNeo4jConfigured } from "../../../package/graph/neo4j.js";
 
 const EMBEDDING_MODEL = "llama-text-embed-v2";
 const EMBEDDING_DIMENSION = 1024;
@@ -48,16 +55,12 @@ export type RelevantCodeMatch = {
   symbolName?: string;
   startLine?: number;
   endLine?: number;
+  graphReason?: string;
+  edgeType?: string;
 };
 
 function getPinecone(): Pinecone {
   return new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-}
-
-function chunkFilesWithAST(
-  files: { path: string; content: string }[],
-): CodeChunk[] {
-  return files.flatMap((file) => parseFileToASTChunks(file.path, file.content));
 }
 
 async function ensureIndexExists(pc: Pinecone, indexName: string) {
@@ -204,14 +207,46 @@ export async function searchRelevantEmbeddings(query: object) {
   return searchResult.matches.map(toMatch);
 }
 
+async function fetchVectorsByIds(
+  indexName: string,
+  ids: string[],
+): Promise<RelevantCodeMatch[]> {
+  if (ids.length === 0) return [];
+
+  const pc = getPinecone();
+  const index = pc.index({ name: indexName });
+  const uniqueIds = [...new Set(ids)].slice(0, 100);
+  const fetched = await index.fetch({ ids: uniqueIds });
+  const records = fetched.records ?? {};
+
+  return Object.values(records).map((record) =>
+    toMatch({
+      id: record.id,
+      score: 0.55,
+      metadata: record.metadata as Record<string, unknown> | undefined,
+    }),
+  );
+}
+
 function dedupeMatches(matches: RelevantCodeMatch[]): RelevantCodeMatch[] {
   const seen = new Set<string>();
   const ranked = [...matches].sort((a, b) => b.score - a.score);
   const unique: RelevantCodeMatch[] = [];
 
   for (const match of ranked) {
-    const key = `${match.filePath}::${match.symbolName ?? match.id}`;
-    if (seen.has(key)) continue;
+    const key = match.id || `${match.filePath}::${match.symbolName ?? ""}`;
+    if (seen.has(key)) {
+      // Prefer keeping graphReason if a later/earlier duplicate has it
+      const existing = unique.find(
+        (u) => (u.id || `${u.filePath}::${u.symbolName ?? ""}`) === key,
+      );
+      if (existing && match.graphReason && !existing.graphReason) {
+        existing.graphReason = match.graphReason;
+        existing.edgeType = match.edgeType;
+        existing.score = Math.max(existing.score, match.score);
+      }
+      continue;
+    }
     seen.add(key);
     unique.push(match);
   }
@@ -226,7 +261,11 @@ function scoreMatchForDiff(
 ): number {
   let boost = match.score;
 
-  if (changedFiles.some((file) => match.filePath.endsWith(file) || file.endsWith(match.filePath))) {
+  if (
+    changedFiles.some(
+      (file) => match.filePath.endsWith(file) || file.endsWith(match.filePath),
+    )
+  ) {
     boost += 0.15;
   }
 
@@ -242,6 +281,15 @@ function scoreMatchForDiff(
     boost += 0.2;
   }
 
+  if (match.graphReason === "changed_symbol") {
+    boost += 0.25;
+  } else if (match.graphReason === "graph_neighbor") {
+    boost += 0.18;
+    if (match.edgeType === "CALLS" || match.edgeType === "IMPORTS") {
+      boost += 0.07;
+    }
+  }
+
   if (match.nodeType === "import" || match.nodeType === "export") {
     boost += 0.05;
   }
@@ -254,8 +302,10 @@ export async function retrieveContextForDiff(options: {
   semanticQuery: string;
   indexName: string;
   topK?: number;
+  owner?: string;
+  repo?: string;
 }): Promise<RelevantCodeMatch[]> {
-  const { diff, semanticQuery, indexName, topK = 8 } = options;
+  const { diff, semanticQuery, indexName, topK = 8, owner, repo } = options;
   const changedFiles = parseChangedFilesFromDiff(diff);
   const changedSymbols = parseChangedSymbolsFromDiff(diff);
 
@@ -264,7 +314,6 @@ export async function retrieveContextForDiff(options: {
     indexName,
     topK: topK * 2,
   });
-
 
   const fileMatches: RelevantCodeMatch[] = [];
   for (const filePath of changedFiles.slice(0, 5)) {
@@ -287,7 +336,45 @@ export async function retrieveContextForDiff(options: {
     symbolMatches.push(...matches);
   }
 
+  const graphMatches: RelevantCodeMatch[] = [];
+  if (owner && repo && isNeo4jConfigured()) {
+    const neighbors = await findGraphNeighbors({
+      repoKey: toRepoKey(owner, repo),
+      changedFiles,
+      changedSymbols,
+      limit: topK * 3,
+    });
+
+    if (neighbors.length > 0) {
+      const fetched = await fetchVectorsByIds(
+        indexName,
+        neighbors.map((n) => n.vectorId),
+      );
+      const reasonById = new Map(
+        neighbors.map((n) => [
+          n.vectorId,
+          { reason: n.reason, edgeType: n.edgeType },
+        ]),
+      );
+
+      for (const match of fetched) {
+        const meta = reasonById.get(match.id);
+        graphMatches.push({
+          ...match,
+          graphReason: meta?.reason,
+          edgeType: meta?.edgeType,
+          score: meta?.reason === "changed_symbol" ? 0.7 : 0.6,
+        });
+      }
+
+      console.log(
+        `Graph neighbors for ${owner}/${repo}: ${graphMatches.length} symbol vectors`,
+      );
+    }
+  }
+
   const combined = dedupeMatches([
+    ...graphMatches,
     ...semanticMatches,
     ...fileMatches,
     ...symbolMatches,
@@ -296,9 +383,7 @@ export async function retrieveContextForDiff(options: {
     score: scoreMatchForDiff(match, changedFiles, changedSymbols),
   }));
 
-  return combined
-    .sort((a, b) => b.score - a.score)
-    .slice(0, topK);
+  return combined.sort((a, b) => b.score - a.score).slice(0, topK);
 }
 
 export async function vectorDBExists(DBName: string): Promise<boolean> {
@@ -331,17 +416,37 @@ export async function runRAGPipeline(data: object) {
   const { installationId, owner, repo } = data as RAGPipelineInput;
 
   const indexName = toIndexName(owner, repo);
+  const repoKey = toRepoKey(owner, repo);
   const zipPath = await downlaodRepoZIP(installationId, owner, repo);
   const extractedDir = extractZIP(zipPath);
+  const repoRoot = resolveRepoRoot(extractedDir);
 
   const files = readCodeFiles(extractedDir);
-  const chunks = chunkFilesWithAST(files);
+  const graph = buildCodeGraph({
+    repoKey,
+    files,
+    repoRoot,
+  });
+  const chunks = graph.chunks;
 
   const vectors = await createEmbeddings({ chunks, indexName });
   await saveToVectorDB({ vectors, indexName });
 
+  if (isNeo4jConfigured()) {
+    const persisted = await replaceRepositoryGraph(graph);
+    if (!persisted) {
+      console.warn(
+        `Neo4j graph persist skipped/failed for ${owner}/${repo}; vector index is still available`,
+      );
+    }
+  } else {
+    console.log(
+      `Skipping Neo4j graph persist for ${owner}/${repo} (not configured)`,
+    );
+  }
+
   cleanup([zipPath, extractedDir]);
   console.log(
-    `RAG pipeline complete for ${owner}/${repo}: ${files.length} files → ${chunks.length} AST chunks indexed`,
+    `RAG pipeline complete for ${owner}/${repo}: ${files.length} files → ${chunks.length} AST chunks, ${graph.nodes.length} graph nodes, ${graph.edges.length} edges`,
   );
 }
