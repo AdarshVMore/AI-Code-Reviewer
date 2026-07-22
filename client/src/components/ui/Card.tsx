@@ -1,4 +1,5 @@
-import { ReactNode } from 'react'
+import { ReactNode, forwardRef } from 'react'
+import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 
 interface CardProps {
@@ -8,17 +9,30 @@ interface CardProps {
   hoverable?: boolean
 }
 
-export function Card({ children, className, onClick, hoverable }: CardProps) {
+/**
+ * Glassmorphic card — translucent surface over the shared AmbientGlow layer,
+ * hairline border, layered shadow. See client/DESIGN.md §4a. Motion timing
+ * per DESIGN.md §6 (entrance 300ms w/ slight overshoot, hover 160ms).
+ */
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  { children, className, onClick, hoverable },
+  ref,
+) {
   return (
-    <div
+    <motion.div
+      ref={ref}
       onClick={onClick}
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={hoverable ? { y: -2 } : undefined}
       className={cn(
-        'bg-bg-surface border border-bg-border rounded-xl p-5',
-        hoverable && 'cursor-pointer hover:bg-bg-raised transition-colors duration-150',
-        className
+        'glass-card rounded-xl p-5 relative z-10',
+        hoverable && 'glass-card--hoverable cursor-pointer',
+        className,
       )}
     >
       {children}
-    </div>
+    </motion.div>
   )
-}
+})
