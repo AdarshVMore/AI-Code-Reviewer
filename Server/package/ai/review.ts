@@ -184,6 +184,19 @@ type RelevantCodeMatch = {
   symbolName?: string
   startLine?: number
   endLine?: number
+  graphReason?: string
+  edgeType?: string
+}
+
+function formatGraphReason(match: RelevantCodeMatch): string | null {
+  if (!match.graphReason) return null;
+  if (match.graphReason === "changed_symbol") {
+    return "// Graph: changed symbol in this PR";
+  }
+  if (match.edgeType) {
+    return `// Graph: neighbor via ${match.edgeType}`;
+  }
+  return "// Graph: related neighbor";
 }
 
 function formatRelevantCode(matches: RelevantCodeMatch[]): string {
@@ -193,6 +206,7 @@ function formatRelevantCode(matches: RelevantCodeMatch[]): string {
       const header = [
         m.symbolName ? `// ${m.filePath} — ${m.symbolName} (${m.nodeType ?? "symbol"})` : `// ${m.filePath}`,
         m.startLine && m.endLine ? `// Lines ${m.startLine}-${m.endLine}` : null,
+        formatGraphReason(m),
       ]
         .filter(Boolean)
         .join("\n")
