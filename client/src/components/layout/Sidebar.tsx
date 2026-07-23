@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { GitBranch, LayoutDashboard, Sparkles } from 'lucide-react'
+import { GitBranch, LayoutDashboard, Sparkles, Command } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { motion } from 'motion/react'
 import { Avatar } from '@/components/ui'
 import { useUser } from '@/hooks/useUser'
 
@@ -35,29 +36,53 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-56 h-screen bg-bg-surface border-r border-bg-border flex flex-col shrink-0">
-      <div className="px-5 py-5 border-b border-bg-border">
-        <span className="font-mono text-sm font-medium text-brand">CodeRefyn</span>
+    <aside className="w-56 h-screen bg-bg-surface/70 backdrop-blur-xl border-r border-border-hairline flex flex-col shrink-0 relative z-10">
+      <div className="px-5 py-5 border-b border-border-hairline flex items-center gap-2">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 live-pulse-dot" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
+        </span>
+        <span className="font-mono text-sm font-medium text-brand tracking-tight">CodeRefyn</span>
       </div>
 
       <nav className="flex-1 px-2 py-4 flex flex-col gap-0.5">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-transparent text-sm transition-all duration-150 ${
-              isActive(item.href)
-                ? 'bg-bg-raised text-text-primary  border-transparent'
-                : 'text-text-secondary hover:text-text-primary hover:bg-bg-raised border-transparent'
-            }`}
-          >
-            <item.icon className="shrink-0" size={16} strokeWidth={1.8} />
-            {item.label}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const active = isActive(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150 ${
+                active ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
+              }`}
+            >
+              {active && (
+                <motion.span
+                  layoutId="sidebar-active-pill"
+                  className="absolute inset-0 rounded-lg bg-bg-raised"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              )}
+              <item.icon className="relative shrink-0" size={16} strokeWidth={1.8} />
+              <span className="relative">{item.label}</span>
+            </Link>
+          )
+        })}
       </nav>
 
-      <div className="mt-auto border-t border-bg-border px-4 py-4">
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
+          className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-bg-raised/60 text-text-tertiary hover:text-text-secondary hover:bg-bg-raised transition-colors duration-150 text-xs font-mono"
+        >
+          <span className="flex items-center gap-2">
+            <Command size={12} strokeWidth={2} /> Quick jump
+          </span>
+          <span className="opacity-60">⌘K</span>
+        </button>
+      </div>
+
+      <div className="mt-auto border-t border-border-hairline px-4 py-4">
         <div className="flex items-center gap-3">
           <Avatar src={user?.githubAvatar ?? ''} username={user?.githubUsername ?? ''} size="md" />
           <div className="flex flex-col min-w-0">
