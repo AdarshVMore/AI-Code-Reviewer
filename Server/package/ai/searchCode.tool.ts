@@ -17,6 +17,8 @@ export async function searchCodeContext(options: {
     semanticQuery: options.semanticQuery,
     indexName,
     topK: options.topK ?? 8,
+    owner: options.owner,
+    repo: options.repo,
   });
 }
 
