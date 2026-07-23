@@ -194,6 +194,8 @@ export async function runPRReview(data: PRReviewJobData) {
         semanticQuery: searchQuery,
         indexName,
         topK: 8,
+        owner,
+        repo,
       });
       console.log(
         `RAG context for ${owner}/${repo}#${prNumber}: ${relevantCode.length} AST chunks`,
