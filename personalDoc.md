@@ -1,4 +1,5 @@
 # Some New Feature to Add
+  - Having history of PRs , 2 people working on seperate branches and PRs should have context about each others code (like 1 on backend and 1 on frontend , and backend initializes ZOD types so frontend guy should have those context about the zod types that are not merged yet)
   - dropdown of > Review, and in description why and how
   - celebrate Good things with green tick ✓ and yellow , red for issues with dropdown
   - "Apply Suggestions" link in each issue => redirects to deployment fix buttons (or run a cURL api-req that will run that specific deployment fix)
