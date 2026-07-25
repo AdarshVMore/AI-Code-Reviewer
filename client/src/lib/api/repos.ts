@@ -24,3 +24,24 @@ export async function updateRepoSettings(id: string, body: Record<string, unknow
   const { data } = await apiClient.put(`/api/repo/update-settings?id=${id}`, body)
   return data
 }
+
+export type CodeGraphNode = {
+  id: string
+  label: string
+  fullPath?: string
+  type: 'repo' | 'file'
+  issueCount: number
+  severity: 'none' | 'high' | 'medium' | 'low'
+  categories?: string[]
+}
+
+export type CodeGraphEdge = {
+  id: string
+  source: string
+  target: string
+}
+
+export async function fetchCodeGraph(id: string) {
+  const { data } = await apiClient.get(`/api/repo/code-graph?id=${id}`)
+  return data as { nodes: CodeGraphNode[]; edges: CodeGraphEdge[] }
+}

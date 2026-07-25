@@ -51,6 +51,67 @@ export async function getSettings(req: Request, res: Response) {
   res.json(repo);
 }
 
+/**
+ * Derives an "issue hotspot" graph for a repo from real review/issue data
+ * already in Postgres — root node (the repo) fanning out to every file that
+ * has had at least one flagged issue, sized/colored by issue severity.
+ *
+ * This is intentionally independent from the Neo4j-backed AST code graph
+ * (feature/hybrid-neo4j-code-graph, not yet merged) so the frontend revamp
+ * doesn't depend on or conflict with that unmerged branch.
+ */
+export async function codeGraphLite(req: Request, res: Response) {
+  const userId = await getDbUserId(req);
+  if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
+
+  const { id } = req.query;
+  if (!id || typeof id !== "string") { res.status(400).json({ error: "repo id required" }); return; }
+
+  const repo = await db.repository.findFirst({ where: { id, userId } });
+  if (!repo) { res.status(404).json({ error: "repo not found" }); return; }
+
+  const issues = await db.issue.findMany({
+    where: { review: { repositoryId: id } },
+    select: { file: true, severity: true, category: true },
+    take: 500,
+  });
+
+  type FileStats = { count: number; high: number; medium: number; low: number; categories: Set<string> };
+  const fileMap = new Map<string, FileStats>();
+
+  for (const issue of issues) {
+    const entry = fileMap.get(issue.file) ?? { count: 0, high: 0, medium: 0, low: 0, categories: new Set<string>() };
+    entry.count += 1;
+    if (issue.severity === "high") entry.high += 1;
+    else if (issue.severity === "medium") entry.medium += 1;
+    else entry.low += 1;
+    entry.categories.add(issue.category);
+    fileMap.set(issue.file, entry);
+  }
+
+  const rootId = "__repo_root__";
+  const nodes = [
+    { id: rootId, label: `${repo.owner}/${repo.name}`, type: "repo" as const, issueCount: issues.length, severity: "none" as const },
+    ...Array.from(fileMap.entries()).map(([file, stats]) => ({
+      id: file,
+      label: file.split("/").pop() ?? file,
+      fullPath: file,
+      type: "file" as const,
+      issueCount: stats.count,
+      severity: (stats.high > 0 ? "high" : stats.medium > 0 ? "medium" : "low") as "high" | "medium" | "low",
+      categories: Array.from(stats.categories),
+    })),
+  ];
+
+  const edges = Array.from(fileMap.keys()).map((file) => ({
+    id: `${rootId}->${file}`,
+    source: rootId,
+    target: file,
+  }));
+
+  res.json({ nodes, edges });
+}
+
 export async function updateSettings(req: Request, res: Response) {
   const userId = await getDbUserId(req);
   if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }

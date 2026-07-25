@@ -16,8 +16,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Card, SectionLabel, Avatar } from "@/components/ui";
+import { motion } from "motion/react";
+import { Card, SectionLabel, Avatar, EmptyState } from "@/components/ui";
 import { Topbar } from "@/components/layout/Topbar";
+import { CodeGraphView } from "@/components/graph/CodeGraphView";
 import { useRepos } from "@/hooks/useRepos";
 import { useAllPRs } from "@/hooks/useAllPRs";
 import { useCollaborators } from "@/hooks/useCollaborator";
@@ -26,6 +28,9 @@ import { useDeployments, Deployment } from "@/hooks/useDeployments";
 import { fixDeployment } from "@/lib/api/deployments";
 import { fetchRepoSettings, updateRepoSettings } from "@/lib/api/repos";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import { GitPullRequest } from "lucide-react";
+import { FORCE_LOADING } from "@/lib/forceLoading";
+import { TileWaveSkeletonPage } from "@/components/ui";
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -49,7 +54,7 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-bg-raised border border-bg-border rounded-lg px-3 py-2 text-xs font-mono text-text-primary">
+    <div className="bg-bg-raised border border-border-hairline rounded-lg px-3 py-2 text-xs font-mono text-text-primary">
       {label}: {payload[0].value}
     </div>
   );
@@ -58,6 +63,7 @@ function CustomTooltip({
 type TabId =
   | "reviews"
   | "analytics"
+  | "codeGraph"
   | "collaborators"
   | "settings"
   | "deployment";
@@ -65,8 +71,9 @@ type TabId =
 const tabs: { id: TabId; label: string }[] = [
   { id: "reviews", label: "Reviews" },
   { id: "analytics", label: "Analytics" },
+  { id: "codeGraph", label: "Code Graph" },
   { id: "collaborators", label: "Team Analysis" },
-  { id: "deployment", label: "deployment" },
+  { id: "deployment", label: "Deployment" },
   { id: "settings", label: "Settings" },
 ];
 
@@ -116,7 +123,6 @@ export default function RepoPage() {
     analysisLoading,
     getCollaboratorAnalysis,
   } = useCollaborators(repoId);
-  console.log("allCollaborator======>", allCollaborators);
   const {
     deployments,
     loading: deploymentsLoading,
@@ -194,25 +200,41 @@ export default function RepoPage() {
     }
   }
 
+  if (FORCE_LOADING) {
+    return (
+      <>
+        <Topbar title={`${owner}/${repo}`} />
+        <TileWaveSkeletonPage layout="repo" />
+      </>
+    )
+  }
+
   return (
     <>
       <Topbar
         title={`${owner}/${repo}`}
         subtitle={`${prs.length} PRs reviewed`}
       />
-      <div className="px-8 py-7 max-w-7xl mx-auto">
-        <div className="flex border-b border-bg-border mb-6">
+      <div className="px-8 py-7 w-full">
+        <div className="flex border-b border-border-hairline mb-6 relative">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`text-sm px-4 py-2.5 font-medium cursor-pointer transition-colors duration-150 bg-transparent border-none ${
+              className={`relative text-sm px-4 py-2.5 font-medium cursor-pointer transition-colors duration-150 bg-transparent border-none ${
                 activeTab === tab.id
-                  ? "text-text-primary border-b-2 border-brand -mb-px"
+                  ? "text-text-primary"
                   : "text-text-secondary hover:text-text-primary"
               }`}
             >
               {tab.label}
+              {activeTab === tab.id && (
+                <motion.span
+                  layoutId="repo-tab-underline"
+                  className="absolute left-0 right-0 -bottom-px h-0.5 bg-brand rounded-full"
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                />
+              )}
             </button>
           ))}
         </div>
@@ -223,9 +245,7 @@ export default function RepoPage() {
               <p className="text-sm text-text-secondary">Loading...</p>
             )}
             {!loading && prs.length === 0 && (
-              <p className="text-sm text-text-secondary">
-                No PRs reviewed yet.
-              </p>
+              <EmptyState message="No PRs reviewed yet." icon={GitPullRequest} />
             )}
             {prs.map((pr) => (
               <Card
@@ -259,6 +279,16 @@ export default function RepoPage() {
               </Card>
             ))}
           </>
+        )}
+
+        {activeTab === "codeGraph" && (
+          <div>
+            <SectionLabel>Issue hotspots</SectionLabel>
+            <p className="text-xs text-text-tertiary mb-4 -mt-2">
+              Files the AI has flagged most often, mapped out — click a node for details.
+            </p>
+            <CodeGraphView repoId={repoId} />
+          </div>
         )}
 
         {activeTab === "analytics" && (
@@ -308,7 +338,7 @@ export default function RepoPage() {
                   className={`text-left rounded-xl border p-4 transition-all duration-150 cursor-pointer ${
                     selectedMember?.login === m.login
                       ? "border-brand bg-brand/5"
-                      : "border-bg-border bg-bg-raised hover:border-brand/40"
+                      : "border-border-hairline bg-bg-raised hover:border-brand/40"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -320,7 +350,7 @@ export default function RepoPage() {
             </div>
 
             {selectedMember && (
-              <div className="rounded-xl border border-bg-border bg-bg-raised p-5 space-y-6">
+              <div className="rounded-xl border border-border-hairline bg-bg-raised p-5 space-y-6">
                 {analysisLoading && !collaboratorAnalysis && (
                   <p className="text-sm text-text-secondary">Loading analysis...</p>
                 )}
@@ -364,7 +394,7 @@ export default function RepoPage() {
                           <div className="space-y-2">
                             {repeatedEntries.map(([type, count]) => (
                               <div key={type} className="flex items-center gap-3">
-                                <span className={`text-xs font-mono px-2 py-0.5 rounded-full border shrink-0 ${ISSUE_TYPE_COLORS[type] ?? "bg-bg-border text-text-secondary border-bg-border"}`}>
+                                <span className={`text-xs font-mono px-2 py-0.5 rounded-full border shrink-0 ${ISSUE_TYPE_COLORS[type] ?? "bg-bg-border text-text-secondary border-border-hairline"}`}>
                                   {type}
                                 </span>
                                 <div className="flex-1 h-1.5 rounded-full bg-bg-border overflow-hidden">
@@ -383,13 +413,13 @@ export default function RepoPage() {
                           {analysis.recentPR.map((pr) => {
                             const uniqueCategories = [...new Set(pr.issues.map((i) => i.category))]
                             return (
-                              <div key={pr.prNumber} className="flex items-start justify-between gap-3 py-2 border-b border-bg-border last:border-0">
+                              <div key={pr.prNumber} className="flex items-start justify-between gap-3 py-2 border-b border-border-hairline last:border-0">
                                 <div className="min-w-0">
                                   <p className="text-sm text-text-primary truncate">{pr.prTitle ?? `PR #${pr.prNumber}`}</p>
                                   <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                                     <span className="text-xs font-mono text-text-tertiary">#{pr.prNumber} · {timeAgo(pr.createdAt)}</span>
                                     {uniqueCategories.map((t) => (
-                                      <span key={t} className={`text-xs font-mono px-1.5 py-0 rounded border ${ISSUE_TYPE_COLORS[t] ?? "bg-bg-border text-text-secondary border-bg-border"}`}>
+                                      <span key={t} className={`text-xs font-mono px-1.5 py-0 rounded border ${ISSUE_TYPE_COLORS[t] ?? "bg-bg-border text-text-secondary border-border-hairline"}`}>
                                         {t}
                                       </span>
                                     ))}
@@ -433,7 +463,7 @@ export default function RepoPage() {
                       />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-bg-raised border border-bg-border text-text-secondary capitalize">
+                          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-bg-raised border border-border-hairline text-text-secondary capitalize">
                             {d.provider.replace("_", " ")}
                           </span>
                           {d.branch && (
@@ -470,7 +500,7 @@ export default function RepoPage() {
                     </div>
                   </div>
                   {d.cause && (
-                    <div className="mt-3 pt-3 border-t border-bg-border">
+                    <div className="mt-3 pt-3 border-t border-border-hairline">
                       <p className="text-xs font-mono text-text-tertiary mb-1">
                         Cause
                       </p>
@@ -493,7 +523,7 @@ export default function RepoPage() {
 
 {activeTab === "settings" && (
           <div className="max-w-xl">
-            <div className="rounded-xl border border-bg-border bg-bg-raised p-5 mb-4">
+            <div className="rounded-xl border border-border-hairline bg-bg-raised p-5 mb-4">
               <p className="text-xs font-mono text-text-tertiary uppercase tracking-wide mb-2">Review behaviour</p>
               <ToggleSwitch
                 label="Allow GIF in Review"
@@ -515,7 +545,7 @@ export default function RepoPage() {
               />
             </div>
 
-            <div className="rounded-xl border border-bg-border bg-bg-raised p-5">
+            <div className="rounded-xl border border-border-hairline bg-bg-raised p-5">
               <p className="text-xs font-mono text-text-tertiary uppercase tracking-wide mb-3">Reviewer</p>
               <div className="flex items-center justify-between gap-6">
                 <div>
@@ -525,7 +555,7 @@ export default function RepoPage() {
                 <select
                   value={selectedReviewer}
                   onChange={(e) => setSelectedReviewer(e.target.value)}
-                  className="bg-bg-surface border border-bg-border text-text-primary text-sm rounded-lg px-3 py-1.5 font-mono focus:outline-none focus:border-brand transition-colors shrink-0"
+                  className="bg-bg-surface border border-border-hairline text-text-primary text-sm rounded-lg px-3 py-1.5 font-mono focus:outline-none focus:border-brand transition-colors shrink-0"
                 >
                   <option value="none">None</option>
                   {allCollaborators.map((c) => (
