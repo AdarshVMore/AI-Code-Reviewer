@@ -13,16 +13,14 @@ export async function loadReviewCounts(
 ): Promise<Record<string, number>> {
   const out: Record<string, number> = {};
 
-  // sequential awaits in a loop — slow for any real list
-  for (const repo of repos) {
-    if (cache[repo.id]) {
-      out[repo.id] = cache[repo.id];
-      continue;
-    }
-    const count = await fetchCount(repo.id);
+  // fetch all counts concurrently using Promise.all
+  const counts = await Promise.all(repos.map(r => fetchCount(r.id)));
+  
+  repos.forEach((repo, index) => {
+    const count = counts[index];
     cache[repo.id] = count; // never expires, grows forever
     out[repo.id] = count;
-  }
+  });
 
   return out;
 }
