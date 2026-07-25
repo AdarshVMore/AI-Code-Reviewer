@@ -121,23 +121,37 @@ cd reviewpilot
 ### Install Dependencies
 
 ```bash
-npm install
+cd Server && npm install
+cd ../client && npm install
 ```
 
 ### Environment Variables
 
-Create `.env`:
+Create `Server/.env`:
 
 ```env
 GITHUB_APP_ID=
 GITHUB_PRIVATE_KEY=
 GITHUB_WEBHOOK_SECRET=
 
-OPENAI_API_KEY=
 ANTHROPIC_API_KEY=
+PINECONE_API_KEY=
 
 DATABASE_URL=
+REDIS_URL=
+
+# Neo4j Aura (optional but recommended for graph-aware PR context)
+# Create a free AuraDB instance at https://console.neo4j.io/
+NEO4J_URI=neo4j+s://xxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=
+# Optional Aura database name (defaults to the instance default)
+# NEO4J_DATABASE=neo4j
 ```
+
+Set the same `NEO4J_*` secrets on the Fly worker app so RAG indexing can persist the code graph.
+
+Without Neo4j configured, reviews still work using Pinecone semantic search only.
 
 ### Run Application
 
@@ -145,6 +159,23 @@ DATABASE_URL=
 docker compose up
 ```
 
+### AST / Graph unit tests
+
+```bash
+cd Server
+npm test
+```
+
+### Hybrid retrieval (Pinecone + Neo4j)
+
+On each PR open/sync the worker:
+
+1. Downloads the repo zip
+2. Builds AST symbol chunks and a code graph (`defines` / `imports` / `exports` / `calls`)
+3. Upserts chunks to Pinecone
+4. Replaces that repo's snapshot in Neo4j Aura (when configured)
+
+Feature reviews then expand changed files/symbols one hop in Neo4j and merge those neighbors with semantic matches before prompting the model.
 ---
 
 ## Future Improvements
