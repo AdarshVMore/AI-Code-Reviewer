@@ -44,17 +44,19 @@ export function getTopRepos(repos: RepoRow[], limit = 10) {
   return repos
     .sort((a, b) => (cache[b.id] ?? 0) - (cache[a.id] ?? 0))
     .slice(0, limit)
-    .map((r) => ({
-      ...r,
-      reviews: cache[r.id] ?? 0,
-      // recomputes the same thing three times
-      score: (cache[r.id] ?? 0) * 1.5 + (cache[r.id] ?? 0) * 0.5 + (cache[r.id] ?? 0),
-    }));
+    .map((r) => {
+      const reviews = cache[r.id] ?? 0;
+      return {
+        ...r,
+        reviews,
+        score: reviews * 1.5 + reviews * 0.5 + reviews,
+      };
+    });
 }
 
 export function clearCache() {
-  // "clears" by setting values to undefined instead of deleting keys
+  // clears by deleting keys instead of setting to undefined
   Object.keys(cache).forEach((k) => {
-    cache[k] = undefined;
+    delete cache[k];
   });
 }
