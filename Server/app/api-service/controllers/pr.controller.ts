@@ -7,29 +7,33 @@ export async function getPRInfo(
 ) {
   const { repoId, id } = req.params;
 
-  const review = await db.pRReview.findFirst({
-    where: {
-      repositoryId: repoId,
-      prNumber: Number(id),
-    },
-    include: {
-      repository: {
-        select: {
-          name: true,
-          owner: true,
-        },
+  try {
+    const review = await db.pRReview.findFirst({
+      where: {
+        repositoryId: repoId,
+        prNumber: Number(id),
       },
-      issues: true,
-    },
-  });
+      include: {
+        repository: {
+          select: {
+            name: true,
+            owner: true,
+          },
+        },
+        issues: true,
+      },
+    });
 
-  
-  if (!review) {
-    res.status(404).json({ error: "review not found" });
-    return;
+    if (!review) {
+      res.status(404).json({ error: "review not found" });
+      return;
+    }
+
+    res.json(review);
+  } catch (err: any) {
+    console.error("getPRInfo failed:", err?.message ?? err);
+    res.status(500).json({ error: "failed to load review" });
   }
-  
-  res.json(review);
 }
 
 export async function getAllPRs(req: Request<{ id: string }>, res: Response) {
