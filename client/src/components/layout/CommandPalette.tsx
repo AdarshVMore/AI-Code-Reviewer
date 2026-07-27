@@ -11,10 +11,6 @@ import type { fetchDashboardData } from '@/lib/api/dashboard'
 
 type RecentPR = Awaited<ReturnType<typeof fetchDashboardData>>['recentPR'][number]
 
-/**
- * Cmd+K / Ctrl+K command palette — the primary fast-navigation surface for
- * power users, per client/DESIGN.md §7b. Mounted once in the dashboard layout.
- */
 export function CommandPalette() {
   const [open, setOpen] = useState(false)
   const router = useRouter()

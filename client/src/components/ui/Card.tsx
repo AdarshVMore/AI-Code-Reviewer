@@ -9,11 +9,6 @@ interface CardProps {
   hoverable?: boolean
 }
 
-/**
- * Glassmorphic card — translucent surface over the shared AmbientGlow layer,
- * hairline border, layered shadow. See client/DESIGN.md §4a. Motion timing
- * per DESIGN.md §6 (entrance 300ms w/ slight overshoot, hover 160ms).
- */
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   { children, className, onClick, hoverable },
   ref,

@@ -1,10 +1,3 @@
-/**
- * Shared ambient background glow layer — see client/DESIGN.md §4a.
- *
- * Renders 2–3 large, heavily blurred, low-opacity color blobs behind the page
- * content. Glass cards borrow this glow through their translucent background
- * instead of each generating their own halo. Mount ONCE per page/layout.
- */
 export function AmbientGlow({ variant = 'default' }: { variant?: 'default' | 'live' }) {
   return (
     <div className="ambient-glow-layer" aria-hidden="true">

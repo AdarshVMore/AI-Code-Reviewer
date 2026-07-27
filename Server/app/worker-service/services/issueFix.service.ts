@@ -8,12 +8,6 @@ export type ApplyIssueFixResult = {
   alreadyApplied?: boolean;
 };
 
-/**
- * Applies a single review issue's suggested fix as a commit on the PR's
- * *current* head branch. The branch is looked up live via the GitHub API
- * (not a value saved at review time), so this always lands on whatever
- * branch the PR is pointing at right now.
- */
 export async function applyIssueFix(issueId: string): Promise<ApplyIssueFixResult> {
   const issue = await db.issue.findUnique({
     where: { id: issueId },

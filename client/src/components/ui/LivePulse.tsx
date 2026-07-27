@@ -18,11 +18,6 @@ const toneText: Record<string, string> = {
   active: 'text-status-active',
 }
 
-/**
- * Genuine "this is live" indicator — only mount this against a real async
- * state (a fetch in flight, a deployment building, a graph query running).
- * See client/DESIGN.md §7c. Never use as static decoration.
- */
 export function LivePulse({ label, tone = 'pulse', className }: LivePulseProps) {
   return (
     <span className={cn('inline-flex items-center gap-2 text-xs font-mono', toneText[tone], className)}>

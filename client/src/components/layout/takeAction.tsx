@@ -38,7 +38,6 @@ export function TakeAction({
               transition={{ duration: 0.32, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
               className="relative overflow-hidden rounded-xl"
             >
-              {/* Soft ambient wash behind the glass — brand + pulse, no flat mustard bar */}
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0"

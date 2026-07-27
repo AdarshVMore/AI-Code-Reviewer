@@ -40,14 +40,12 @@ export default function DashboardPage() {
       <Topbar title="Dashboard" />
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-8 py-4 w-full">
-        {/* Stats — fixed height */}
         <div className="grid shrink-0 grid-cols-4 gap-3">
           <StatCard compact value={String(data?.stats.totalReviews ?? 0)} label="PRs reviewed" />
           <StatCard compact value={String(data?.stats.totalIssues ?? 0)} label="Issues found" />
           <StatCard compact value={String(data?.stats.totalRepos ?? 0)} label="Active repos" />
         </div>
 
-        {/* Recent reviews — takes remaining middle space, scrolls internally if needed */}
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <SectionLabel className="mb-2 shrink-0">Recent reviews</SectionLabel>
           <div className="relative min-h-0 flex-1">
@@ -86,13 +84,11 @@ export default function DashboardPage() {
                   </div>
                 </Card>
               ))}
-              {/* Spacer so the last card can scroll fully above the fade */}
               <div className="h-10 shrink-0" aria-hidden />
             </motion.div>
           </div>
         </div>
 
-        {/* Bottom cards — slightly taller, still fits viewport */}
         <div className="grid shrink-0 grid-cols-1 lg:grid-cols-2 gap-3 h-[220px]">
           <Card className="!p-0 overflow-hidden h-full flex flex-col">
             <div className="flex items-center gap-2 px-3.5 pt-3 pb-2 shrink-0">

@@ -1,32 +1,58 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Skeleton } from './Skeleton'
 import { BootLoader } from './BootLoader'
 
 type TileWaveSkeletonProps = {
   className?: string
-  /** Card height in px */
   height?: number
 }
 
-/**
- * CodeRabbit-style tile field — pure CSS grid pattern + GPU wave sweep.
- * No per-tile DOM, no ResizeObserver delay: starts instantly and stays smooth.
- */
+const TILE = 8
+const GAP = 3
+const PADDING = 3
+const TILE_STEP = TILE + GAP
+
+function tilesInSpan(span: number) {
+  const available = span - PADDING * 2
+  return Math.max(1, Math.floor((available + GAP) / TILE_STEP))
+}
+
 export function TileWaveSkeleton({
   className,
   height = 56,
 }: TileWaveSkeletonProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [cols, setCols] = useState(0)
+
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el) return
+    const measure = (width: number) => setCols(tilesInSpan(width))
+    measure(el.getBoundingClientRect().width)
+    const ro = new ResizeObserver(([entry]) => measure(entry.contentRect.width))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const rows = tilesInSpan(height)
+  const tileCount = cols * rows
+
   return (
     <div
+      ref={cardRef}
       role="status"
       aria-label="Loading"
       className={cn('tile-wave-card', className)}
       style={{ height }}
     >
-      <div className="tile-wave-grid" aria-hidden />
+      <div className="tile-wave-grid" aria-hidden>
+        {Array.from({ length: tileCount }).map((_, i) => (
+          <div key={i} className="tile-wave-cell" />
+        ))}
+      </div>
       <div className="tile-wave-sheen" aria-hidden />
       <span className="sr-only">Loading…</span>
     </div>
@@ -52,10 +78,10 @@ function PageBody({
         </div>
         <Skeleton className="h-3 w-28 mb-3" />
         <div className="space-y-2 mb-6">
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
         </div>
         <div className="grid grid-cols-2 gap-4 mt-6">
           <Skeleton className="h-[200px]" />
@@ -70,14 +96,14 @@ function PageBody({
       <div className={cn('px-8 py-7 w-full', className)}>
         <Skeleton className="h-3 w-40 mb-3" />
         <div className="space-y-2">
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
         </div>
       </div>
     )
@@ -96,8 +122,8 @@ function PageBody({
         <Skeleton className="h-3 w-32 mb-3" />
         <Skeleton className="h-[88px] mb-4" />
         <div className="space-y-2">
-          <TileWaveSkeleton height={52} />
-          <TileWaveSkeleton height={52} />
+          <TileWaveSkeleton height={51} />
+          <TileWaveSkeleton height={51} />
         </div>
       </div>
     )
@@ -147,7 +173,6 @@ function PageBody({
   )
 }
 
-/** Boot loader first, then layout-matched skeletons (shimmer headers + tile-wave lists) */
 export function TileWaveSkeletonPage({
   className,
   layout = 'dashboard',
@@ -158,7 +183,6 @@ export function TileWaveSkeletonPage({
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    // Paint boot loader first, then swap on next frames so skeletons never flash empty
     let raf2 = 0
     const raf1 = requestAnimationFrame(() => {
       raf2 = requestAnimationFrame(() => setReady(true))

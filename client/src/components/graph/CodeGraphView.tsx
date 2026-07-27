@@ -8,7 +8,6 @@ import { EmptyState, TileWaveSkeleton, TileWaveSkeletonPage } from '@/components
 import { FORCE_LOADING } from '@/lib/forceLoading'
 import { Network } from 'lucide-react'
 
-// reagraph is WebGL/three.js — client-only, no SSR.
 const GraphCanvas = dynamic(() => import('reagraph').then((m) => m.GraphCanvas), {
   ssr: false,
   loading: () => (
@@ -29,11 +28,7 @@ interface CodeGraphViewProps {
   repoId: string
 }
 
-/**
- * Issue-hotspot code graph — see client/DESIGN.md §7a. Derived from real
- * PRReview/Issue data (repo.controller.ts `codeGraphLite`), not the unmerged
- * Neo4j AST graph, so this stays conflict-free with that branch.
- */
+
 export function CodeGraphView({ repoId }: CodeGraphViewProps) {
   const { nodes, edges, loading, error } = useCodeGraph(repoId)
   const [selected, setSelected] = useState<string | null>(null)

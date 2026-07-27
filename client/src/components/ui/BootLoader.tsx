@@ -1,9 +1,5 @@
 'use client'
 
-/**
- * Pre-skeleton boot state — mini 3×3 tile pulse + "Loading.."
- * Shown until the full page skeleton is ready to paint.
- */
 export function BootLoader() {
   return (
     <div className="flex h-full min-h-[50vh] w-full items-center justify-center">

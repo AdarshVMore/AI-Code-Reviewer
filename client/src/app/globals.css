@@ -188,8 +188,8 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* CodeRabbit-style tile wave — CSS grid pattern + GPU sheen sweep      */
-/* No per-tile DOM → instant start, smooth 60fps                        */
+/* CodeRabbit-style tile wave — rounded tiles on a CSS grid + GPU sheen */
+/* Tile count is computed in JS (ResizeObserver) to match container    */
 /* ------------------------------------------------------------------ */
 .tile-wave-card {
   position: relative;
@@ -199,17 +199,23 @@ body {
   background: #0d1117;
 }
 
-/* Dense perfect squares via background grid (6px tile + 1px gutter) */
+/* Distinct rounded tiles with visible gaps between them */
 .tile-wave-grid {
   position: absolute;
   inset: 0;
-  /* Tile fill shows through; gutters drawn as card bg lines */
-  background-color: rgba(139, 148, 158, 0.14);
-  background-image:
-    linear-gradient(to right, #0d1117 1px, transparent 1px),
-    linear-gradient(to bottom, #0d1117 1px, transparent 1px);
-  background-size: 7px 7px;
-  background-position: 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 8px);
+  grid-auto-rows: 8px;
+  gap: 4px;
+  padding: 3px;
+  overflow: none;
+}
+
+.tile-wave-cell {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background-color: rgba(139, 148, 158, .14);
 }
 
 /* Soft L→R wave band — transform only (compositor-friendly) */

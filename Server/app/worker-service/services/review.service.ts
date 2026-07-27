@@ -44,15 +44,14 @@ const SEVERITY_LABEL: Record<string, string> = {
   medium: "Worth fixing",
   low: "nit",
 };
-// Only two colors were asked for on issues (red/yellow) — low rides along
-// with medium under yellow for now, easy to split out later if wanted.
+
 const SEVERITY_EMOJI: Record<string, string> = {
   high: "🔴",
   medium: "🟡",
   low: "🟡",
 };
 
-const FRONTEND_BASE_URL = "https://custom-ai-code-reviewer.vercel.app";
+const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || "https://custom-ai-code-reviewer.vercel.app";
 
 type CommentIssue = {
   id: string;
@@ -299,8 +298,6 @@ export async function runPRReview(data: PRReviewJobData) {
   const usedCodebaseContext = Boolean(relevantCode && relevantCode.length > 0);
   const rawIssues: any[] = parsedPrompt.issues ?? [];
 
-  // Save to the DB first so each issue has a stable id to link to from the
-  // "Apply Suggestion" button in the comment below.
   const repository = await db.repository.findUnique({
     where: { owner_name: { owner, name: repo } },
   });
@@ -347,9 +344,7 @@ export async function runPRReview(data: PRReviewJobData) {
         })),
       });
 
-      // A single multi-row INSERT ... RETURNING on Postgres comes back in
-      // the same order the rows were inserted, so this lines back up with
-      // rawIssues index-for-index.
+
       commentIssues = savedIssues.map((saved) => ({
         id: saved.id,
         file: saved.file,

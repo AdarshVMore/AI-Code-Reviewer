@@ -51,15 +51,6 @@ export async function getSettings(req: Request, res: Response) {
   res.json(repo);
 }
 
-/**
- * Derives an "issue hotspot" graph for a repo from real review/issue data
- * already in Postgres — root node (the repo) fanning out to every file that
- * has had at least one flagged issue, sized/colored by issue severity.
- *
- * This is intentionally independent from the Neo4j-backed AST code graph
- * (feature/hybrid-neo4j-code-graph, not yet merged) so the frontend revamp
- * doesn't depend on or conflict with that unmerged branch.
- */
 export async function codeGraphLite(req: Request, res: Response) {
   const userId = await getDbUserId(req);
   if (!userId) { res.status(401).json({ error: "unauthorized" }); return; }
