@@ -20,7 +20,7 @@ function createClient(apiKey: string) {
   return new Anthropic({ apiKey });
 }
 
-export async function getRevieType(diff: string, apiKey: string, usage?: TokenAccumulator) {
+export async function getReviewType(diff: string, apiKey: string, usage?: TokenAccumulator) {
   const anthropic = createClient(apiKey);
   const diffPreview = diff.slice(0, 3000);
   const prompt = `Identify the PR type from this code diff snippet. Return ONLY one word: feature | bugfix | refactor\n\n${diffPreview}`;

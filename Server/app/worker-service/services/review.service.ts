@@ -1,17 +1,14 @@
-import {
-  getOctokit,
-  getDifferenceData,
-  getReviewRules,
-} from "./github.service.js";
+import { getOctokit } from "../../../package/github/client.js";
+import { getDifferenceData, getReviewRules } from "../../../package/github/pr.js";
 import {
   getAIReview,
   reviewPrompt,
   parseAIResponse,
-  getRevieType,
+  getReviewType,
   getCodeDiff,
   generateRelevantSearchQuery,
   createTokenAccumulator,
-} from "./ai.service.js";
+} from "../../../package/ai/review.js";
 import { db } from "../../../package/db/prisma.js";
 import {
   vectorDBExists,
@@ -244,12 +241,8 @@ export async function runPRReview(data: PRReviewJobData) {
   const tokenUsage = createTokenAccumulator();
 
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
-  await octokit.rest.repos.listCollaborators({
-    owner,
-    repo,
-  });
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
-  const reviewType = (await getRevieType(difference, apiKey, tokenUsage)) as any;
+  const reviewType = (await getReviewType(difference, apiKey, tokenUsage)) as any;
   const indexName = toIndexName(owner, repo);
   let relevantCode: Awaited<ReturnType<typeof retrieveContextForDiff>> | undefined;
   const processedDiff = (await getCodeDiff(difference)) as any;
