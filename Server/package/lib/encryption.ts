@@ -3,7 +3,10 @@ import crypto from "crypto";
 const ALGORITHM = "aes-256-gcm";
 
 function getKey(): Buffer {
-  const secret = process.env.ENCRYPTION_SECRET ?? "dev-encryption-secret-change-me";
+  const secret = process.env.ENCRYPTION_SECRET;
+  if (!secret) {
+    throw new Error("ENCRYPTION_SECRET environment variable is not set");
+  }
   return crypto.scryptSync(secret, "coderefiyn-salt", 32);
 }
 
