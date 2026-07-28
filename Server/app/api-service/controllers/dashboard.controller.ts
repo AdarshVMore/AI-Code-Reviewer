@@ -1,17 +1,10 @@
 import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
 import { getRedisConnection } from "../../../package/lib/redis.client.js";
-
-
-async function getDbUserId(req: Request): Promise<string | null> {
-  const githubId = (req as any).githubUser?.id;
-  if (!githubId) return null;
-  const user = await db.user.findUnique({ where: { githubId } });
-  return user?.id ?? null;
-}
+import { getUserId } from "../auth/auth.js";
 
 export async function getAllData(req: Request, res: Response) {
-  const userId = await getDbUserId(req);
+  const userId = getUserId(req);
   const redisClient = await getRedisConnection()
 
   if (!redisClient.isOpen){
@@ -67,10 +60,8 @@ async function getStats(userId: string) {
       db.issue.count({ where: { review: { repositoryId: { in: repoIds } } } }),
     ]);
 
-    const finalResult = { totalReviews, totalRepos, totalIssues };
-
     return { totalReviews, totalRepos, totalIssues };
-  
+
 }
 
 async function recentPRs(userId: string) {

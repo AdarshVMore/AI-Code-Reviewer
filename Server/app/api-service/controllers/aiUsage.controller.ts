@@ -2,13 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
 import { encrypt, maskApiKey } from "../../../package/lib/encryption.js";
 import { PLATFORM_FREE_REVIEWS } from "../../../package/lib/apiKey.service.js";
-
-async function getDbUserId(req: Request): Promise<string | null> {
-  const githubId = (req as any).githubUser?.id;
-  if (!githubId) return null;
-  const user = await db.user.findUnique({ where: { githubId } });
-  return user?.id ?? null;
-}
+import { getUserId } from "../auth/auth.js";
 
 function startOfMonth(): Date {
   const now = new Date();
@@ -68,7 +62,7 @@ async function buildUsageSummary(userId: string) {
 }
 
 export async function getAIUsage(req: Request, res: Response) {
-  const userId = await getDbUserId(req);
+  const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized" });
     return;
@@ -87,7 +81,7 @@ export async function getAIUsage(req: Request, res: Response) {
 }
 
 export async function addApiKey(req: Request, res: Response) {
-  const userId = await getDbUserId(req);
+  const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized" });
     return;
@@ -118,7 +112,7 @@ export async function addApiKey(req: Request, res: Response) {
 }
 
 export async function deleteApiKey(req: Request, res: Response) {
-  const userId = await getDbUserId(req);
+  const userId = getUserId(req);
   if (!userId) {
     res.status(401).json({ error: "unauthorized" });
     return;
