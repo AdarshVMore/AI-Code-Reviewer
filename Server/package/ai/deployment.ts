@@ -1,11 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { CLAUDE_MODEL } from "./models.js";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+function getClient(): Anthropic {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+}
 
 export async function analyzeDeploymentLogs(logs: string, provider: string) {
+  const anthropic = getClient();
   const res = await anthropic.messages.create({
     model: CLAUDE_MODEL,
     max_tokens: 1500,
@@ -44,6 +45,7 @@ Do NOT include markdown or text outside the JSON.`,
 }
 
 export async function generateDeploymentFix(fileContent: string, cause: string, fix: string, fileName: string) {
+  const anthropic = getClient();
   const res = await anthropic.messages.create({
     model: CLAUDE_MODEL,
     max_tokens: 4000,
