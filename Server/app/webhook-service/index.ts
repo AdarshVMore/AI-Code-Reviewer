@@ -4,7 +4,9 @@ import bodyParser from "body-parser";
 import githubWebhookRouter from "./routes/github.webhook.js";
 
 const app = express();
-const port = 3002;
+const port = Number(process.env.PORT) || 3002;
+
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 
 app.use(
   bodyParser.json({

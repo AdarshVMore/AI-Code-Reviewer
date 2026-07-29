@@ -7,6 +7,15 @@ import { getRedisConnection } from "../../../package/lib/redis.client.js";
 
 const router = Router();
 const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
+const WORKER_SERVICE_URL = process.env.WORKER_SERVICE_URL;
+
+// Render's free tier spins worker-service down after 15 min idle, and it has no
+// HTTP traffic of its own to wake it back up — so ping it the moment we queue a
+// job. Fire-and-forget: never let this block or fail the webhook response.
+function wakeWorkerService() {
+  if (!WORKER_SERVICE_URL) return;
+  fetch(`${WORKER_SERVICE_URL}/health`).catch(() => {});
+}
 
 type PullRequestEvent = {
   action: "opened" | "synchronize" | "closed";
@@ -149,7 +158,7 @@ if (!client.isOpen){
     }
   }
 
-  
+  wakeWorkerService();
 
   res.sendStatus(200);
 });
