@@ -1,32 +1,46 @@
 import { createClient, RedisClientType } from "redis";
 
-const REDIS_URL = process.env.REDIS_URL ?? "redis://redis:6379";
+const QUEUE_REDIS_URL = process.env.REDIS_QUEUE_URL ?? process.env.REDIS_URL ?? "redis://redis:6379";
+const CACHE_REDIS_URL = process.env.REDIS_CACHE_URL ?? process.env.REDIS_URL ?? "redis://redis:6379";
 
-let redisClient : RedisClientType | null = null
+let queueClient: RedisClientType | null = null;
+let cacheClient: RedisClientType | null = null;
 
-export async function getRedisConnection():Promise<RedisClientType> {
-    if(!redisClient){
-        redisClient = createClient({ url: REDIS_URL }) as RedisClientType
+export async function getQueueRedisConnection(): Promise<RedisClientType> {
+    if (!queueClient) {
+        queueClient = createClient({ url: QUEUE_REDIS_URL }) as RedisClientType;
 
-        redisClient.on("error", (err:Error)=>{
-            console.error("Redis Error:", err);
-        })
+        queueClient.on("error", (err: Error) => {
+            console.error("Redis queue cluster error:", err);
+        });
 
-        await redisClient.connect()
-        console.log("redis client connected successfully")
+        await queueClient.connect();
+        console.log("redis queue cluster connected successfully");
     }
 
-    return redisClient
+    return queueClient;
 }
 
-// Workers that call brPop need their own dedicated connection —
-// brPop blocks the TCP socket, so sharing one connection across
-// multiple workers means only the first brPop ever executes.
-export async function createWorkerRedisClient():Promise<RedisClientType> {
-    const client = createClient({ url: REDIS_URL }) as RedisClientType
+export async function getCacheRedisConnection(): Promise<RedisClientType> {
+    if (!cacheClient) {
+        cacheClient = createClient({ url: CACHE_REDIS_URL }) as RedisClientType;
+
+        cacheClient.on("error", (err: Error) => {
+            console.error("Redis cache cluster error:", err);
+        });
+
+        await cacheClient.connect();
+        console.log("redis cache cluster connected successfully");
+    }
+
+    return cacheClient;
+}
+
+export async function createQueueWorkerClient(): Promise<RedisClientType> {
+    const client = createClient({ url: QUEUE_REDIS_URL }) as RedisClientType;
     client.on("error", (err: Error) => {
-        console.error("Redis worker client error:", err);
-    })
-    await client.connect()
-    return client
+        console.error("Redis queue worker client error:", err);
+    });
+    await client.connect();
+    return client;
 }
