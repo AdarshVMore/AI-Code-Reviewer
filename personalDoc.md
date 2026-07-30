@@ -25,3 +25,31 @@
     - Colors
     - Component alignment
     - Landing page showing How to use and Working of features
+
+# how AST looks like
+FunctionDeclaration
+    Block
+        IfStatement
+            BinaryExpression
+                Identifier
+                GreaterThan
+                NumericLiteral
+            Block
+                ExpressionStatement
+                    CallExpression
+                        Identifier
+                        PropertyAccessExpression
+        WhileStatement
+            BinaryExpression
+            Block
+                ...
+
+normal node we embeed : 
+{
+  kind: "FunctionDeclaration",
+  name: "addOrder",
+  parameters: [...],
+  body: {...},
+  pos: 1023,
+  end: 1358
+}
