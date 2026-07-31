@@ -2,16 +2,13 @@ import { Router, Request, Response } from "express";
 import { verifySignature } from "../middleware/verifySignature.js";
 import { createClient } from "redis";
 import { db } from "../../../package/db/prisma.js";
-import { getRedisConnection } from "../../../package/lib/redis.client.js";
+import { getQueueRedisConnection } from "../../../package/lib/redis.client.js";
 
 
 const router = Router();
 const GITHUB_SECRET = process.env.GITHUB_SECRET as string;
 const WORKER_SERVICE_URL = process.env.WORKER_SERVICE_URL;
 
-// Render's free tier spins worker-service down after 15 min idle, and it has no
-// HTTP traffic of its own to wake it back up — so ping it the moment we queue a
-// job. Fire-and-forget: never let this block or fail the webhook response.
 function wakeWorkerService() {
   if (!WORKER_SERVICE_URL) return;
   fetch(`${WORKER_SERVICE_URL}/health`).catch(() => {});
@@ -37,7 +34,7 @@ router.post("/webhook/github", async (req: Request, res: Response) => {
     return res.status(401).send("invalid signature");
   }
 
-  const client = await getRedisConnection()
+  const client = await getQueueRedisConnection()
 
 if (!client.isOpen){
     await client.connect();
