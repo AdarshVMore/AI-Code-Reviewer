@@ -10,10 +10,15 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
+  redis-queue:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+
+  redis-cache:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
 
   webhook-service:
     build:
@@ -23,9 +28,11 @@ services:
       - "3002:3002"
     env_file:
       - .env
+    environment:
+      - REDIS_QUEUE_URL=redis://redis-queue:6379
     depends_on:
       - postgres
-      - redis
+      - redis-queue
 
   worker-service:
     build:
@@ -33,9 +40,11 @@ services:
       dockerfile: app/worker-service/Dockerfile
     env_file:
       - .env
+    environment:
+      - REDIS_QUEUE_URL=redis://redis-queue:6379
     depends_on:
       - postgres
-      - redis
+      - redis-queue
 
   api-service:
     build:
@@ -47,9 +56,11 @@ services:
     command: sh -c "npx prisma migrate deploy && node dist/app/api-service/index.js"
     env_file:
       - .env
+    environment:
+      - REDIS_CACHE_URL=redis://redis-cache:6379
     depends_on:
       - postgres
-      - redis
+      - redis-cache
 
 volumes:
   postgres_data:
