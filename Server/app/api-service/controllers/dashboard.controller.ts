@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { db } from "../../../package/db/prisma.js";
-import { getRedisConnection } from "../../../package/lib/redis.client.js";
+import { getCacheRedisConnection } from "../../../package/lib/redis.client.js";
 import { getUserId } from "../auth/auth.js";
 
 export async function getAllData(req: Request, res: Response) {
   const userId = getUserId(req);
-  const redisClient = await getRedisConnection()
+  const redisClient = await getCacheRedisConnection()
 
   if (!redisClient.isOpen){
     await redisClient.connect();
