@@ -1,27 +1,4 @@
-# Render Blueprint for CodeRefyn's backend.
-#
-# Frontend stays on Vercel — not declared here.
-# Postgres (Neon) and Redis (Upstash) are external — not declared here, just
-# referenced as env vars below (mark "sync: false" in Render's dashboard and
-# paste the values in yourself; never commit them).
-#
-# All three services are `type: web` (not `type: worker`) on purpose: only web
-# services get Render's free-tier "sleep after 15 min idle, wake on next HTTP
-# request" behavior. worker-service has no HTTP work of its own — its /health
-# route (added in app/worker-service/index.ts) exists purely so Render has a
-# port to sleep/wake. webhook-service pings that route the moment it queues a
-# job (see wakeWorkerService() in github.webhook.ts), so a GitHub event is
-# what actually wakes worker-service up — no need for the frontend to know
-# about it.
-#
-# Deploy: Render dashboard → New → Blueprint → point at this repo → it reads
-# this file. You'll be prompted to fill in every `sync: false` var per service.
-
 services:
-  # ---------------------------------------------------------------------
-  # api-service — serves the dashboard frontend (Vercel) over REST.
-  # This is the one client/src/components/ServerWakeGate.tsx polls.
-  # ---------------------------------------------------------------------
   - type: web
     name: coderefyn-api
     runtime: docker
@@ -34,11 +11,8 @@ services:
         sync: false
       - key: ENCRYPTION_SECRET
         sync: false
-      - key: REDIS_URL
+      - key: REDIS_CACHE_URL
         sync: false
-      # Needed here only because deployment.controller.ts / issueFix.controller.ts
-      # import worker-service's fix-generation code directly (a cross-service
-      # coupling flagged separately — fixing that would shrink this list).
       - key: GITHUB_APP_ID
         sync: false
       - key: GITHUB_PRIVATE_KEY
@@ -46,9 +20,6 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
 
-  # ---------------------------------------------------------------------
-  # webhook-service — public endpoint GitHub posts events to.
-  # ---------------------------------------------------------------------
   - type: web
     name: coderefyn-webhook
     runtime: docker
@@ -61,17 +32,11 @@ services:
         sync: false
       - key: DATABASE_URL
         sync: false
-      - key: REDIS_URL
+      - key: REDIS_QUEUE_URL
         sync: false
-      # coderefyn-worker's own Render URL (e.g. https://coderefyn-worker.onrender.com) —
-      # fill this in AFTER worker-service's first deploy, once you know its URL.
       - key: WORKER_SERVICE_URL
         sync: false
 
-  # ---------------------------------------------------------------------
-  # worker-service — brPop loops against reviewQueue / ragData / deploymentQueue.
-  # Needs every secret since it's the one that actually calls Claude/GitHub/Pinecone/Giphy.
-  # ---------------------------------------------------------------------
   - type: web
     name: coderefyn-worker
     runtime: docker
@@ -82,7 +47,7 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false
-      - key: REDIS_URL
+      - key: REDIS_QUEUE_URL
         sync: false
       - key: GITHUB_APP_ID
         sync: false
@@ -96,9 +61,5 @@ services:
         sync: false
       - key: ENCRYPTION_SECRET
         sync: false
-      # Used to build "Apply Suggestion" links in PR comments — your actual
-      # live Vercel URL (I found two different ones referenced in the repo —
-      # README says coderefyn.vercel.app, the code fallback says
-      # custom-ai-code-reviewer.vercel.app — fill in whichever is current).
       - key: FRONTEND_BASE_URL
         sync: false
