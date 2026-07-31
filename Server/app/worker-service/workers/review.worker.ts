@@ -1,8 +1,8 @@
 import { processPRReviewJob } from "../processors/review.processor.js";
-import { createWorkerRedisClient } from "../../../package/lib/redis.client.js";
+import { createQueueWorkerClient } from "../../../package/lib/redis.client.js";
 
 export async function workersOn(){
-    const client = await createWorkerRedisClient()
+    const client = await createQueueWorkerClient()
     console.log("webhook for PR is on")
 
     while (true) {

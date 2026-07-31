@@ -1,8 +1,8 @@
 import { processDeploymentJob } from "../processors/deployment.processor.js";
-import { createWorkerRedisClient } from "../../../package/lib/redis.client.js";
+import { createQueueWorkerClient } from "../../../package/lib/redis.client.js";
 
 export async function deploymentWorkerOn() {
-  const client = await createWorkerRedisClient()
+  const client = await createQueueWorkerClient()
   console.log("webhook for Deployments is on")
 
   while (true) {
