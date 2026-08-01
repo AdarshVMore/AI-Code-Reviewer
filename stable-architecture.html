@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeRefyn — Scalable Architecture</title>
+<style>
+  :root {
+    --bg-canvas: #0a0b0d;
+    --bg-surface: #101113;
+    --bg-raised: #16171a;
+    --bg-overlay: #1c1d21;
+    --border-hairline: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.12);
+    --text-primary: #ededed;
+    --text-secondary: #8b8b93;
+    --text-tertiary: #55565c;
+    --brand: #5b6af0;
+    --pulse: #ff7a45;
+    --sev-high: #ef4444; --sev-high-bg: #1f0a0a; --sev-high-text: #fca5a5;
+    --sev-med: #f59e0b;  --sev-med-bg: #1f1200;  --sev-med-text: #fcd34d;
+    --sev-low: #22c55e;  --sev-low-bg: #0a1f0e;  --sev-low-text: #86efac;
+    --font-display: ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1180px; margin: 0 auto; padding: 56px 28px 96px; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pulse);
+    margin: 0 0 14px;
+  }
+
+  h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance; }
+
+  .dek { color: var(--text-secondary); font-size: 15.5px; line-height: 1.6; max-width: 66ch; margin: 0 0 40px; }
+
+  .stage {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+    padding: 8px;
+    margin-bottom: 20px;
+  }
+
+  .stage-inner {
+    overflow-x: auto;
+    border-radius: 6px;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(91,106,240,0.08), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(255,122,69,0.07), transparent 42%),
+      var(--bg-canvas);
+    padding: 28px 20px;
+  }
+
+  .stage-inner .mermaid { display: flex; justify-content: center; min-width: 1080px; }
+  .stage-inner.compact .mermaid { min-width: 760px; }
+  .stage-inner .mermaid, .stage-inner .mermaid * { box-sizing: content-box !important; white-space: normal !important; }
+  .stage-inner .mermaid foreignObject,
+  .stage-inner .mermaid foreignObject div,
+  .stage-inner .mermaid foreignObject span,
+  .stage-inner .mermaid .nodeLabel,
+  .stage-inner .mermaid .label { overflow: visible !important; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+    padding: 14px 18px; margin-bottom: 44px;
+    border: 1px solid var(--border-hairline); border-radius: 8px; background: var(--bg-surface);
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; border: 1.5px solid; }
+  .sw-new { background: rgba(255,122,69,0.15); border-color: var(--pulse); }
+  .sw-kept { background: rgba(91,106,240,0.15); border-color: var(--brand); }
+  .sw-data { background: rgba(34,197,94,0.12); border-color: var(--sev-low); }
+
+  section { margin-top: 52px; }
+  h2 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 6px; }
+  .section-note { color: var(--text-secondary); font-size: 13.5px; line-height: 1.65; max-width: 70ch; margin: 0 0 20px; }
+
+  .stage-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-tertiary); margin: 0 0 10px;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-tertiary); font-weight: 500;
+    padding: 0 14px 10px; border-bottom: 1px solid var(--border-hairline);
+  }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border-hairline); vertical-align: top; color: var(--text-primary); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td.dim { color: var(--text-secondary); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border-hairline); border-radius: 8px; background: var(--bg-surface); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 5px; white-space: nowrap;
+  }
+  .pill-high { background: var(--sev-high-bg); color: var(--sev-high-text); }
+  .pill-med  { background: var(--sev-med-bg);  color: var(--sev-med-text); }
+  .pill-low  { background: var(--sev-low-bg);  color: var(--sev-low-text); }
+
+  .bottleneck-list { display: flex; flex-direction: column; gap: 10px; }
+  .bn {
+    display: grid; grid-template-columns: 90px 1fr; gap: 18px;
+    padding: 14px 16px; border-radius: 8px; background: var(--bg-surface);
+    border: 1px solid var(--border-hairline); border-left: 3px solid var(--sev-low);
+  }
+  .bn.high { border-left-color: var(--sev-high); }
+  .bn.med { border-left-color: var(--sev-med); }
+  .bn h3 { font-size: 13.5px; font-weight: 600; margin: 0 0 5px; }
+  .bn p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+  .prose-card {
+    background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 8px;
+    padding: 20px 22px; font-size: 13.5px; line-height: 1.75; color: var(--text-secondary);
+  }
+  .prose-card strong { color: var(--text-primary); font-weight: 600; }
+  .prose-card code, code, .mono { font-family: var(--font-mono); font-size: 0.92em; color: var(--text-primary); }
+  .prose-card p + p { margin-top: 12px; }
+
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border-hairline); color: var(--text-tertiary); font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .page { padding: 36px 16px 72px; }
+    .bn { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">System Design · Part 2 of 2</p>
+  <h1>The same product, built to not fall over</h1>
+  <p class="dek">
+    Same nine capabilities as today — nothing added, nothing dropped. What changes: services stop
+    importing each other's internals, Redis splits into a queue cluster and a cache cluster, the
+    codebase index becomes something you update one node at a time instead of rebuilding, and
+    hosting stops depending on a wake-up ping.
+  </p>
+
+  <p class="stage-label">2A — request &amp; queue path</p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':50,'rankSpacing':75,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','secondaryColor':'#101113','tertiaryColor':'#1c1d21',
+  'lineColor':'#55565c','textColor':'#ededed','clusterBkg':'#101113','clusterBorder':'#262626',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart TD
+  GH(["GitHub"])
+  UI["dashboard UI"]
+
+  subgraph EDGE["Edge — Cloudflare"]
+    direction LR
+    WAF["rate-limit / DDoS"]
+    CDNFE["edge cache<br/>GET only"]
+  end
+
+  GH --> WAF
+  UI --> CDNFE
+
+  LB["Load balancer"]
+  WAF --> LB
+  CDNFE --> LB
+
+  subgraph SVCS["Independent services"]
+    direction LR
+    WHSVC["webhook-service<br/>always-on"]
+    ASVC["api-service<br/>autoscale"]
+  end
+  LB --> WHSVC
+  LB --> ASVC
+
+  subgraph STREAMS["Redis Streams<br/>sharded + replicated"]
+    direction LR
+    S1["review.stream"]
+    S2["index.stream"]
+    S3["deployment.stream"]
+  end
+  WHSVC -->|xadd| S1
+  WHSVC -->|xadd| S2
+  WHSVC -->|xadd| S3
+
+  subgraph WORKERS["Worker pools<br/>autoscale on lag"]
+    direction LR
+    RWP["review-worker"]
+    IWP["index-worker"]
+    DWP["deploy-worker"]
+  end
+  S1 --> RWP
+  S2 --> IWP
+  S3 --> DWP
+
+  style EDGE fill:#2a1a10,stroke:#ff7a45,color:#ededed
+  style STREAMS fill:#2a1a10,stroke:#ff7a45,color:#ededed
+  style WORKERS fill:#2a1a10,stroke:#ff7a45,color:#ededed
+  style SVCS fill:#16171a,stroke:#5b6af0,color:#ededed
+      </div>
+    </div>
+  </div>
+
+  <p class="stage-label">2B — what each worker pool actually touches</p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':38,'rankSpacing':150,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','lineColor':'#55565c','textColor':'#ededed',
+  'clusterBkg':'#101113','clusterBorder':'#262626','edgeLabelBackground':'#0a0b0d',
+  'fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  subgraph SRC["Callers"]
+    direction TB
+    RWP["review-worker"]
+    IWP["index-worker"]
+    DWP["deploy-worker"]
+    ASVC["api-service"]
+  end
+
+  subgraph DST["What they touch"]
+    direction TB
+    CLAUDE["Claude"]
+    GHAPI["GitHub API"]
+    NEO[("Neo4j")]
+    HMAP[("Redis hashmap")]
+    VEC[("Vector store")]
+    CACHE[("Redis cache")]
+    PGP[("Postgres primary")]
+    PGR[("Postgres replica")]
+    OBJ[("S3 storage")]
+  end
+
+  RWP --> CLAUDE
+  RWP --> GHAPI
+  RWP --> HMAP
+  RWP --> VEC
+  RWP --> CACHE
+  RWP --> PGP
+  RWP --> OBJ
+
+  IWP --> NEO
+  IWP --> HMAP
+  IWP --> VEC
+
+  DWP --> CLAUDE
+  DWP --> GHAPI
+  DWP --> PGP
+
+  ASVC --> CACHE
+  ASVC --> PGR
+
+  HMAP -.->|cache miss| NEO
+
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  class NEO,HMAP,VEC,CACHE,PGP,PGR,OBJ data;
+  class CLAUDE,GHAPI ext;
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch sw-new"></span>new / restructured for scale</div>
+    <div class="legend-item"><span class="swatch sw-kept"></span>same role as today, just independent + replicated</div>
+    <div class="legend-item"><span class="swatch sw-data"></span>data stores</div>
+  </div>
+  <p class="section-note">Split the same way as part 1: 2A is the plumbing a request or job travels through, 2B is every worker's external dependency list. That fan-out — one pool touching seven different systems — is inherently a hub shape; giving it a dedicated diagram instead of merging it into 2A is what keeps either one readable.</p>
+
+  <section>
+    <p class="stage-label">2C — close-up: what "update only the changed node" actually means</p>
+    <div class="stage">
+      <div class="stage-inner compact">
+        <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':45,'rankSpacing':70,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#ff7a45','lineColor':'#55565c','textColor':'#ededed',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  A["file changed"] --> B["diff changed files"]
+  B --> C["AST-chunk changed"]
+  C --> D["Neo4j: update nodes"]
+  C --> E["hashmap: update keys"]
+  C --> F["vectors: replace"]
+  D & E & F --> G["rest — untouched"]
+        </div>
+      </div>
+    </div>
+    <p class="section-note">This is the actual fix for the current design's worst inefficiency: today, opening or updating a PR re-downloads and re-embeds the entire repository regardless of how many files changed. The cost of an update becomes proportional to the diff, not the repo.</p>
+  </section>
+
+  <section>
+    <h2>Caching — what, where, for how long</h2>
+    <p class="section-note">Not everything gets cached. A full AI review shouldn't be — there's no shared retrieval opportunity between reviews, and staleness there means a wrong review.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>What</th><th>Where</th><th>Lifetime</th><th>Invalidation</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard stats</td><td class="mono">Redis cache cluster</td><td>~15 min</td><td class="dim">time-based (unchanged from today)</td></tr>
+          <tr><td>RAG retrieval result</td><td class="mono">Redis cache cluster</td><td>few min</td><td class="dim">keyed by diff hash — survives a review retry without recomputing embeddings</td></tr>
+          <tr><td>Repo rules / collaborators</td><td class="mono">Redis cache cluster</td><td>hours</td><td class="dim">webhook on repo settings change, else TTL</td></tr>
+          <tr><td>Symbol / file → node id</td><td class="mono">Redis hashmap</td><td>no TTL</td><td class="dim">rewritten by the incremental indexer on every touched key</td></tr>
+          <tr><td>GitHub OAuth token check</td><td class="mono">api-service in-memory / Redis</td><td>~1 min</td><td class="dim">TTL only — stops hitting GitHub's <code>/user</code> on every request</td></tr>
+          <tr><td>Full AI review output</td><td class="dim">not cached</td><td class="dim">—</td><td class="dim">every review should be a fresh read of the diff</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Redis: two clusters, not one</h2>
+    <p class="section-note">Today it's one Upstash instance doing queueing and caching at once, unsharded, unreplicated. That's the single riskiest piece of infrastructure in the whole system.</p>
+    <div class="prose-card">
+      <p><strong>Queue cluster</strong> (Redis Streams, consumer groups replacing plain <code>lPush</code>/<code>brPop</code>) needs durability more than raw speed — a lost job means a PR silently never gets reviewed. Shard by stream name across hash slots; each shard gets a primary plus at least one replica, promoted automatically on failure. Consumer groups give you <code>XACK</code>, so a worker that dies mid-job doesn't lose the job — it just gets redelivered to another consumer in the group.</p>
+      <p><strong>Cache cluster</strong> is the opposite trade: speed over durability. Losing a cache entry just means one slower request, not a dropped job — so it can run <code>allkeys-lru</code> eviction under memory pressure without anyone noticing. Sharded by key hash for horizontal scale, replicas mainly for read throughput and failover rather than durability.</p>
+      <p>The reason to physically separate them: a cache eviction storm during a traffic spike should never be able to starve or delay the queue, and heavy queue write throughput shouldn't blow a cache-latency budget. On managed Redis (Upstash, ElastiCache) this is two separate provisioned instances; self-hosted, it's two separate Redis Cluster deployments.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Hosting and the CDN's actual job</h2>
+    <div class="prose-card">
+      <p>webhook-service has to be <strong>always-on</strong>, full stop — GitHub's delivery timeout doesn't care that a request would've woken a sleeping instance in 40 seconds. api-service and the worker pools can autoscale: api-service on request rate behind the load balancer, workers on <strong>stream lag</strong> specifically (queue depth, not CPU — a worker doing a 30-second Claude call looks idle to a CPU-based autoscaler right up until the queue backs up).</p>
+      <p>The CDN's job here is narrower than "put Cloudflare in front of everything." Cache the truly public, low-personalization reads at the edge with a short TTL; everything authenticated, and the webhook endpoint specifically, bypasses cache entirely and goes straight to origin. The frontend's static assets and edge delivery stay on Vercel — no reason to rebuild what it already does well.</p>
+      <p>Neo4j moves to a managed cluster (AuraDB, or self-hosted causal clustering once volume justifies the operational cost) with read replicas for the graph queries that don't need to hit the write primary. Repo archives and CI logs move from ephemeral <code>/tmp</code> disk to object storage (S3), so a worker that dies mid-job doesn't take a half-downloaded repo with it — any replica can pick the job back up.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bottlenecks, ranked</h2>
+    <div class="bottleneck-list">
+      <div class="bn high">
+        <div><span class="pill pill-high">high</span></div>
+        <div><h3>Full-repo re-index on every PR</h3><p>The current design's worst inefficiency by far — cost scales with repo size, not diff size. Fixed by the incremental indexing pipeline above.</p></div>
+      </div>
+      <div class="bn high">
+        <div><span class="pill pill-high">high</span></div>
+        <div><h3>Fully sequential Claude call chain</h3><p>Classify type → search query → main review → gif title, each waiting on the last even where nothing downstream needs it. Parallelize the independent legs; gif title is the one call that genuinely can't move earlier, since it needs the finished review.</p></div>
+      </div>
+      <div class="bn med">
+        <div><span class="pill pill-med">medium</span></div>
+        <div><h3>One vector index per repo</h3><p>Fine at a handful of installs, doesn't hold past a few thousand — Pinecone bills and rate-limits per index. Namespaces inside shared indexes instead.</p></div>
+      </div>
+      <div class="bn med">
+        <div><span class="pill pill-med">medium</span></div>
+        <div><h3>Sequential per-file GitHub writes on fix flows</h3><p>Deployment and issue fixes patch up to five files one request at a time, risking GitHub's secondary rate limits. Parallelize independent file fetches, batch where the API allows it.</p></div>
+      </div>
+      <div class="bn med">
+        <div><span class="pill pill-med">medium</span></div>
+        <div><h3>Unsharded, unreplicated Redis doing three jobs at once</h3><p>Queues and cache on one instance, no failover. Addressed by the two-cluster split above.</p></div>
+      </div>
+      <div class="bn">
+        <div><span class="pill pill-low">low</span></div>
+        <div><h3>Dashboard aggregates hitting the write primary</h3><p>Read replica absorbs this — it's read-heavy, tolerant of a few seconds of replication lag, and shouldn't compete with review writes.</p></div>
+      </div>
+      <div class="bn">
+        <div><span class="pill pill-low">low</span></div>
+        <div><h3>Free-tier cold starts</h3><p>The wake-ping between webhook and worker is a legitimate fix for a real constraint today, not a scaling strategy — always-on hosting retires the whole problem once budget allows.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>CodeRefyn · architecture snapshot · same capabilities as part 1, restructured for load it doesn't see yet</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: false, wrap: true }
+  });
+  function widenLabels() {
+    document.querySelectorAll('.mermaid svg .node, .mermaid svg .cluster').forEach((el) => {
+      const fo = el.querySelector('foreignObject');
+      if (!fo) return;
+      const extra = 46;
+      const oldW = parseFloat(fo.getAttribute('width')) || 0;
+      const oldX = parseFloat(fo.getAttribute('x')) || 0;
+      fo.setAttribute('width', oldW + extra);
+      fo.setAttribute('x', oldX - extra / 2);
+
+      if (el.classList.contains('node')) {
+        const rect = el.querySelector('rect');
+        if (rect) {
+          const w = parseFloat(rect.getAttribute('width')) || 0;
+          const x = parseFloat(rect.getAttribute('x')) || 0;
+          rect.setAttribute('width', w + extra);
+          rect.setAttribute('x', x - extra / 2);
+        }
+      }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    mermaid.run({ querySelector: '.mermaid' }).then(widenLabels);
+  });
+</script>
+</body>
+</html>

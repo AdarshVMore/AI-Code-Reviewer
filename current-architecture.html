@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeRefyn — Current Architecture</title>
+<style>
+  :root {
+    --bg-canvas: #0a0b0d;
+    --bg-surface: #101113;
+    --bg-raised: #16171a;
+    --bg-overlay: #1c1d21;
+    --border-hairline: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.12);
+    --text-primary: #ededed;
+    --text-secondary: #8b8b93;
+    --text-tertiary: #55565c;
+    --brand: #5b6af0;
+    --brand-glow: rgba(91,106,240,0.35);
+    --pulse: #ff7a45;
+    --sev-high: #ef4444;
+    --sev-med: #f59e0b;
+    --sev-low: #22c55e;
+    --font-display: ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 28px 96px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+
+  .dek {
+    color: var(--text-secondary);
+    font-size: 15.5px;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin: 0 0 40px;
+  }
+
+  .stage {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+    padding: 8px;
+    margin-bottom: 28px;
+  }
+
+  .stage-inner {
+    overflow-x: auto;
+    border-radius: 6px;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(91,106,240,0.08), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(255,122,69,0.05), transparent 40%),
+      var(--bg-canvas);
+    padding: 28px 20px;
+  }
+
+  .stage-inner .mermaid { display: flex; justify-content: center; min-width: 920px; }
+  .stage-inner .mermaid, .stage-inner .mermaid * { box-sizing: content-box !important; white-space: normal !important; }
+  .stage-inner .mermaid foreignObject,
+  .stage-inner .mermaid foreignObject div,
+  .stage-inner .mermaid foreignObject span,
+  .stage-inner .mermaid .nodeLabel,
+  .stage-inner .mermaid .label { overflow: visible !important; }
+
+  .stage-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-tertiary); margin: 0 0 10px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    padding: 14px 18px;
+    margin-bottom: 44px;
+    border: 1px solid var(--border-hairline);
+    border-radius: 8px;
+    background: var(--bg-surface);
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; border: 1.5px solid; }
+  .sw-svc { background: rgba(91,106,240,0.15); border-color: var(--brand); }
+  .sw-data { background: rgba(34,197,94,0.12); border-color: var(--sev-low); }
+  .sw-ext { background: rgba(139,139,147,0.12); border-color: var(--text-secondary); }
+  .sw-ai { background: rgba(255,122,69,0.12); border-color: var(--pulse); }
+
+  section { margin-top: 44px; }
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
+
+  .section-note {
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    line-height: 1.65;
+    max-width: 68ch;
+    margin: 0 0 18px;
+  }
+
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-radius: 8px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+  }
+
+  .card h3 {
+    font-size: 13.5px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.02em;
+  }
+
+  code, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-hairline);
+    color: var(--text-tertiary);
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 36px 16px 72px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="eyebrow">System Design · Part 1 of 2</p>
+  <h1>What's actually running today</h1>
+  <p class="dek">
+    Three Express processes coordinated only through raw Redis lists, no queue library, everything
+    on Render's free tier. This is the literal current state — including the parts that are shortcuts,
+    not decisions.
+  </p>
+
+  <p class="stage-label">1A — request &amp; queue flow</p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':50,'rankSpacing':80,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','secondaryColor':'#101113','tertiaryColor':'#1c1d21',
+  'lineColor':'#55565c','textColor':'#ededed','clusterBkg':'#101113','clusterBorder':'#262626',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart TD
+  GH(["GitHub"])
+  WHR["webhook-service"]
+  GH --> WHR
+
+  PG[("Postgres")]
+  RD[("Redis")]
+
+  WHR -->|upsert| PG
+  WHR -->|lPush ×3| RD
+
+  subgraph WSVC["worker-service"]
+    direction TB
+    RWK["review.worker"]
+    RGW["rag.worker"]
+    DWK["deployment.worker"]
+  end
+
+  RD --> RWK
+  RD --> RGW
+  RD --> DWK
+  WHR -.->|wake-ping| WSVC
+
+  subgraph FE["Frontend"]
+    direction TB
+    UI["dashboard UI"]
+    SWG["ServerWakeGate"]
+  end
+
+  API["api-service"]
+  UI -->|axios| API
+  SWG -.->|poll| API
+  API -->|reads/writes| PG
+  API -->|cache| RD
+
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  class PG,RD data;
+  class GH ext;
+      </div>
+    </div>
+  </div>
+
+  <p class="stage-label">1B — who calls what (the part that got tangled before)</p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':40,'rankSpacing':140,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','lineColor':'#55565c','textColor':'#ededed',
+  'clusterBkg':'#101113','clusterBorder':'#262626','edgeLabelBackground':'#0a0b0d',
+  'fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  subgraph SRC["Callers"]
+    direction TB
+    RWK["review.worker"]
+    RGW["rag.worker"]
+    DWK["deployment.worker"]
+    API["api-service"]
+  end
+
+  subgraph DST["Called"]
+    direction TB
+    GHAPI["GitHub API"]
+    CLAUDE["Claude"]
+    PINE["Pinecone"]
+    GIPHY["Giphy"]
+    PG["Postgres"]
+  end
+
+  RWK --> GHAPI
+  RWK --> CLAUDE
+  RWK --> PINE
+  RWK --> GIPHY
+  RWK --> PG
+
+  RGW --> GHAPI
+  RGW --> PINE
+
+  DWK --> GHAPI
+  DWK --> CLAUDE
+  DWK --> PG
+
+  API --> GHAPI
+  API --> CLAUDE
+  API --> PG
+
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  classDef ai fill:#16171a,stroke:#ff7a45,color:#ededed;
+  class GHAPI,GIPHY ext;
+  class PG data;
+  class CLAUDE ai;
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch sw-svc"></span>your services (indigo)</div>
+    <div class="legend-item"><span class="swatch sw-data"></span>data stores (green)</div>
+    <div class="legend-item"><span class="swatch sw-ext"></span>external APIs (grey)</div>
+    <div class="legend-item"><span class="swatch sw-ai"></span>Claude (orange)</div>
+  </div>
+  <p class="section-note">Split on purpose: 1A is the control/data flow, 1B is every external dependency. api-service and deployment.worker both calling GitHub + Claude + Postgres is exactly the kind of fan-out that turns into spaghetti when it shares a canvas with the queue plumbing — so it gets its own diagram instead.</p>
+
+  <section>
+    <h2>The shortcuts baked into this diagram</h2>
+    <p class="section-note">Not bugs exactly — decisions made to ship, that the scalable version (part 2) exists to unwind.</p>
+    <div class="grid-cards">
+      <div class="card">
+        <h3>Full repo re-index every time <span class="tag">rag.service.ts</span></h3>
+        <p>Every PR open/sync re-downloads the entire repo zip, re-chunks every file, re-embeds everything — regardless of how many files actually changed.</p>
+      </div>
+      <div class="card">
+        <h3>One vector index per repo <span class="tag">Pinecone</span></h3>
+        <p>Works fine at a handful of repos. Pinecone charges and rate-limits per index, so this doesn't hold as install count grows.</p>
+      </div>
+      <div class="card">
+        <h3>api-service imports worker-service <span class="tag">deployment.controller.ts</span></h3>
+        <p>The "apply fix" endpoints reach directly into worker-service's internal modules instead of going through the queue — the two services aren't actually independently deployable.</p>
+      </div>
+      <div class="card">
+        <h3>One Redis instance, three jobs <span class="tag">Upstash</span></h3>
+        <p>Queues and cache share the same instance with no replication. A cache eviction storm and a lost queue item are one incident away from each other.</p>
+      </div>
+      <div class="card">
+        <h3>Sequential Claude calls <span class="tag">review.service.ts</span></h3>
+        <p>Classify type → generate search query → main review → gif title, each one waits on the last, even where nothing downstream actually depends on it.</p>
+      </div>
+      <div class="card">
+        <h3>Free-tier sleep everywhere <span class="tag">Render</span></h3>
+        <p>All three backend processes cold-start after 15 idle minutes. The wake-ping between webhook and worker is a real fix for a real constraint — but it's a workaround, not a scaling strategy.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>CodeRefyn · architecture snapshot · part 2 covers the scaled version of each of these</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: false, wrap: true }
+  });
+  function widenLabels() {
+    document.querySelectorAll('.mermaid svg .node, .mermaid svg .cluster').forEach((el) => {
+      const fo = el.querySelector('foreignObject');
+      if (!fo) return;
+      const extra = 46;
+      const oldW = parseFloat(fo.getAttribute('width')) || 0;
+      const oldX = parseFloat(fo.getAttribute('x')) || 0;
+      fo.setAttribute('width', oldW + extra);
+      fo.setAttribute('x', oldX - extra / 2);
+
+      if (el.classList.contains('node')) {
+        const rect = el.querySelector('rect');
+        if (rect) {
+          const w = parseFloat(rect.getAttribute('width')) || 0;
+          const x = parseFloat(rect.getAttribute('x')) || 0;
+          rect.setAttribute('width', w + extra);
+          rect.setAttribute('x', x - extra / 2);
+        }
+      }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    mermaid.run({ querySelector: '.mermaid' }).then(widenLabels);
+  });
+</script>
+</body>
+</html>
