@@ -261,7 +261,6 @@ export function parseAIResponse(text: string) {
     try {
       return JSON.parse(candidate);
     } catch {
-      // try next candidate
     }
   }
 

@@ -25,7 +25,6 @@ export function ServerWakeGate({ children }: { children: React.ReactNode }) {
         const res = await fetch(HEALTH_URL, { cache: 'no-store' })
         if (res.ok && !cancelled) setAwake(true)
       } catch {
-        // server asleep or still starting up — keep polling
       }
     }
 
