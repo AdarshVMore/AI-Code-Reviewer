@@ -180,7 +180,7 @@ body {
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 3px;
   background: #0d1117;
 }
 
@@ -196,9 +196,9 @@ body {
 }
 
 .tile-wave-cell {
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
+  width: 9.5px;
+  height: 9.5px;
+  border-radius: 2px;
   background-color: rgba(139, 148, 158, .14);
 }
 
