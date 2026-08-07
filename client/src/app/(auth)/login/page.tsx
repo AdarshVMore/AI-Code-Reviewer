@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { LoginButton } from "./LoginButton"
+import { Logo } from "@/components/ui"
 
 export default async function LoginPage() {
   const session = await auth()
@@ -15,7 +16,10 @@ export default async function LoginPage() {
       <div className="bg-bg-surface border border-bg-border rounded-2xl p-10 w-full max-w-sm">
 
         <div className="flex flex-col gap-1.5 mb-6">
-          <span className="font-mono text-base font-medium text-brand">CodeRefyn</span>
+          <div className="flex items-center gap-2 mb-2">
+            <Logo size={22} className="text-brand" />
+            <span className="font-mono text-base font-medium text-brand">CodeRefyn</span>
+          </div>
           <h1 className="text-2xl font-semibold text-text-primary">Sign in to your account</h1>
           <p className="text-sm text-text-secondary leading-relaxed">
             Connect your GitHub to start reviewing PRs automatically.

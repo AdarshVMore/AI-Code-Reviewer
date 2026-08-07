@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { GitBranch, LayoutDashboard, Sparkles, Command } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { motion } from 'motion/react'
-import { Avatar } from '@/components/ui'
+import { Avatar, Logo } from '@/components/ui'
 import { useUser } from '@/hooks/useUser'
 
 const navItems = [
@@ -38,10 +38,7 @@ export function Sidebar() {
   return (
     <aside className="w-56 h-screen bg-bg-surface/70 backdrop-blur-xl border-r border-border-hairline flex flex-col shrink-0 relative z-10">
       <div className="px-5 py-5 border-b border-border-hairline flex items-center gap-2">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 live-pulse-dot" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
-        </span>
+        <Logo size={18} className="text-brand shrink-0" />
         <span className="font-mono text-sm font-medium text-brand tracking-tight">CodeRefyn</span>
       </div>
 
