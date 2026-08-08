@@ -1,8 +1,12 @@
 import apiClient from "./client"
 
+export type AIProvider = "anthropic" | "openrouter"
+
 export type AIUsageKey = {
   id: string
   name: string
+  provider: AIProvider
+  model: string | null
   maskedKey: string
   createdAt: string
 }
@@ -53,10 +57,17 @@ export async function fetchAIUsage(): Promise<AIUsageData> {
   }
 }
 
-export async function addAIUsageKey(name: string, key: string) {
+export async function addAIUsageKey(
+  name: string,
+  key: string,
+  provider: AIProvider = "anthropic",
+  model?: string,
+) {
   const { data } = await apiClient.post<AIUsageKey>("/api/ai-usage/keys", {
     name,
     key,
+    provider,
+    model,
   })
   return data
 }

@@ -1,6 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { addUsage, createTokenAccumulator, type TokenAccumulator } from "./review.js";
-import { CLAUDE_MODEL } from "./models.js";
+import { createChatProvider, type AIKeyConfig } from "./providers/index.js";
 
 export type GifContext = {
   score?: number | null;
@@ -41,7 +40,7 @@ function resolveMood(context?: GifContext): Mood {
 
 export async function getGifName(
   summary: string | null | undefined,
-  apiKey: string,
+  key: AIKeyConfig,
   usage?: TokenAccumulator,
   context?: GifContext,
 ): Promise<string> {
@@ -51,10 +50,10 @@ export async function getGifName(
 
   if (!cleanSummary) return fallback;
 
-  const anthropic = new Anthropic({ apiKey });
-  const res = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 40,
+  const client = createChatProvider(key.provider, key.apiKey);
+  const res = await client.complete({
+    model: key.model,
+    maxTokens: 150,
     temperature: 0.4,
     system: `Turn a code review into a short, fun Giphy search query that captures the MOOD of the review.
 ${MOOD_HINT[mood]}
@@ -68,7 +67,6 @@ Keep it relatable to developers. Return ONLY 2 to 5 simple words, no punctuation
   });
   addUsage(usage ?? createTokenAccumulator(), res.usage);
 
-  const block = res.content.find((b) => b.type === "text");
-  const text = block && block.type === "text" ? block.text.trim() : "";
+  const text = res.text.trim();
   return text || fallback;
 }

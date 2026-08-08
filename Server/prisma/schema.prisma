@@ -25,6 +25,8 @@ model UserApiKey {
   id           String   @id @default(cuid())
   userId       String
   name         String
+  provider     String   @default("anthropic") // "anthropic" | "openrouter"
+  model        String?  // required for openrouter; anthropic falls back to CLAUDE_MODEL
   encryptedKey String
   maskedKey    String
   createdAt    DateTime @default(now())

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   AreaChart,
@@ -16,6 +17,12 @@ import { Card, SectionLabel, StatCard, EmptyState, TileWaveSkeletonPage } from '
 import { Topbar } from '@/components/layout/Topbar'
 import useAIUsage from '@/hooks/useAIUsage'
 import { FORCE_LOADING } from '@/lib/forceLoading'
+import type { AIProvider } from '@/lib/api/aiUsage'
+
+const PROVIDERS: { value: AIProvider; label: string; keyPlaceholder: string }[] = [
+  { value: 'anthropic', label: 'Anthropic', keyPlaceholder: 'sk-ant-api03-...' },
+  { value: 'openrouter', label: 'OpenRouter', keyPlaceholder: 'sk-or-v1-...' },
+]
 
 function UsageTooltip({
   active,
@@ -52,9 +59,14 @@ export default function AIUsagePage() {
   const { keys, usage, loading, error, handleAddKey, handleDeleteKey } = useAIUsage()
   const [keyName, setKeyName] = useState('')
   const [keyValue, setKeyValue] = useState('')
+  const [provider, setProvider] = useState<AIProvider>('anthropic')
+  const [model, setModel] = useState('')
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const activeProvider = PROVIDERS.find((p) => p.value === provider) ?? PROVIDERS[0]
+  const needsModel = provider === 'openrouter'
 
   if (FORCE_LOADING || loading) {
     return (
@@ -71,14 +83,20 @@ export default function AIUsagePage() {
   async function onAdd(e: React.FormEvent) {
     e.preventDefault()
     if (!keyValue.trim() || !keyName.trim()) return
+    if (needsModel && !model.trim()) {
+      setAddError('Model is required for OpenRouter keys.')
+      return
+    }
     setAdding(true)
     setAddError(null)
     try {
-      await handleAddKey(keyName.trim(), keyValue.trim())
+      await handleAddKey(keyName.trim(), keyValue.trim(), provider, needsModel ? model.trim() : undefined)
       setKeyName('')
       setKeyValue('')
-    } catch {
-      setAddError('Failed to save API key. Please try again.')
+      setModel('')
+    } catch (err) {
+      const backendMessage = isAxiosError(err) ? (err.response?.data as { error?: string })?.error : null
+      setAddError(backendMessage || 'Failed to save API key. Please try again.')
     } finally {
       setAdding(false)
     }
@@ -125,7 +143,7 @@ export default function AIUsagePage() {
                 : `${usage?.platformReviewsRemaining ?? 0} / ${usage?.platformFreeLimit ?? 5}`
             }
             label={hasOwnKey ? 'Billing source' : 'Free reviews left'}
-            trend={hasOwnKey ? 'Reviews bill to your Claude key' : 'Platform key until limit'}
+            trend={hasOwnKey ? 'Reviews bill to your key' : 'Platform key until limit'}
           />
         </div>
 
@@ -157,7 +175,7 @@ export default function AIUsagePage() {
                     free platform reviews.
                   </p>
                   <p className="text-xs text-text-tertiary mt-1.5 font-mono">
-                    Drop your Claude key below for unlimited reviews on your bill.
+                    Drop your Anthropic or OpenRouter key below for unlimited reviews on your bill.
                   </p>
                 </div>
               </div>
@@ -217,45 +235,90 @@ export default function AIUsagePage() {
           )}
         </Card>
 
-        <SectionLabel>Claude API keys</SectionLabel>
+        <SectionLabel>AI provider keys</SectionLabel>
 
         <Card className="mb-4">
-          <form onSubmit={onAdd} className="flex flex-col sm:flex-row sm:items-end gap-3">
-            <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+          <form onSubmit={onAdd} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
               <label className="text-xs text-text-tertiary font-mono uppercase tracking-wider">
-                Key name
+                Provider
               </label>
-              <input
-                type="text"
-                value={keyName}
-                onChange={(e) => setKeyName(e.target.value)}
-                placeholder="e.g. Production"
-                className={fieldClass}
-              />
+              <div className="inline-flex w-fit rounded-lg border border-border-hairline bg-bg-raised/80 p-1">
+                {PROVIDERS.map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => setProvider(p.value)}
+                    className={[
+                      'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                      provider === p.value
+                        ? 'bg-brand text-white shadow-[0_0_12px_rgba(91,106,240,0.3)]'
+                        : 'text-text-tertiary hover:text-text-primary',
+                    ].join(' ')}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
-              <label className="text-xs text-text-tertiary font-mono uppercase tracking-wider">
-                API key
-              </label>
-              <input
-                type="password"
-                value={keyValue}
-                onChange={(e) => setKeyValue(e.target.value)}
-                placeholder="sk-ant-api03-..."
-                className={fieldClass}
-              />
+
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+              <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                <label className="text-xs text-text-tertiary font-mono uppercase tracking-wider">
+                  Key name
+                </label>
+                <input
+                  type="text"
+                  value={keyName}
+                  onChange={(e) => setKeyName(e.target.value)}
+                  placeholder="e.g. Production"
+                  className={fieldClass}
+                />
+              </div>
+              <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
+                <label className="text-xs text-text-tertiary font-mono uppercase tracking-wider">
+                  API key
+                </label>
+                <input
+                  type="password"
+                  value={keyValue}
+                  onChange={(e) => setKeyValue(e.target.value)}
+                  placeholder={activeProvider.keyPlaceholder}
+                  className={fieldClass}
+                />
+              </div>
+              {needsModel && (
+                <div className="flex flex-col gap-1.5 flex-[2] min-w-0">
+                  <label className="text-xs text-text-tertiary font-mono uppercase tracking-wider">
+                    Model
+                  </label>
+                  <input
+                    type="text"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    placeholder="anthropic/claude-sonnet-4.5"
+                    className={fieldClass}
+                  />
+                </div>
+              )}
+              <motion.button
+                type="submit"
+                disabled={adding || !keyName.trim() || !keyValue.trim() || (needsModel && !model.trim())}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ duration: 0.15 }}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-sm font-medium shadow-[0_0_20px_rgba(91,106,240,0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              >
+                <Plus size={14} strokeWidth={2.2} />
+                {adding ? 'Saving…' : 'Add key'}
+              </motion.button>
             </div>
-            <motion.button
-              type="submit"
-              disabled={adding || !keyName.trim() || !keyValue.trim()}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ duration: 0.15 }}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-sm font-medium shadow-[0_0_20px_rgba(91,106,240,0.3)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-            >
-              <Plus size={14} strokeWidth={2.2} />
-              {adding ? 'Saving…' : 'Add key'}
-            </motion.button>
+            {needsModel && (
+              <p className="text-xs text-text-tertiary font-mono">
+                Model is the OpenRouter model slug this key will call — see{' '}
+                <span className="text-text-secondary">openrouter.ai/models</span>.
+              </p>
+            )}
           </form>
           <AnimatePresence>
             {addError && (
@@ -291,11 +354,17 @@ export default function AIUsagePage() {
                         <KeyRound size={15} strokeWidth={1.8} />
                       </div>
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="text-sm font-medium text-text-primary truncate">
-                          {key.name}
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className="text-sm font-medium text-text-primary truncate">
+                            {key.name}
+                          </span>
+                          <span className="shrink-0 rounded-full border border-brand/20 bg-brand/10 px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-brand">
+                            {key.provider}
+                          </span>
                         </span>
                         <span className="text-xs font-mono text-text-tertiary tracking-widest truncate">
                           {key.maskedKey}
+                          {key.model ? ` · ${key.model}` : ''}
                         </span>
                       </div>
                     </div>

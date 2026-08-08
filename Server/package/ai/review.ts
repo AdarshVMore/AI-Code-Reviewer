@@ -1,5 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { CLAUDE_MODEL } from "./models.js";
+import { createChatProvider, isRetryableStatus, type AIKeyConfig } from "./providers/index.js";
+
+export type { AIKeyConfig } from "./providers/index.js";
 
 export type TokenAccumulator = {
   inputTokens: number;
@@ -10,23 +11,19 @@ export function createTokenAccumulator(): TokenAccumulator {
   return { inputTokens: 0, outputTokens: 0 };
 }
 
-export function addUsage(acc: TokenAccumulator, usage?: Anthropic.Messages.Usage | null) {
+export function addUsage(acc: TokenAccumulator, usage?: { inputTokens: number; outputTokens: number } | null) {
   if (!usage) return;
-  acc.inputTokens += usage.input_tokens ?? 0;
-  acc.outputTokens += usage.output_tokens ?? 0;
+  acc.inputTokens += usage.inputTokens ?? 0;
+  acc.outputTokens += usage.outputTokens ?? 0;
 }
 
-function createClient(apiKey: string) {
-  return new Anthropic({ apiKey });
-}
-
-export async function getReviewType(diff: string, apiKey: string, usage?: TokenAccumulator) {
-  const anthropic = createClient(apiKey);
+export async function getReviewType(diff: string, key: AIKeyConfig, usage?: TokenAccumulator) {
+  const client = createChatProvider(key.provider, key.apiKey);
   const diffPreview = diff.slice(0, 3000);
   const prompt = `Identify the PR type from this code diff snippet. Return ONLY one word: feature | bugfix | refactor\n\n${diffPreview}`;
-  const res = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 16,
+  const res = await client.complete({
+    model: key.model,
+    maxTokens: 200,
     temperature: 0,
     messages: [
       {
@@ -36,8 +33,7 @@ export async function getReviewType(diff: string, apiKey: string, usage?: TokenA
     ],
   });
   addUsage(usage ?? createTokenAccumulator(), res.usage);
-  const block = res.content.find((b) => b.type === "text");
-  return block && block.type === "text" ? block.text.trim().toLowerCase() : "";
+  return res.text.trim().toLowerCase();
 }
 
 export async function getCodeDiff(diff: string) {
@@ -50,13 +46,13 @@ export async function getCodeDiff(diff: string) {
 
 export async function generateRelevantSearchQuery(
   processedDiff: string,
-  apiKey: string,
+  key: AIKeyConfig,
   usage?: TokenAccumulator,
 ) {
-  const anthropic = createClient(apiKey);
-  const res = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 100,
+  const client = createChatProvider(key.provider, key.apiKey);
+  const res = await client.complete({
+    model: key.model,
+    maxTokens: 300,
     temperature: 0,
     system:
       "Convert the given git diff into a short semantic search query  to find relevant code in a repository Return ONLY a short phrase.",
@@ -68,24 +64,23 @@ export async function generateRelevantSearchQuery(
     ],
   });
   addUsage(usage ?? createTokenAccumulator(), res.usage);
-  const block = res.content.find((b) => b.type === "text");
-  return block && block.type === "text" ? block.text.trim() : "";
+  return res.text.trim();
 }
 
 export async function getAIReview(
   prompt: string | null,
-  apiKey: string,
+  key: AIKeyConfig,
   usage?: TokenAccumulator,
   retries = 4,
 ) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await _callAI(prompt, apiKey, usage);
+      return await _callAI(prompt, key, usage);
     } catch (err: any) {
-      if (err?.status === 529 && attempt < retries) {
+      if (isRetryableStatus(err?.status) && attempt < retries) {
         const delay = Math.pow(2, attempt) * 1000;
         console.log(
-          `Anthropic overloaded (529), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`,
+          `${key.provider} overloaded (${err?.status}), retrying in ${delay / 1000}s... (attempt ${attempt + 1}/${retries})`,
         );
         await new Promise((r) => setTimeout(r, delay));
       } else {
@@ -96,11 +91,11 @@ export async function getAIReview(
   throw new Error("Max retries exceeded for AI review");
 }
 
-async function _callAI(prompt: string | null, apiKey: string, usage?: TokenAccumulator) {
-  const anthropic = createClient(apiKey);
-  const res = await anthropic.messages.create({
-    model: CLAUDE_MODEL,
-    max_tokens: 4096,
+async function _callAI(prompt: string | null, key: AIKeyConfig, usage?: TokenAccumulator) {
+  const client = createChatProvider(key.provider, key.apiKey);
+  const res = await client.complete({
+    model: key.model,
+    maxTokens: 4096,
     temperature: 0,
     system: `You are a normal, thoughtful engineer reviewing a teammate's pull request — knowledgeable, but you don't write like a robot.
 
@@ -169,14 +164,12 @@ Do NOT include markdown, explanations, or any text outside the JSON.`,
   });
   addUsage(usage ?? createTokenAccumulator(), res.usage);
 
-  if (res.stop_reason === "max_tokens") {
+  if (res.stopReason === "max_tokens") {
     console.warn("AI review response was truncated (max_tokens reached)");
   }
 
-  const block = res.content.find((b) => b.type === "text");
-  if (!block || block.type !== "text")
-    throw new Error("No text block in AI response");
-  return block.text;
+  if (!res.text) throw new Error(`No text in AI response (provider: ${key.provider}, stopReason: ${res.stopReason})`);
+  return res.text;
 }
 
 type RelevantCodeMatch = {
