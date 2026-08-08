@@ -72,13 +72,18 @@ export async function getAIUsage(req: Request, res: Response) {
     db.userApiKey.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
-      select: { id: true, name: true, maskedKey: true, createdAt: true },
+      select: { id: true, name: true, provider: true, model: true, maskedKey: true, createdAt: true },
     }),
     buildUsageSummary(userId),
   ]);
 
   res.json({ keys, usage });
 }
+
+const KEY_FORMAT_PREFIX: Record<string, string> = {
+  anthropic: "sk-ant-",
+  openrouter: "sk-or-",
+};
 
 export async function addApiKey(req: Request, res: Response) {
   const userId = getUserId(req);
@@ -87,14 +92,32 @@ export async function addApiKey(req: Request, res: Response) {
     return;
   }
 
-  const { name, key } = req.body as { name?: string; key?: string };
+  const { name, key, provider: rawProvider, model: rawModel } = req.body as {
+    name?: string;
+    key?: string;
+    provider?: string;
+    model?: string;
+  };
   if (!name?.trim() || !key?.trim()) {
     res.status(400).json({ error: "name and key are required" });
     return;
   }
 
-  if (!key.startsWith("sk-ant-")) {
-    res.status(400).json({ error: "invalid Anthropic API key format" });
+  const provider = rawProvider?.trim() || "anthropic";
+  if (provider !== "anthropic" && provider !== "openrouter") {
+    res.status(400).json({ error: "provider must be 'anthropic' or 'openrouter'" });
+    return;
+  }
+
+  const expectedPrefix = KEY_FORMAT_PREFIX[provider];
+  if (!key.trim().startsWith(expectedPrefix)) {
+    res.status(400).json({ error: `invalid ${provider} API key format` });
+    return;
+  }
+
+  const model = rawModel?.trim() || null;
+  if (provider === "openrouter" && !model) {
+    res.status(400).json({ error: "model is required for OpenRouter keys" });
     return;
   }
 
@@ -102,10 +125,12 @@ export async function addApiKey(req: Request, res: Response) {
     data: {
       userId,
       name: name.trim(),
+      provider,
+      model,
       encryptedKey: encrypt(key.trim()),
       maskedKey: maskApiKey(key.trim()),
     },
-    select: { id: true, name: true, maskedKey: true, createdAt: true },
+    select: { id: true, name: true, provider: true, model: true, maskedKey: true, createdAt: true },
   });
 
   res.status(201).json(saved);

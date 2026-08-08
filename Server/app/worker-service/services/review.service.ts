@@ -23,6 +23,8 @@ import {
   incrementPlatformReviewCount,
   recordTokenUsage,
 } from "../../../package/lib/apiKey.service.js";
+import type { AIKeyConfig } from "../../../package/ai/providers/index.js";
+import { logRetrievedContext } from "../../../package/lib/contextLogger.js";
 import {
   formatReviewComment,
   formatQuotaExceededComment,
@@ -41,12 +43,12 @@ export type PRReviewJobData = {
 
 async function getReviewGifUrl(
   parsed: any,
-  apiKey: string,
+  key: AIKeyConfig,
   usage: ReturnType<typeof createTokenAccumulator>,
 ): Promise<string | null> {
   try {
     const issues: any[] = parsed?.issues ?? [];
-    const gifQuery = await getGifName(parsed?.summary, apiKey, usage, {
+    const gifQuery = await getGifName(parsed?.summary, key, usage, {
       score: parsed?.score ?? null,
       totalIssues: issues.length,
       highSeverityCount: issues.filter((i) => i.severity === "high").length,
@@ -95,12 +97,12 @@ export async function runPRReview(data: PRReviewJobData) {
     return;
   }
 
-  const { apiKey, source } = resolvedKey;
+  const { source, ...key } = resolvedKey;
   const tokenUsage = createTokenAccumulator();
 
   const difference = await getDifferenceData(octokit, owner, repo, prNumber);
   const rules = await getReviewRules(octokit, owner, repo, prNumber);
-  const reviewType = (await getReviewType(difference, apiKey, tokenUsage)) as any;
+  const reviewType = (await getReviewType(difference, key, tokenUsage)) as any;
   const indexName = toIndexName(owner, repo);
   let relevantCode: Awaited<ReturnType<typeof retrieveContextForDiff>> | undefined;
   const processedDiff = (await getCodeDiff(difference)) as any;
@@ -113,7 +115,7 @@ export async function runPRReview(data: PRReviewJobData) {
     if (indexReady) {
       const searchQuery = await generateRelevantSearchQuery(
         processedDiff,
-        apiKey,
+        key,
         tokenUsage,
       );
       relevantCode = await retrieveContextForDiff({
@@ -125,6 +127,7 @@ export async function runPRReview(data: PRReviewJobData) {
       console.log(
         `RAG context for ${owner}/${repo}#${prNumber}: ${relevantCode.length} AST chunks`,
       );
+      logRetrievedContext({ owner, repo, prNumber, searchQuery }, relevantCode);
     } else {
       console.log(
         `Vector index "${indexName}" not ready — reviewing without RAG context`,
@@ -133,7 +136,7 @@ export async function runPRReview(data: PRReviewJobData) {
   }
 
   const prompt = reviewPrompt(difference, rules, relevantCode);
-  const aiResponse = await getAIReview(prompt, apiKey, tokenUsage);
+  const aiResponse = await getAIReview(prompt, key, tokenUsage);
   const cleanText = aiResponse
     .replace(/```json/g, "")
     .replace(/```/g, "")
@@ -145,7 +148,7 @@ export async function runPRReview(data: PRReviewJobData) {
     return;
   }
 
-  const gifUrl = await getReviewGifUrl(parsedPrompt, apiKey, tokenUsage);
+  const gifUrl = await getReviewGifUrl(parsedPrompt, key, tokenUsage);
   const usedCodebaseContext = Boolean(relevantCode && relevantCode.length > 0);
   const rawIssues: any[] = parsedPrompt.issues ?? [];
 

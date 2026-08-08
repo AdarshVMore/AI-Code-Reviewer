@@ -6,6 +6,7 @@ import {
   deleteAIUsageKey,
   emptyAIUsage,
   fetchAIUsage,
+  type AIProvider,
   type AIUsageKey,
   type AIUsageSummary,
 } from "@/lib/api/aiUsage"
@@ -36,8 +37,8 @@ export default function useAIUsage() {
     loadUsage()
   }, [loadUsage])
 
-  async function handleAddKey(name: string, key: string) {
-    const savedKey = await addAIUsageKey(name, key)
+  async function handleAddKey(name: string, key: string, provider: AIProvider = "anthropic", model?: string) {
+    const savedKey = await addAIUsageKey(name, key, provider, model)
     setKeys((current) => [savedKey, ...current])
     await loadUsage()
   }
