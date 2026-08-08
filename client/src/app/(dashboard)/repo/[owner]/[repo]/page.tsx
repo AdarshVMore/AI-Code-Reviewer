@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
@@ -28,7 +28,7 @@ import { useDeployments, Deployment } from "@/hooks/useDeployments";
 import { fixDeployment } from "@/lib/api/deployments";
 import { fetchRepoSettings, updateRepoSettings } from "@/lib/api/repos";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
-import { GitPullRequest } from "lucide-react";
+import { GitPullRequest, ChevronDown } from "lucide-react";
 import { FORCE_LOADING } from "@/lib/forceLoading";
 import { TileWaveSkeletonPage } from "@/components/ui";
 
@@ -56,6 +56,99 @@ function CustomTooltip({
   return (
     <div className="bg-bg-raised border border-border-hairline rounded-lg px-3 py-2 text-xs font-mono text-text-primary">
       {label}: {payload[0].value}
+    </div>
+  );
+}
+
+function ReviewsTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { value: number }[];
+  label?: string;
+}) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-xl border border-border-hairline bg-bg-overlay px-4 py-3 shadow-lg shadow-black/40 min-w-[120px]">
+      <p className="text-lg font-semibold text-text-primary leading-none">
+        {payload[0].value}
+      </p>
+      <p className="text-xs text-text-tertiary mt-1.5">{label}</p>
+    </div>
+  );
+}
+
+type TimeRange = "7d" | "30d" | "90d" | "all";
+
+const TIME_RANGE_OPTIONS: { id: TimeRange; label: string }[] = [
+  { id: "7d", label: "Last 7 Days" },
+  { id: "30d", label: "Last 30 Days" },
+  { id: "90d", label: "Last 3 Months" },
+  { id: "all", label: "All Time" },
+];
+
+function TimeRangeSelect({
+  value,
+  onChange,
+}: {
+  value: TimeRange;
+  onChange: (value: TimeRange) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const current = TIME_RANGE_OPTIONS.find((o) => o.id === value) ?? TIME_RANGE_OPTIONS[0];
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-2 text-sm font-medium text-text-primary bg-bg-surface border border-border-hairline rounded-lg pl-3 pr-2.5 py-1.5 cursor-pointer hover:border-border-hover transition-colors duration-150"
+      >
+        {current.label}
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-text-tertiary transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="absolute right-0 mt-1.5 w-40 rounded-lg border border-border-hairline bg-bg-overlay shadow-lg shadow-black/40 py-1 z-20"
+        >
+          {TIME_RANGE_OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => {
+                onChange(opt.id);
+                setOpen(false);
+              }}
+              className={`w-full text-left text-sm px-3 py-1.5 cursor-pointer transition-colors duration-100 ${
+                opt.id === value
+                  ? "text-brand bg-brand/10"
+                  : "text-text-secondary hover:text-text-primary hover:bg-bg-raised"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -109,6 +202,7 @@ export default function RepoPage() {
   const [strictMode, setStrictMode] = useState(false);
   const [autoComment, setAutoComment] = useState(true);
   const [selectedReviewer, setSelectedReviewer] = useState("none");
+  const [timeRange, setTimeRange] = useState<TimeRange>("30d");
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
 
@@ -159,8 +253,20 @@ export default function RepoPage() {
   }
 
   const reviewsData = useMemo(() => {
+    const rangeMs: Record<TimeRange, number | null> = {
+      "7d": 7 * 86_400_000,
+      "30d": 30 * 86_400_000,
+      "90d": 90 * 86_400_000,
+      all: null,
+    };
+    const cutoff = rangeMs[timeRange];
+    const now = Date.now();
+    const filteredPrs = cutoff
+      ? prs.filter((pr) => now - new Date(pr.createdAt).getTime() <= cutoff)
+      : prs;
+
     const counts: Record<string, number> = {};
-    for (const pr of prs) {
+    for (const pr of filteredPrs) {
       const date = new Date(pr.createdAt).toLocaleDateString("en-US", {
         month: "short",
         day: "2-digit",
@@ -168,7 +274,7 @@ export default function RepoPage() {
       counts[date] = (counts[date] ?? 0) + 1;
     }
     return Object.entries(counts).map(([date, count]) => ({ date, count }));
-  }, [prs]);
+  }, [prs, timeRange]);
 
   async function handleFix(deployment: Deployment) {
     setFixingId(deployment.id);
@@ -293,35 +399,68 @@ export default function RepoPage() {
 
         {activeTab === "analytics" && (
           <div>
-            <SectionLabel>Reviews over time</SectionLabel>
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={reviewsData}>
-                <XAxis
-                  dataKey="date"
-                  tick={{ fill: "#555555", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fill: "#555555", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <CartesianGrid stroke="#262626" vertical={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#5b6af0"
-                  strokeWidth={1.5}
-                  fill="#5b6af0"
-                  fillOpacity={0.08}
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-sm font-medium text-text-primary">Reviews over time</p>
+                  <p className="text-xs text-text-tertiary mt-0.5">
+                    PRs reviewed by the AI in the selected period
+                  </p>
+                </div>
+                <TimeRangeSelect value={timeRange} onChange={setTimeRange} />
+              </div>
 
-            
+              {reviewsData.length === 0 ? (
+                <p className="text-sm text-text-secondary py-10 text-center">
+                  No reviews in this period.
+                </p>
+              ) : (
+                <ResponsiveContainer width="100%" height={280}>
+                  <AreaChart data={reviewsData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                    <defs>
+                      <pattern
+                        id="reviewsHatch"
+                        patternUnits="userSpaceOnUse"
+                        width="7"
+                        height="7"
+                        patternTransform="rotate(45)"
+                      >
+                        <rect width="7" height="7" fill="transparent" />
+                        <line x1="0" y1="0" x2="0" y2="7" stroke="#5b6af0" strokeWidth="1.4" strokeOpacity="0.35" />
+                      </pattern>
+                    </defs>
+                    <CartesianGrid stroke="#1f2023" vertical horizontal />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "#55565c", fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      dy={8}
+                    />
+                    <YAxis
+                      tick={{ fill: "#55565c", fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={32}
+                      allowDecimals={false}
+                    />
+                    <Tooltip
+                      content={<ReviewsTooltip />}
+                      cursor={{ stroke: "#5b6af0", strokeWidth: 1.5 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#5b6af0"
+                      strokeWidth={2}
+                      fill="url(#reviewsHatch)"
+                      dot={{ r: 4, fill: "#16171a", stroke: "#5b6af0", strokeWidth: 2 }}
+                      activeDot={{ r: 5, fill: "#5b6af0", stroke: "#16171a", strokeWidth: 2 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </Card>
           </div>
         )}
 
