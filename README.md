@@ -35,18 +35,26 @@ https://github.com/apps/coderefyn
 
 ## 📸 Screenshots
 
+### Architecture
+
+<img width="1033" height="691" alt="image" src="https://github.com/user-attachments/assets/d4457e97-e15e-4d58-8264-a576d16b241c" />
+
 
 ### Dashboard / UI
 
-<img width="100%" src="https://github.com/user-attachments/assets/0f6223d2-eae3-4cb1-b95b-89559e605bcd" />
+<img width="1470" height="881" alt="image" src="https://github.com/user-attachments/assets/87083ca7-d364-4d7d-bb95-1e04f6265093" />
 
-<img width="100%" src="https://github.com/user-attachments/assets/2748b188-2a5b-4b4b-b33e-56c2255bd4f7" />
+<img width="1470" height="881" alt="image" src="https://github.com/user-attachments/assets/bc645512-5d19-4f95-8c5b-2b0c11a5dee5" />
 
-<img width="100%" src="https://github.com/user-attachments/assets/ddf9b899-5129-4d72-8b3e-0f9163f67de7" />
+<img width="1470" height="883" alt="image" src="https://github.com/user-attachments/assets/6a75eb46-d0e6-4d5c-b80c-14fc8f065756" />
 
-<img width="100%" src="https://github.com/user-attachments/assets/634da127-491e-4120-b900-1f946566bfcb" />
+<img width="1467" height="881" alt="image" src="https://github.com/user-attachments/assets/63d3421f-29f3-4615-b6ba-ad99a51e4dcd" />
 
-<img width="100%" src="https://github.com/user-attachments/assets/4ee3d218-b2d7-43d5-864c-68ab23a8b7e6" />
+<img width="1469" height="882" alt="image" src="https://github.com/user-attachments/assets/b8fe6cc1-98f2-40ce-81b5-48dbc7f5af68" />
+
+<img width="1470" height="883" alt="image" src="https://github.com/user-attachments/assets/85edddf3-1ebe-4f77-8f57-0d0d5dad22c4" />
+
+<img width="1470" height="880" alt="image" src="https://github.com/user-attachments/assets/d8421eaf-c9df-4665-bba1-b56baf975737" />
 
 ---
 
