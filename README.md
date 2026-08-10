@@ -37,7 +37,7 @@ https://github.com/apps/coderefyn
 
 ### Architecture
 
-<img width="1033" height="691" alt="image" src="https://github.com/user-attachments/assets/d4457e97-e15e-4d58-8264-a576d16b241c" />
+<img width="1110" height="755" alt="image" src="https://github.com/user-attachments/assets/6ba5fbc6-d355-4c93-b759-2ba703691265" />
 
 
 ### Dashboard / UI
