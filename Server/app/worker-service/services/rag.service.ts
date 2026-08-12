@@ -1,9 +1,10 @@
-import { Pinecone } from "@pinecone-database/pinecone";
+import { Pinecone, type Index } from "@pinecone-database/pinecone";
 import {
   downlaodRepoZIP,
   extractZIP,
   readCodeFiles,
   cleanup,
+  isSupportedFile,
 } from "./repoSetup.service.js";
 import {
   parseFileToASTChunks,
@@ -11,15 +12,23 @@ import {
   parseChangedSymbolsFromDiff,
   type ASTCodeChunk,
 } from "../../../package/ast/parser.js";
+import { getOctokit } from "../../../package/github/client.js";
+import { db } from "../../../package/db/prisma.js";
+import { getQueueRedisConnection } from "../../../package/lib/redis.client.js";
+import type { Octokit } from "@octokit/rest";
 
 const EMBEDDING_MODEL = "llama-text-embed-v2";
 const EMBEDDING_DIMENSION = 1024;
 const EMBED_BATCH_SIZE = 96;
 
+type RAGPipelineTrigger = "pr_opened" | "push";
+
 type RAGPipelineInput = {
   installationId: number;
   owner: string;
   repo: string;
+  trigger?: RAGPipelineTrigger;
+  headSha?: string;
 };
 
 export type CodeChunk = ASTCodeChunk;
@@ -327,10 +336,91 @@ export async function waitForVectorIndex(
   return false;
 }
 
-export async function runRAGPipeline(data: object) {
-  const { installationId, owner, repo } = data as RAGPipelineInput;
 
-  const indexName = toIndexName(owner, repo);
+const LOCK_TTL_MS = 10 * 60 * 1000;
+
+async function acquireRepoLock(indexName: string): Promise<string | null> {
+  const client = await getQueueRedisConnection();
+  const token = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const ok = await client.set(`rag-lock:${indexName}`, token, {
+    condition: "NX",
+    expiration: { type: "PX", value: LOCK_TTL_MS },
+  });
+  return ok ? token : null;
+}
+
+async function releaseRepoLock(indexName: string, token: string): Promise<void> {
+  const client = await getQueueRedisConnection();
+  const current = await client.get(`rag-lock:${indexName}`);
+  if (current === token) {
+    await client.del(`rag-lock:${indexName}`);
+  }
+}
+
+async function getDefaultBranchHead(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+): Promise<{ branch: string; sha: string }> {
+  const { data: repoData } = await octokit.repos.get({ owner, repo });
+  const branch = repoData.default_branch;
+  const { data: branchData } = await octokit.repos.getBranch({ owner, repo, branch });
+  return { branch, sha: branchData.commit.sha };
+}
+
+type ChangedFile = { path: string; status: string; previousPath?: string };
+
+async function compareCommits(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  base: string,
+  head: string,
+): Promise<ChangedFile[]> {
+  const { data } = await octokit.repos.compareCommitsWithBasehead({
+    owner,
+    repo,
+    basehead: `${base}...${head}`,
+  });
+
+  return (data.files ?? []).map((f) => ({
+    path: f.filename,
+    status: f.status,
+    previousPath: f.previous_filename,
+  }));
+}
+
+async function fetchFileContent(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  filePath: string,
+  ref: string,
+): Promise<string | null> {
+  try {
+    const { data } = await octokit.repos.getContent({ owner, repo, path: filePath, ref });
+    if (Array.isArray(data) || data.type !== "file" || !("content" in data)) return null;
+    return Buffer.from(data.content, "base64").toString("utf-8");
+  } catch (err) {
+    console.error(`Failed to fetch content for ${filePath}@${ref}:`, err);
+    return null;
+  }
+}
+
+async function deleteVectorsForFile(index: Index, filePath: string): Promise<void> {
+  try {
+    await index.deleteMany({ filter: { filePath: { $eq: filePath } } });
+  } catch (err) {
+    console.error(`Failed to delete stale vectors for ${filePath}:`, err);
+  }
+}
+
+async function runFullIndex(
+  installationId: number,
+  owner: string,
+  repo: string,
+  indexName: string,
+): Promise<void> {
   const zipPath = await downlaodRepoZIP(installationId, owner, repo);
   const extractedDir = extractZIP(zipPath);
 
@@ -342,6 +432,118 @@ export async function runRAGPipeline(data: object) {
 
   cleanup([zipPath, extractedDir]);
   console.log(
-    `RAG pipeline complete for ${owner}/${repo}: ${files.length} files → ${chunks.length} AST chunks indexed`,
+    `Full RAG index built for ${owner}/${repo}: ${files.length} files → ${chunks.length} AST chunks`,
   );
+}
+
+async function runIncrementalIndex(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  indexName: string,
+  baseSha: string,
+  headSha: string,
+): Promise<void> {
+  const changedFiles = await compareCommits(octokit, owner, repo, baseSha, headSha);
+  if (changedFiles.length === 0) {
+    console.log(`No file changes between ${baseSha} and ${headSha} for "${indexName}"`);
+    return;
+  }
+
+  const pc = getPinecone();
+  const index = pc.index({ name: indexName });
+
+  const removed = changedFiles.filter((f) => f.status === "removed" || f.status === "renamed");
+  const changed = changedFiles.filter(
+    (f) => f.status !== "removed" && isSupportedFile(f.path),
+  );
+
+  const pathsToClear = new Set<string>([
+    ...removed.map((f) => f.previousPath ?? f.path),
+    ...changed.map((f) => f.path),
+  ]);
+  for (const filePath of pathsToClear) {
+    await deleteVectorsForFile(index, filePath);
+  }
+
+  const files: { path: string; content: string }[] = [];
+  for (const file of changed) {
+    const content = await fetchFileContent(octokit, owner, repo, file.path, headSha);
+    if (content !== null) files.push({ path: file.path, content });
+  }
+
+  const chunks = chunkFilesWithAST(files);
+  if (chunks.length > 0) {
+    const vectors = await createEmbeddings({ chunks, indexName });
+    await saveToVectorDB({ vectors, indexName });
+  }
+
+  console.log(
+    `Incremental RAG update for "${indexName}": ${removed.length} removed, ${changed.length} changed → ${chunks.length} chunks re-embedded`,
+  );
+}
+
+export async function runRAGPipeline(data: object) {
+  const input = data as RAGPipelineInput;
+  const { installationId, owner, repo } = input;
+  const trigger = input.trigger ?? "push";
+  const indexName = toIndexName(owner, repo);
+
+  const lockToken = await acquireRepoLock(indexName);
+  if (!lockToken) {
+    console.log(`RAG pipeline already running for "${indexName}" — skipping this trigger`);
+    return;
+  }
+
+  try {
+    const indexExists = await vectorDBExists(indexName);
+
+    if (trigger === "pr_opened" && indexExists) {
+      console.log(`Index "${indexName}" already exists — skipping rebuild on PR open`);
+      return;
+    }
+
+    if (!indexExists) {
+      await runFullIndex(installationId, owner, repo, indexName);
+      const { sha } = input.headSha
+        ? { sha: input.headSha }
+        : await getDefaultBranchHead(await getOctokit(installationId), owner, repo);
+      await db.repository.update({
+        where: { owner_name: { owner, name: repo } },
+        data: { lastIndexedSha: sha, lastIndexedAt: new Date() },
+      });
+      return;
+    }
+
+    // Index already exists and this is a push — bring it up to date incrementally.
+    const octokit = await getOctokit(installationId);
+    const headSha = input.headSha ?? (await getDefaultBranchHead(octokit, owner, repo)).sha;
+    const repository = await db.repository.findUnique({
+      where: { owner_name: { owner, name: repo } },
+      select: { lastIndexedSha: true },
+    });
+
+    if (!repository?.lastIndexedSha) {
+      await runFullIndex(installationId, owner, repo, indexName);
+    } else if (repository.lastIndexedSha === headSha) {
+      console.log(`"${indexName}" already up to date at ${headSha}`);
+      return;
+    } else {
+      await runIncrementalIndex(
+        octokit,
+        owner,
+        repo,
+        indexName,
+        repository.lastIndexedSha,
+        headSha,
+      );
+    }
+
+    await db.repository.update({
+      where: { owner_name: { owner, name: repo } },
+      data: { lastIndexedSha: headSha, lastIndexedAt: new Date() },
+    });
+  } finally {
+    await releaseRepoLock(indexName, lockToken);
+  }
 }
