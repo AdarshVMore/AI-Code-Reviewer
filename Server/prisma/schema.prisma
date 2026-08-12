@@ -57,6 +57,8 @@ model Repository {
   installationId Int
   userId         String
   createdAt      DateTime     @default(now())
+  lastIndexedSha String?
+  lastIndexedAt  DateTime?
   deployments    Deployment[]
   reviews        PRReview[]
   user           User         @relation(fields: [userId], references: [id])
