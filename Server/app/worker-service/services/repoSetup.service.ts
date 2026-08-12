@@ -6,6 +6,10 @@ import { createAppAuth } from "@octokit/auth-app";
 
 const ALLOWED_EXT = [".ts", ".js", ".tsx", ".jsx", ".py", ".go", ".java", ".rb", ".rs"];
 
+export function isSupportedFile(filePath: string): boolean {
+  return ALLOWED_EXT.includes(path.extname(filePath));
+}
+
 async function getInstallationToken(installationId: number): Promise<string> {
   const auth = createAppAuth({
     appId: process.env.GITHUB_APP_ID!,
