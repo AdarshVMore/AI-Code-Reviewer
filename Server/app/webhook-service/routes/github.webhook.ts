@@ -21,6 +21,14 @@ type PullRequestEvent = {
   repository: { name: string; owner: { id: number; login: string; avatar_url: string } };
 };
 
+type PushEvent = {
+  ref: string;
+  after: string;
+  deleted?: boolean;
+  installation: { id: number };
+  repository: { name: string; default_branch: string; owner: { login: string } };
+};
+
 type InstallationEvent = {
   action: "created" | "deleted";
   installation: { id: number };
@@ -84,7 +92,13 @@ if (!client.isOpen){
     const prNumber = payload.pull_request.number;
 
     if (payload.action === "opened" || payload.action === "synchronize") {
-      client.lPush("ragData", JSON.stringify({ installationId, owner, repo }))
+      if (payload.action === "opened") {
+
+        client.lPush(
+          "ragData",
+          JSON.stringify({ installationId, owner, repo, trigger: "pr_opened" }),
+        );
+      }
       const repoOwner = payload.repository.owner;
 
       const user = await db.user.upsert({
@@ -125,7 +139,30 @@ if (!client.isOpen){
       console.log("pushed to queue, queue length:", pushed);
     }
   }
-  
+
+  if (event === "push") {
+    const payload = req.body as PushEvent;
+    const installationId = payload.installation?.id;
+    const owner = payload.repository.owner.login;
+    const repo = payload.repository.name;
+    const defaultRef = `refs/heads/${payload.repository.default_branch}`;
+
+
+    if (installationId && !payload.deleted && payload.ref === defaultRef) {
+      client.lPush(
+        "ragData",
+        JSON.stringify({
+          installationId,
+          owner,
+          repo,
+          trigger: "push",
+          headSha: payload.after,
+        }),
+      );
+      console.log(`default-branch push for ${owner}/${repo} — queued RAG re-index`);
+    }
+  }
+
   if (event === "workflow_run") {
     const payload = req.body as any;
 
