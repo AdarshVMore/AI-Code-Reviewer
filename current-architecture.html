@@ -211,10 +211,11 @@ flowchart TD
   GH --> WHR
 
   PG[("Postgres")]
-  RD[("Redis")]
+  RDQ[("Redis Streams<br/>queue instance")]
+  RDC[("Redis<br/>cache instance")]
 
   WHR -->|upsert| PG
-  WHR -->|lPush ×3| RD
+  WHR -->|xadd ×3| RDQ
 
   subgraph WSVC["worker-service"]
     direction TB
@@ -223,9 +224,9 @@ flowchart TD
     DWK["deployment.worker"]
   end
 
-  RD --> RWK
-  RD --> RGW
-  RD --> DWK
+  RDQ -->|consume| RWK
+  RDQ -->|consume| RGW
+  RDQ -->|consume| DWK
   WHR -.->|wake-ping| WSVC
 
   subgraph FE["Frontend"]
@@ -238,11 +239,11 @@ flowchart TD
   UI -->|axios| API
   SWG -.->|poll| API
   API -->|reads/writes| PG
-  API -->|cache| RD
+  API -->|cache| RDC
 
   classDef data fill:#101113,stroke:#22c55e,color:#ededed;
   classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
-  class PG,RD data;
+  class PG,RDQ,RDC data;
   class GH ext;
       </div>
     </div>
@@ -311,6 +312,94 @@ flowchart LR
   </div>
   <p class="section-note">Split on purpose: 1A is the control/data flow, 1B is every external dependency. api-service and deployment.worker both calling GitHub + Claude + Postgres is exactly the kind of fan-out that turns into spaghetti when it shares a canvas with the queue plumbing — so it gets its own diagram instead.</p>
 
+  <p class="stage-label">1C — inside each worker</p>
+  <p class="section-note">Same three loops from 1A, expanded into the actual sequence each one runs per job — including the branches that matter: the no-key quota exit, the feature-only RAG lookup, the retry-on-overload.</p>
+
+  <p class="stage-label">review.worker <span class="tag">reviewQueue</span></p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':45,'rankSpacing':70,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','lineColor':'#55565c','textColor':'#ededed',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  A["pop job<br/>reviewQueue"] --> B["resolve installation<br/>+ user"]
+  B --> C{"has API key or<br/>free reviews left?"}
+  C -->|no| C1["post quota comment<br/>· exit"]
+  C -->|yes| D["fetch diff<br/>+ review rules"]
+  D --> E["classify PR type"]
+  E --> F{"type =<br/>feature?"}
+  F -->|yes| G["search query +<br/>retrieve RAG context"]
+  F -->|no| H["generate review<br/>retries on overload"]
+  G --> H
+  H --> I["parse JSON +<br/>mood gif query"]
+  I --> J["save review<br/>Postgres"]
+  J --> K["post PR comment"]
+
+  classDef ai fill:#16171a,stroke:#ff7a45,color:#ededed;
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  class E,G,H,I ai;
+  class J data;
+  class C1,D,K ext;
+      </div>
+    </div>
+  </div>
+
+  <p class="stage-label">rag.worker <span class="tag">ragData</span></p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':45,'rankSpacing':70,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','lineColor':'#55565c','textColor':'#ededed',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  A["pop job<br/>ragData"] --> B["download + extract<br/>repo zip"]
+  B --> C["read + AST-chunk<br/>every file"]
+  C --> D["embed chunks<br/>batched"]
+  D --> E["upsert vectors<br/>to index"]
+  E --> F["cleanup<br/>temp files"]
+
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  class B ext;
+  class D,E data;
+      </div>
+    </div>
+  </div>
+
+  <p class="stage-label">deployment.worker <span class="tag">deploymentQueue</span></p>
+  <div class="stage">
+    <div class="stage-inner">
+      <div class="mermaid">
+%%{init: {'theme':'base','flowchart':{'nodeSpacing':45,'rankSpacing':70,'curve':'basis','htmlLabels':true,'wrap':true},'themeVariables':{
+  'background':'#0a0b0d','mainBkg':'#16171a','primaryColor':'#16171a','primaryTextColor':'#ededed',
+  'primaryBorderColor':'#5b6af0','lineColor':'#55565c','textColor':'#ededed',
+  'edgeLabelBackground':'#0a0b0d','fontFamily':'ui-sans-serif, system-ui, sans-serif','fontSize':'13px'
+}}}%%
+flowchart LR
+  A["pop job<br/>deploymentQueue"] --> B["look up repository<br/>Postgres"]
+  B --> C{"provider =<br/>github_actions?"}
+  C -->|yes| D["fetch action logs<br/>GitHub"]
+  C -->|no| E["analyze logs<br/>for root cause"]
+  D --> E
+  E --> F["save deployment<br/>Postgres"]
+
+  classDef ai fill:#16171a,stroke:#ff7a45,color:#ededed;
+  classDef data fill:#101113,stroke:#22c55e,color:#ededed;
+  classDef ext fill:#1c1d21,stroke:#8b8b93,color:#ededed;
+  class E ai;
+  class B,F data;
+  class D ext;
+      </div>
+    </div>
+  </div>
+  <p class="section-note">"apply fix" isn't shown here — it's a separate, synchronous flow triggered directly from an API route, not something this worker's queue loop ever runs.</p>
+
   <section>
     <h2>The shortcuts baked into this diagram</h2>
     <p class="section-note">Not bugs exactly — decisions made to ship, that the scalable version (part 2) exists to unwind.</p>
@@ -328,8 +417,8 @@ flowchart LR
         <p>The "apply fix" endpoints reach directly into worker-service's internal modules instead of going through the queue — the two services aren't actually independently deployable.</p>
       </div>
       <div class="card">
-        <h3>One Redis instance, three jobs <span class="tag">Upstash</span></h3>
-        <p>Queues and cache share the same instance with no replication. A cache eviction storm and a lost queue item are one incident away from each other.</p>
+        <h3>Streams, but still single-instance <span class="tag">Redis</span></h3>
+        <p>Queue and cache are separate instances now, and the queue side runs on Streams — but each is still one unreplicated node with no consumer-group ack. A worker that crashes mid-job still loses that job.</p>
       </div>
       <div class="card">
         <h3>Sequential Claude calls <span class="tag">review.service.ts</span></h3>

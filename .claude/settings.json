@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof -nP -iTCP:3001 -sTCP:LISTEN)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3001/health)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3001/)",
+      "Bash(docker exec *)",
+      "Bash(echo \"---exit: $?\")",
+      "Bash(docker compose *)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s http://localhost:3000/login)",
+      "Bash(grep -o '<svg[^>]*viewBox=\"0 0 32 32\"[^>]*>.\\\\{0,400\\\\}')",
+      "Bash(curl -s http://localhost:3000/login -o /tmp/login.html)",
+      "Read(//tmp/**)",
+      "Bash(python3 -c ' *)",
+      "Read(//private/tmp/**)",
+      "Bash(git status *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000 --max-time 3)",
+      "Bash(ps -p 26582 -o command=)",
+      "Bash(curl -s http://localhost:3000/api/health --max-time 3 -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000 --max-time 3)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "WebFetch(domain:openrouter.ai)",
+      "Bash(npx prisma *)",
+      "Bash(curl -s \"https://openrouter.ai/api/v1/models\" -o /tmp/openrouter_models.json)",
+      "Bash(grep -iA3 \"migrat\")",
+      "Bash(gh pr *)",
+      "Bash(grep -v \"running RAG worker\\\\|RAG pipeline error\\\\|pinecone\\\\|Pinecone\\\\|mapHttpStatusError\\\\|handleApiError\\\\|processTicksAndRejections\\\\|InferenceApi\\\\|Inference._embed\\\\|createEmbeddings\\\\|cause: undefined\\\\|^worker-service-1  | }$\")"
+    ]
+  }
+}

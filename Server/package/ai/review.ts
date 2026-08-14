@@ -140,7 +140,7 @@ For each issue:
 Return ONLY valid JSON in this exact format:
 
 {
-  "summary": "1-2 friendly sentences on the overall change; note what's good and the general direction",
+  "summary": "ONE tight sentence (max ~20 words) stating what this PR does. This is used as a clickable headline in the review comment, so it must read like a standalone title — no filler like 'This PR' or 'Overall,' just the change itself.",
   "score": number (0-100),
   "issues": [
     {
