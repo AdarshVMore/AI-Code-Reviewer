@@ -16,6 +16,14 @@
     "avoid nested loops over large arrays"
   ],
   "ci": {
-    "install_directory": "backend"
+    "install_directory": "backend",
+    "pre_lint_commands": [
+      "npx tsc --noEmit"
+    ],
+    "fix_instructions": [
+      "Add null checks for 'repository' before accessing its properties (use optional chaining or an early return guard)",
+      "Fix variable name typo: use 'octokit' consistently throughout collaborators.controller.ts (rename any 'oktokit' occurrences to 'octokit')",
+      "Add explicit type annotation for parameter 'c' on line 21 in collaborators.controller.ts (e.g., 'c: Context' from Hono)"
+    ]
   }
 }

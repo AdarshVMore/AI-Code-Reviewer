@@ -39,7 +39,7 @@ export async function getCollaborators(
   );
 
   res.json(
-    collaborators.map((c) => ({
+    collaborators.map((c: { id: number; login: string; avatar_url: string; permissions?: Record<string, boolean> }) => ({
       id: c.id,
       login: c.login,
       avatar_url: c.avatar_url,
